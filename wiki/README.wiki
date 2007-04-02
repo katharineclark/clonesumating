@@ -1,15 +1,10 @@
-#summary One-sentence summary of this page.
 
 = Introduction =
 
 Read this before you do anything.
 
 
-= Details =
-
-
-
-SYSTEM REQUIREMENTS
+= SYSTEM REQUIREMENTS =
 
 	Apache with mod_perl
 	FastCGI (FCGI and CGI::Fast)
@@ -19,7 +14,7 @@ SYSTEM REQUIREMENTS
 	All Perl modules required should be freely available at http://search.cpan.org	
 
 
-CONFIGURING CONSUCODE TO WORK ON YOUR SERVER
+= CONFIGURING CONSUCODE TO WORK ON YOUR SERVER =
 
 	1. Install all the code and images into a web root somewhere
 	2. Make changes to your apache config so that the mod_perl modules get mapped correctly
@@ -33,7 +28,7 @@ CONFIGURING CONSUCODE TO WORK ON YOUR SERVER
 	10. There are a few cron jobs in /admin/cron/  They need to be set up to run regularly.
 	
 
-CUSTOMIZING CATEGORIES, ETC
+= CUSTOMIZING CATEGORIES, ETC =
 
 	1. You'll want to fill a few databases with categories for your users. 	 
 		=> topicChannels - a list of all channels a topic can be in
@@ -44,11 +39,11 @@ CUSTOMIZING CATEGORIES, ETC
 	3. There are a bunch of email alerts and notifications in /front/emails and /front/alerts
 
 
-EXPERIMENTAL CODE
+= EXPERIMENTAL CODE =
 	There is some fun, slightly newer versions of the peeps page, play page, etc in the EXPERIMENTAL dir.
 	None of this stuff will work out of the box, but you can see where the code is going.
 
-KNOWN ISSUES
+= KNOWN ISSUES =
 
 	1. The drawing tool does not work in IE. It may look like it is working, but it will fail in the end.
 	2. Sometimes, toys mysteriously disappear. I think this has to do with them moving instead of copying.
