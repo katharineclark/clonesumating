@@ -1,0 +1,74 @@
+<div style="text-align: center; margin-bottom: 20px;">
+	<span class="medium"><cms::if type="date" name="singleday">On <cms::var type="date" name="start" date></cms::if><cms::ifnot type="date" name="singleday">Between <cms::var type="date" name="start" date> and <cms::var type="date" name="end" date></cms::ifnot> you <cms::if type="points" name="positive">got</cms::if><cms::ifnot type="points" name="positive">lost</cms::ifnot> a total of <cms::var type="points" name="total"> points!</span>
+</div>
+
+<div id="leftcolumn">
+
+<h3>Here's some more detail for you blingmongers:</h3>
+
+<bl>
+<cms::if type="thumbs" name="points" nest>
+		<li><cms::if type="thumbs" name="positive">Gained</cms::if><cms::ifnot type="thumbs" name="positive">Lost</cms::ifnot> <span class="blue"><cms::var type="thumbs" name="points"> <cms::wc type="thumbs" name="points" s="point" p="points"></span> for your profile.</li>
+</cms::if type="thumbs" name="points">
+
+<cms::if type="points" name="questions" nest>
+        <li><cms::if type="points" name="questionspositive">Gained</cms::if><cms::ifnot type="points" name="questionspositive">Lost</cms::ifnot> <span class="blue"><cms::var type="points" name="questions"> <cms::wc type="points" name="questions" s="point" p="points"></span> for your answers.</li>
+</cms::if type="points" name="questions">
+
+<cms::fancylist over="contests">
+         <li><cms::if type="contest" name="positive">Gained</cms::if><cms::ifnot type="contest" name="positive">Lost</cms::ifnot> <span class="blue"><cms::var type="contest" name="points"> point<cms::wc type="contest" name="points" s="" p="s"></span> in the <a href="/picture.pl?id=<cms::var type="contest" name="photoId">&contestId=<cms::var type="contest" name="contestId">"><cms::var type="contest" name="name"></a> contest.</li>
+</cms::fancylist>
+</bl>
+
+<br />
+
+<h3>Current Weighting</h3>
+<P>Currently, each thumb up you get is worth <b>2 points</b>, and each thumb down you get is worth <b>-1 point</b>.  We update your score
+several times a day.</p>
+
+    <p><a href="/invite/">Invite your friends</a> and you'll get an automatic thumb-up from each person who joins!  They'll automagically appear in <a href="/updates/">Your Peeps</a> so you can keep track of them!</p>
+
+</div>
+<div id="rightcolumn">
+    <h2 class="subtitle">Top Gainers & Losers</h2>
+<cms::if type="noquestions" name="message">
+	<P>You didn't receive any ups or downs on any of your questions during this time period.</p>	
+</cms::if>
+<cms::ifnot type="noquestions" name="message" nest>
+<cms::fancylist over="questions">
+	<a name="<cms::var type="question" name="id">"></a>
+	<div class="gainer<cms::var type="list" name="evenodd"> corners greyborders">
+		<div class="pad10">
+            <div class="corners bling">
+				<cms::var type="question" name="points">
+			</div>
+			<a href="/profiles/<cms::var type="question" name="linkhandle">#<cms::var type="question" name="id">"><b><cms::var type="question" name="question"></b></a>
+		</div>
+		<b class="round666 tl"></b>
+        <b class="round666 tr"></b>
+        <b class="round666 bl"></b>
+        <b class="round666 br"></b>
+	</div>
+</cms::fancylist>
+<cms::fancylist over="questionslosers">
+    <a name="<cms::var type="question" name="id">"></a>
+    <div class="loser<cms::var type="list" name="evenodd"> corners greyborders">
+        <div class="pad10">
+            <div class="bling">
+				-<cms::var type="question" name="points">
+			</div>
+            <a href="/profiles/<cms::var type="question" name="linkhandle">#<cms::var type="question" name="id">"><b><cms::var type="question" name="question"></b></a>
+        </div>
+		<b class="round666 tl"></b>
+        <b class="round666 tr"></b>
+        <b class="round666 bl"></b>
+        <b class="round666 br"></b>
+    </div>
+</cms::fancylist>
+</cms::ifnot type="noquestions" name="message">
+
+
+
+</div>
+
+<br clear="all"/>

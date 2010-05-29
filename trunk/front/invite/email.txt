@@ -1,0 +1,22 @@
+Your friend <cms::var type="user" name="firstName"> has invited you to join Consumating, 
+a new site that is part contest, part social network, and part crack-like addiction.  
+
+When you join, you will automatically get a thumbs-up from your friend, and they will 
+be added to your hot list so that you can keep track of what they do on Consumating.  <cms::if type="email" name="tags">
+
+<cms::var type="user" name="firstName"> has already tagged you <cms::var type="email" name="tags">.  
+When you join, these will appear automatically on your profile!</cms::if>
+
+Click below to join now:
+
+http://www.consumating.com/profiles/<cms::var type="user" name="linkhandle">/invite?v=<cms::var type="email" name="verification"><cms::if type="email" name="tagslink">&tags=<cms::var type="email" name="tagslink"></cms::if>
+
+<cms::var type="user" name="firstName"> can be found here:
+
+http://www.consumating.com/profiles/<cms::var type="user" name="linkhandle">
+
+And you can explore everything here:
+
+http://www.consumating.com/
+
+See you soon!

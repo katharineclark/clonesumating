@@ -1,0 +1,65 @@
+<link rel="Stylesheet" href="/styles.css" type="text/css" />
+<div style="float: left; width: 470px; padding: 0px;">
+
+<cms::fancylist over="profiles">
+
+        <div id="<cms::var type="profile" name="linkhandle">" class="card <cms::var type="list" name="evenodd">" style="margin: 2px;">
+                <a href="/profiles/<cms::var type="profile" name="linkhandle">"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="profile" name="id">/100/<cms::var type="profile" name="photoId">.jpg" border="0" width="100" height="100" alt="<cms::var type="profile" name="handle">"></a><BR /> <span class="small"> 
+ <a href="/profiles/<cms::var type="profile" name="linkhandle">"><cms::var type="profile" name="handle"></a>
+<BR />
+        <cms::var type="profile" name="pageCount"><BR />
+        <cms::var type="profile" name="lastActive"><BR />
+                </span>
+
+        </div>
+
+</cms::fancylist>
+</div>
+<div id="right" style="padding: 10px;padding-left:0px;">
+
+<h2>Users On Now<BR />
+<cms::var type="stats" name="usersnow"></h2>
+<BR />
+<h2>User Sessions<BR />
+<cms::var type="stats" name="users"> users<BR />
+<cms::var type="stats" name="userVisits"> visits</h2>
+<BR />
+<h2>New Users Today<BR />
+<cms::var type="stats" name="conversions"></h2>
+<Br />
+<!--<h2>Impressions Today<BR />
+<cms::var type="stats" name="impressions"></h2>
+<BR />-->
+<h2>Message Today:<BR />
+<cms::var type="stats" name="msgcount">
+</h2>
+
+<BR />
+<h2>Time Since Last Message:<BR />
+<cms::var type="stats" name="lastMessage">
+</h2>
+<BR />
+<h2>Time Since Last Register:<BR />
+<cms::var type="stats" name="lastRegister">
+</h2>
+<BR />
+<h2>Last Thumb:<Br />
+<cms::var type="stats" name="lastThumb">
+<br/> <br/> <br/>
+<span class="small">
+<a href="/admin/zeitgeist.pl?timespan=1 day">Zeitgeist for today</a><br/>
+<a href="/admin/zeitgeist.pl?timespan=7 day">Zeitgeist for past 7 days</a><br/>
+<a href="/admin/zeitgeist.pl?timespan=14 day">Zeitgeist for past 14 days</a><br/>
+<a href="/admin/zeitgeist.pl?timespan=30 day">Zeitgeist for past 30 days</a><br/>
+<a href="/admin/zeitgeist.pl?timespan=6 month">Zeitgeist for past 6 months</a><br/>
+</span>
+</div>
+
+<script>                 
+
+
+        setTimeout("document.location='/admin/now.pl';",30000);
+
+
+</script>
+

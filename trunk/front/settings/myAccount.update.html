@@ -1,0 +1,109 @@
+<script>
+
+
+function locationToggle() {
+
+        var country = document.getElementById('country').options[ document.getElementById('country').selectedIndex].value;
+
+        if (country == "US") {
+                document.getElementById('usa_location').style.display = 'block';
+                document.getElementById('foreign_location').style.display = 'none';
+        } else {
+                document.getElementById('usa_location').style.display = 'none';
+                document.getElementById('foreign_location').style.display = 'block';
+        }
+
+}
+
+
+</script>
+
+
+<cms::if type="form" name="msg">
+<h2 style="color: #F00;"><cms::var type="form" name="msg"></h2>
+</cms::if>
+
+<form method="post" action="<cms::var type="global" name="scriptName">/save" onSubmit="return validateForm()";>
+            <cms::if type="page" name="saved">
+                <h2 class="green">Your account has been updated!</h2>
+            </cms::if>
+
+
+<table cellspacing="10">
+	<TR>
+		<TD class="label">Name:</TD>
+		<TD>
+			<input id="firstName" name="firstName" value="<cms::var type="user" name="firstName">"> <input id="lastName" name="lastName" value="<cms::var type="user" name="lastName">">
+		</TD>
+	</TR>
+	<TR>
+		<TD class="label">Birth Date:</TD>
+		<TD>
+<select name="month" id="month"><cms::var type="user" name="monthSelect"></select>
+<select name="day" id="day"><cms::var type="user" name="daySelect"></select>
+<select name="year" id="year"><cms::var type="user" name="yearSelect"></select></a>
+		</TD>
+	</TR>
+	<TR>
+		<TD class="label">Gender:</TD>
+		<TD>
+<select name="sex" id="sex">
+<option value="F" <cms::if type="user" name="sex" equals="F">selected</cms::if>>Female</option>
+<option value="M" <cms::if type="user" name="sex" equals="M">selected</cms::if>>Male</option>
+</select>
+</TD>
+	</TR>
+	<TR>
+		<td class="label">Email Address:</TD>
+		<TD><input id="username" name="username" value="<cms::var type="user" name="username">"></TD>
+	</TR>
+	<TR>
+		<TD>&nbsp;</TD>
+		<TD class="desc">Your email address will be used for your username.</TD>
+	</TR>
+	<TR>
+		<td class="label">Cellphone Number:</TD>
+		<TD><input id="cell" name="cell" value="<cms::var type="user" name="cell">"></TD>
+	</TR>
+	<TR>
+		<TD>&nbsp;</TD>
+		<TD class="desc">Your cellphone number will be used for alerts that only <b>you</b> <a href="/settings/myAccount.pl/alerts">specify</a>.</TD>
+	</TR>
+
+<TR>
+	<TD class="label">Country:</TD>
+	<TD><select name="country" id="country" onChange="locationToggle();"><cms::var type="user" name="countrySelect"></select></TD>
+</TR>
+</table>
+<div id="usa_location" <cms::ifnot type="user" name="country" equals="US">style="display: none;"</cms::ifnot>>
+<table cellspacing="10">
+<TR>
+	<TD class="label">City:</TD>
+	<TD><input id="city" name="city" value="<cms::var type="user" name="city">"></TD>
+</TR>
+<TR>
+	<TD class="label">State:</TD>
+	<TD><input id="state" name="state" value="<cms::var type="user" name="state">" size=2></TD>
+</TR>
+ <TR>
+	<TD class="label">Zip code (US only!):</TD>
+	<TD><input name="zipcode" id="zipcode" value="<cms::var type="user" name="zipcode">" maxlength=5></TD>
+</TR>
+</table>
+</div>
+<div id="foreign_location" <cms::if type="user" name="country" equals="US">style="display: none;"</cms::if>>
+<table cellspacing="10">
+<TR>
+	<TD class="label">City / Province / Whatever:</TD>
+	<TD><input id="foreigncity" name="foreigncity" value="<cms::var type="user" name="city">"></TD>
+</TR>
+</table>
+</div>
+<table cellspacing="10">
+
+<TR>
+	<TD colspan="2"><input type="submit" value="Update Account &#187;" class="gobutton threehundred"></TD>
+</TR>
+</table>
+
+</form>

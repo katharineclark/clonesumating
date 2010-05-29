@@ -1,0 +1,205 @@
+#main { width: 900px; }
+.ultrawide { margin: 0px; }
+#mainbody { width: 900px; }
+#toolbar { width: 900px; margin-bottom: 0px;}
+#footer { width: 900px; }
+#thehead { width: 900px; }
+#maincontentarea { width: 880px; }
+.main { width: 550;  margin-right: 20px; }
+.more { width: 302px; float: left; }
+.more .subnav { color: #336699; }
+.more .subnav h2 { font-size: 20px; }
+.more .crossnav { color: #336699; }
+.more .crossnav h3 { font-size: 18px; }
+#ad_box { border: 1px solid #666; }
+.instructions { background: #F0F0F0; margin-bottom: 10px;}
+.pad10 { padding: 10px; }
+.pad5 { padding: 5px; }
+
+
+#profile { 
+	width: 900px; 
+}
+#profile  .phototheme { 
+	background: #333; 
+	color: #FFF; 	
+	font-size: 16px; 
+	float: left;
+}
+
+
+#profile .centerstage { width: 550;  margin-right: 20px; margin-left: 10px; float: left;}
+#profile .more { width: 302px; float: left; }
+#profile .more .subnav { color: #369;  margin-bottom: 10px; margin-top: 0px;}
+#profile .more .subnav h2 { font-size: 20px; }
+#profile .more .subnav h3 { font-size: 16px; }
+#profile .more .crossnav { color: #369; }
+#profile .more .crossnav h3 { font-size: 18px; }
+
+#profile #smallabout { background: #ECF2FE; padding: 5px; margin-bottom: 10px;}
+
+#profile .theme { background: #F0F0F0; border: 1px solid #CCC; padding: 10px; margin-bottom: 10px;}
+#profile .theme .photo { background: #333; padding: 20px; text-align: center;}
+#profile .theme .photo img { border: solid 5px #000; }
+#profile .minitheme { margin-bottom: 5px;}
+
+
+#profile .left { width: 420px; float: left; margin-left: 10px; }
+#profile .right { width: 420px; float: right; margin-right: 10px; }
+#profile .right .profilephoto { background: #333; padding: 10px; }
+#profile #about { margin-bottom: 10px;  }
+#profile .dashboard { margin-bottom: 10px; background: #ECF2FE; padding: 10px; }
+#profile #profilesettings { background: #F0F0F0; padding: 10px; margin: 0px 5px 10px 5px; }
+#profile #topic { font-size: 20px; padding: 10px; background: #FFF; border: 3px solid #F0F0F0; -moz-border-radius: 12px;  margin-bottom: 20px;}
+#profile #topic .meta { text-align: right; font-size: 12px; margin-top: 5px;}
+#profile #meta { border: 2px solid #CCC; background: #F0F0F0; padding: 5px; margin-bottom: 10px;}
+#profile #thumbs { background: #FFFF99; text-align: center; margin-bottom: 10px; -moz-border-radius: 12px;}
+#profile #scoreboard { margin-bottom: 10px; }
+#profile #scoreboard #breakdown { margin-left: 20px; }
+#profile .content { margin-bottom: 10px; border: 1px solid #CCC; background: #F0F0F0; width: 420px; }
+#profile .contenttext { background: #FFF; width: 410px;} 
+#profile .content .postinfo { color: #AAA; }
+#profile .content .postinfo a { color: #AAA; text-decoration: underline; }
+#profile .content .contentstats { background: #369; color: #FFF; padding: 5px;}
+#profile .content .contentthumb { margin-top: 10px; text-align: right;}
+#profile .content .contentstats a{ color: #FFF; font-weight: bold; }
+.content_note { color: #CCC; margin-top: 10px;}
+#profile .content_note a { color: #CCC; text-decoration: underline; }
+#profile .pad5 { padding: 5px; }
+#profile #extra { width: 200px; float: left; }
+#profile #tags { width: 200px; float: right; background: #99CCFF; overflow: hidden;}
+#profile #tags .tag, #profile #tags .othertag { padding: 3px; overflow:hidden;}
+#profile #video { height: 250px; background: #CCC; margin-bottom: 10px;}
+#profile img.activephoto { }
+
+#profile #profileNav {
+	position: relative;
+	top: 12px;
+	width: 900px;
+	line-height: 18px;
+	height: 18px;
+	background: #333;
+	position: relative;
+	top: -20px;
+	text-align: right;
+}
+#profile #profileNav a { 
+		 font-weight: bold;
+		 color: #CCC;
+		 padding: 5px;
+			 }
+
+#profile #profileNav a:hover { color: #FFF; text-decoration: none;}
+
+
+
+#profile .pad10 h1 {
+	position: relative;
+	top: -10px;
+}
+
+#addTagButton {
+	border:1px solid #FFFF99;
+}
+
+#toybox {  
+	width: 420px; 
+	height: 83px; 
+	color: #369;
+	background: url(http://img.consumating.com/img/toybox-default.gif)  #8AB4D1;
+	padding-top: 15px;
+	float: right;
+}
+#itemInfo { 
+	width: 400px; 
+	height: 160px; 
+}
+#toybox .toyboxspot { 
+	width: 54px; 
+	height: 83px; 
+	float: left;  
+	voice-family: "\"}\"";
+	voice-family: inherit;
+	margin: 3px;
+}
+#itemPocket  .toyboxspot {
+    width: 54px;
+    height: 83px;
+    float: left;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    margin: 1px;
+}
+
+html>body {}
+
+.toyboxspot img { 
+}
+
+span.editControl {
+	cursor: pointer;
+	color: #FFF;
+	font-weight: bold;
+}
+span.editControl:hover {
+	text-decoration: underline;
+}
+
+#itemDrawerButton, #itemDrawerButton2 {
+	position: relative;
+	top: 0px;
+	left: 0px;
+}
+#itemDrawerButton a, #itemDrawerButton2 a {
+	float: left;
+	width: 85px;
+	text-align: center;
+	padding: 5px 0px 5px 0px; 
+	background: #369;
+	text-decoration:none;
+	color: #FFF; 
+	z-index: 5000;
+	font-size: 10px; 
+}
+#itemDrawerButton a:hover, #itemDrawerButton2 a:hover {
+	background: #0A6;
+	color: #FFF; 
+}
+#itemDrawerButton2 {
+	float: right;
+}
+#itemDrawerButton2 a {
+	width: 70px;
+}
+
+#itemButtonBar {
+	float: right;
+	width: 420px;
+	height: 40px;
+}
+
+#itemPocket {
+	float: right;
+	background: url(http://img.consumating.com/img/itemPocket.gif) #8AB4D1;
+	width: 400px;
+	height: 80px;
+	display: block;
+	padding: 10px;
+}
+
+#giveDropper {
+	float: left;
+	width: 50px;
+	height: 50px;
+}
+
+#pipeImage {
+	position: absolute; 
+	left:-30px;
+	top: -265px;
+}
+
+#newtopicentry {
+	float: left;
+	width: 400px;
+}

@@ -1,0 +1,67 @@
+<link rel="stylesheet" href="http://<cms::var type="global" name="imgserver">/js/Profilestyles.css" type="text/css" >
+<style>
+	#updates {
+		padding-left: 10px;
+		float: left;
+		width: 558px;
+		overflow: hidden;
+	}
+	.more {
+		width: 302px;
+		float: right;
+	}
+	.myupdates_day { border: 1px groove #CCC; margin-bottom: 10px; padding: 10px;}
+	.myupdates_day h3 { margin-bottom: 5px; margin-top: 0px;}
+	.myupdates_day .tag { margin-bottom: 5px; }
+	.myupdates_day .thumbs { background: #F0F0F0; margin-bottom: 10px; }
+</style>
+<div id="updates">
+<h2><a href="/newprofiles/<cms::var type="user" name="linkhandle">">My Profile</a> &#187; Recent Updates</h2>
+<cms::fancylist over="days" nest>
+
+	<div class="myupdates_day">
+		<h3>Changes to your profile from 
+		<cms::ifnot type="day" name="daysago" equals="0">
+		<cms::var type="day" name="daysago"> <cms::wc type="day" name="daysago" s="day" p="days"> ago
+		</cms::ifnot>
+		<cms::if type="day" name="daysago" equals="0">
+		Today
+		</cms::if></h3>
+		<div class="thumbs">
+		<cms::var type="thumbs" name="ups"> <cms::wc type="thumbs" name="ups" s="thumb up" p="thumbs up"> / <cms::var type="thumbs" name="downs"> <cms::wc type="thumbs" name="downs" s="thumb down" p="thumbs down">
+		</div>
+		<cms::fancylist over="tags" nest>
+			<div class="tag">
+				<img src="http://<cms::var type="global" name="imgserver">/img/tag_on_white.gif" align="absmiddle">&nbsp;<a href="/tags/<cms::var type="tag" name="value">" title="see who else is tagged '<cms::var type="tag" name="value">'"><cms::var type="tag" name="shortvalue"></a> from <a href="/profiles/<cms::var type="profile" name="linkhandle">"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="profile" name="userId">/50/<cms::var type="profile" name="photoId">.jpg" width="25" height="25" align="absmiddle" border="0"></a> <a href="/profiles/<cms::var type="profile" name="linkhandle">"><cms::var type="profile" name="handle"></a><br clear="all" />
+			</div>
+		</cms::fancylist over="tags">
+	</div>
+</cms::fancylist over="days">
+
+<h2><a href="/peeps/myupdates?offset=<cms::var type="page" name="offset">">See older updates</a></h2>
+
+</div>
+<div class="more">
+	<div class="subnav">
+		<h2>&#187; <A href="/peeps">What are my peeps posting?</a></h2>
+		<h2>&#187; <a href="/peeps/onlinenow">Who is online now?</a></h2>
+	</div>
+
+
+<div id="ad_box">
+<script language='JavaScript' type='text/javascript' src='http://campaign.indieclick.com/adx.js'></script>
+<script language='JavaScript' type='text/javascript'>
+<!--
+   if (!document.phpAds_used) document.phpAds_used = ',';
+   phpAds_random = new String (Math.random()); phpAds_random = phpAds_random.substring(2,11);
+   
+   document.write ("<" + "script language='JavaScript' type='text/javascript' src='");
+   document.write ("http://campaign.indieclick.com/adjs.php?n=" + phpAds_random);
+   document.write ("&amp;what=zone:420");
+   document.write ("&amp;exclude=" + document.phpAds_used);
+   if (document.referrer)      document.write ("&amp;referer=" + escape(document.referrer));   document.write ("'><" + "/script>");
+//-->
+</script><noscript><a href='http://campaign.indieclick.com/adclick.php?n=a8a6ff72' target='_blank'><img src='http://campaign.indieclick.com/adview.php?what=zone:420&amp;n=a8a6ff72' border='0' alt=''></a></noscript>
+
+</div>
+</div>

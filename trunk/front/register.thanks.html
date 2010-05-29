@@ -1,0 +1,60 @@
+<h1 id="pagetitle">Welcome!</h1>
+
+<cms::if type="page" name="verified">
+<h2 class="subtitle">Your e-mail address has been verified!  You now have full access to the site!</h2>
+</cms::if>
+<cms::ifnot type="page" name="authkey" equals="">
+<h2 class="subtitle alert">A verification code was sent to the email address you signed up with.  Please verify your email address before proceeding...
+If you do not receive a code within a few minutes, please <a href="/profiles/feedback_zombie/messages">contact us through the Feedback Zombie</a>!</h2>
+</cms::ifnot>
+
+<P>Thanks for joining!   You are now on a path that leads to  a life of constant fun and quasi-irresponsibility! Congrats!  Before we kick you into the full-on experience, here are some starting points that will help you have the best experience you can have.</p> 
+
+<P><span class="subtitle">Invite Your Friends</span><br />
+Tag your friends, read their answers, and conduct a battle of the wits in your conversation.  Everyone you invite will automatically be added to your My Peeps page,
+and you'll get a thumbs up for hooking them up with a cool new site!</p>
+
+<P>The easiest way to invite people is to cut and paste this text into your IM, email, blog, MySpace account, or anywhere you can stick a link.  Anyone who clicks it will get your personal invitation!</p>
+<textarea style="height: 80px; margin-bottom: 20px; background: #F0F0F0;">
+Hey, I just found a cool new site!  You should join!  Click the link below.
+
+http://www.MYNEWSITE.com/profiles/<cms::var type="user" name="linkhandle">/invite?v=<cms::var type="email" name="verification">
+</textarea>
+
+<P>If you don't want to cut and paste, you can use our handy <A href="/invite/">invite tool</a>, where you can simply type your friend's email address.</p>
+
+<P><span class="subtitle">Share Your Profile</span><Br />
+Your profile is permanently located at the address below.  Send it to your friends so they can see your answers and can vote for you in the contests!</p>
+<textarea style="height: 30px; margin-bottom: 20px; background: #F0F0F0;">
+http://www.consumating.com/profiles/<cms::var type="user" name="linkhandle">
+</textarea>
+
+<P><span class="subtitle">Fill Out Your Profile By Answering Questions</span><br />
+Every week, we posts a new question, and all of your answers appear on your profile.   You can see the newest question <A href="/qow.pl">here</a>,
+or you can browse the archive of questions <A href="/play/">by clicking the Participate link</a> at the top of every page.  Answering questions
+will earn you popularity points, and it allows you to share your opinions and quirky personality with the community.</p>
+
+<P class="alert medium">Enough!  <A href="/qow.pl">I want to answer this week's question.</a></p>
+
+<P><span class="subtitle">Enter The Photo Contest</span><br />
+We also host a themed photo contest each week.  We select a theme, and everyone uploads a photo of themselves with that theme 
+in a competition to see who can have the <i>awesomest</i> photo.  You wondered why everyone has such silly photos?  That's why.
+</p>
+
+<P class="medium alert">You've convinced me, <a href="/play/photos/index.pl/current">I want to enter the photo contest.</a></p>
+
+<p><span class="subtitle">Tag Yourself</span><br />
+Tags are short, descriptive words that you can attach to yourself to define who you are and the sort of things you are into.  Having tags
+that really describe your interests -- your hobbies, your favorite tv shows, books, movies and bands, and anything that you identify with -- 
+helps us find cool people to introduce you to.  You can add tags to yourself at any time straight from your profile.  You can also
+be tagged by other people!</p>
+
+<P class="medium alert"><a href="/profiles/<cms::var type="user" name="linkhandle">/tags">I want to add some tags to my profile.</a></p>
+
+<P><span class="subtitle">Find A New Friend</span><br />
+At the core of the site is Consmating's people finding technology.  Search for people by tag using the box at the top of every page.  When you do,
+we'll try to find people who share a lot of your interests, live nearby, and generally seem like nice folks.   You can find people <A href="/tags/coffee">who love coffee</a>, people
+who <a href="/tags/camping">like to camp</a> and <a href="/tags/hike">hike</a>, people who <a href="/tags/curbyourenthusiasm">watch Curb Your Enthusiasm</a>, people who
+<a href="/tags/zombies">love zombies</a>, and...uh, you get the point!</p>
+
+<p class="medium alert"><A href="/tags/">Get out of my way and let me find some people who don't suck!</a></p>

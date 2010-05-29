@@ -1,0 +1,18 @@
+Aloha,
+
+A new photo contest has been posted on Consumating.  
+
+<cms::var type="contest" name="description">
+
+To enter the contest, click the link below.
+
+http://www.consumating.com/weekly/photo/index.pl/current
+
+And to see the entries, click here:
+
+http://www.consumating.com/browse/<cms::var type="contest" name="tagname">_contest
+
+Love, Consumating
+
+PS. If you want to change your email alert options, click below.
+ -> http://www.consumating.com/myAccount.pl/alerts

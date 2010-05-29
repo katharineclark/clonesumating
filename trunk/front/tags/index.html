@@ -1,0 +1,63 @@
+<script src="http://<cms::var type="global" name="imgserver">/js/autocomplete.view.js" type="text/javascript"></script>
+<script src="http://<cms::var type="global" name="imgserver">/js/logic.view.js" type="text/javascript"></script>
+
+<div id="finder">
+
+<div id="left">
+	<div id="search">
+		<form method="get" action="/finder.csm" id="finderForm">
+		<span class="large">Find someone into:</span>
+		<input name="tags" id="tagquery" value="Type a Tag or Two" onClick="if (this.value == 'Type a Tag or Two') { this.value=''; }">
+		<input type="submit" value="Search!">
+		</form>
+	</div>
+
+	<P class="medium">People on this site are tagged <span class="blue"><cms::var type="page" name="tagcount"></span> different ways.</p>
+
+	<div id="recentpublictags">
+        <h2>Recent Public Tags</h2>
+
+            <table border="0" width="390">
+                <cms::fancylist over="publictags" limit="10" offset="0">
+                    <tr class="publictagrow">
+                        <TD align="center" class="tagperson">
+                            <a href="/profiles/<cms::var type="taggee" name="linkhandle">"><img width="50" height="50" src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="taggee" name="userid">/50/<cms::var type="taggee" name="photoId">.jpg" border="0"></a>
+                        </TD>
+                        <TD valign="top" align="center" class="taginfo">
+                            &#171; <span class="small"><a href="/profiles/<cms::var type="taggee" name="linkhandle">"><cms::var type="taggee" name="handle"></a> was just tagged</span><br />
+                            <a href="/tags/<cms::var type="tag" name="value">" class="medium"><cms::var type="tag" name="value"></a><br />
+                            <span class="small">by <a href="/profiles/<cms::var type="tagger" name="linkhandle">"><cms::var type="tagger" name="handle"></a></span> &#187;
+
+                        </td>
+                        <td align="center" class="tagperson">
+                            <a href="/profiles/<cms::var type="tagger" name="linkhandle">"><img width="50" height="50" src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="tagger" name="userid">/50/<cms::var type="tagger" name="photoId">.jpg" border="0"></a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="small">&nbsp;</td>
+                    </tr>
+                </cms::fancylist>
+            </table>
+	</div>
+</div>
+
+<div id="extras">
+	<div class="pod">
+		<P><B>Looking for the <A href="/browse/">PeopleBrowser</a>?</b>  Here are some common searches:</P>
+		<a href="/browse?distance=50&sex=f">Girls who live near me</a><br />
+		<a href="/browse?distance=50&sex=m">Guys who live near me</a><br />
+	</div>
+
+	<div class="pod">
+		<h2>Popular Tags</h2>
+			<cms::fancylist over="poptags" limit="100" offset="10">
+				<a href="/tags/<cms::var type="tag" name="value">">&nbsp;<cms::var type="tag" name="value">&nbsp;</a>
+			</cms::fancylist>
+	</div>
+
+    <cms::var type="zeitgeist" name="content">
+
+</div>
+
+
+</div>

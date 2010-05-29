@@ -1,0 +1,48 @@
+<style>
+    .blogapi {  background:#F0F0F0; border-bottom: 2px solid #CCC; padding: 5px; margin-bottom: 3px;}
+</style>
+<cms::if type="page" name="type" equals="livejournal">
+<script>setTab('tabblog');</script>
+<h2>We're almost done!</h2>
+
+<P>To verify that your LiveJournal information is correct, we need to post a sample post.  It's just going to say, "Hello," and you can delete it
+immediately.  Is this ok?</p>
+
+<form method="post" action="/settings/myBlog.pl/ljtest">
+<input type="hidden" name="un" value="<cms::var type="page" name="un">">
+<input type="hidden" name="pw" value="<cms::var type="page" name="pw">">
+<input type="submit" value="Yes, confirm my LiveJournal account and connect it to my account">
+</form>
+
+</cms::if>
+
+<cms::ifnot type="page" name="type" equals="livejournal">
+<h2>We're almost done!</h2>
+
+<P>We found more than one blog!  Which blog do you want to post to?</p>
+
+<cms::ifloop type="blogs">
+<form method="post" action="/settings/myBlog.pl/store">
+<input type="hidden" name="un" value="<cms::var type="page" name="un">">
+<input type="hidden" name="pw" value="<cms::var type="page" name="pw">">
+<input type="hidden" name="apiurl" value="<cms::var type="page" name="url">">
+<input type="hidden" name="blogname" id="blogname">
+<input type="hidden" name="blogurl" id="blogurl">
+
+<cms::fancylist over="blogs">
+<div class="blogapi">
+<input type="radio" class="checkbox" name="blogid" onClick="document.getElementById('blogname').value='<cms::var type="blog" name="blogName">'; document.getElementById('blogurl').value='<cms::var type="blog" name="url">'; return true;" value="<cms::var type="blog" name="blogid">"> <a href="<cms::var type="blog" name="url">" target="_new"><cms::var type="blog" name="blogName"></a></input>
+</div>
+</cms::fancylist>
+<div style="text-align: right;">
+	<input type="submit" value="Update Publishing Settings">
+</div>
+</form>
+</cms::ifloop>
+
+<cms::ifnotloop type="blogs">
+<P>We couldn't find any blogs using the info you specified.  <A href="/settings/myBlog.pl">Please try again</a>.</p>
+</cms::ifnotloop>
+
+
+</cms::ifnot>

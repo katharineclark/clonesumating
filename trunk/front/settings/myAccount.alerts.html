@@ -1,0 +1,16 @@
+
+<form method="post" action="/settings/myAccount.pl/savealerts">
+<p>If you want to <b>optionally</b> have alerts sent to your cellphone, be sure to enter your cellphone number in your <a href="/myAccount.pl">user information</a>.
+</p>
+	<cms::fancylist over="alerts">
+		<div class="alert">
+		<input type="checkbox" class="checkbox" name="alert_<cms::var type="alert" name="name">" <cms::if type="alert" name="subscribed">checked</cms::if>> <cms::var type="alert" name="description">
+		<select name="<cms::var type="alert" name="name">_target">
+			<option value="email" <cms::if type="alert" name="target" equals="email">selected</cms::if>>Email</option>
+			<option value="cell" <cms::if type="alert" name="target" equals="cell">selected</cms::if>>Cell</option>
+			<option value="both" <cms::if type="alert" name="target" equals="both">selected</cms::if>>Both</option>
+		</select>
+		</div>
+	</cms::fancylist>
+		<input type="submit" value="Update Alert Subscriptions">
+	</form>

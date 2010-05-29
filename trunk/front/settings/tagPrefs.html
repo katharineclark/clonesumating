@@ -1,0 +1,31 @@
+<script>setTab('tabtags');</script>
+<form name="profile" action="/settings/tagPrefs.pl/save" method="post" id="tagPrefForm">
+			<h1>Set your tagging preferences</h1>
+
+			<cms::if type="page" name="saved">
+				<h2 class="green">Your preferences have been saved!</h2>
+			</cms::if>
+
+			<P><h2 class="subtitle">When I tag people...</h2>
+                        <select id="tagPublicly" name="tagPublicly">
+                                <option <cms::if type="profile" name="tagPublicly" equals="0">selected</cms::if> value="0">I DO NOT want to be identified. [Anonymous]</option>
+                                <option <cms::if type="profile" name="tagPublicly" equals="1">selected</cms::if> value="1">Show my profile to people who I tag. [Private]</option>
+                                <option <cms::if type="profile" name="tagPublicly" equals="2">selected</cms::if> value="2">I am bold! Tell the world all about my tags! [Public]</option>
+                        </select></p>
+
+
+			<P><h2 class="subtitle">People who tag me...</h2>
+			<select id="allowAnonymousTags" name="allowAnonymousTags">
+				<option <cms::if type="profile" name="allowAnonymousTags" equals="1">selected</cms::if> value="1">DO NOT need to identify themselves. [Allow Anonymous Tags]</option>
+				<option <cms::if type="profile" name="allowAnonymousTags" equals="0">selected</cms::if> value="0">Must show proper identification!  [Only Private/Public Tags]</option>
+			</select></p>
+
+			<h2 class="subtitle">Don't Tag Me, jerk!</h2>
+			<P>You can block specific tags from being added to your profile, or you can permanently block someone from tagging you.  Just click the <img src="http://<cms::var type="global" name="imgserver">/img/delete_tag.gif" alt="A Tag Delete Button"> next to the tag you don't like from either the <a href="/updates/">Updates Page</a> or <a href="/profiles/<cms::var type="user" name="linkhandle">">your profile</a>.</p>
+
+`			<P>
+			<input type="submit" value="Save Tagging Preferences &#187;">
+			</p>
+</form>
+
+

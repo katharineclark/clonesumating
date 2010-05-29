@@ -1,0 +1,306 @@
+#!/usr/bin/perl
+
+use strict;
+ 
+use FCGI;
+use CGI::Fast;
+use Image::Magick;
+
+use lib qw(lib ../lib);
+use Profiles;
+use template2;
+use Users;
+use points;
+use items;
+use api::item;
+use CONFIG;
+
+my $useritemdir = "$staticPath/img/items/user";
+my $systemitemdir = "$staticPath/img/items/system";
+
+my %template_types = (
+	ifilm		=> 'video\ template',
+	revver		=> 'video\ template',
+	rockyou 	=> 'video\ template',
+	youtube		=> 'video\ template',
+	webshots	=> 'photo\ template',
+	flickr		=> 'photo\ template',
+	rss			=> 'rss\ template',
+);
+
+
+my $appcount = 1;
+my $dbh;
+while (my $cgi = new CGI::Fast) {
+	my $P = Profiles->new(dbh => $dbh, query => $cgi);
+
+for ($P->{query}->param) {
+	warn "$_: ".$P->{query}->param($_);
+}
+
+	if ($P->{command} eq '/api') {
+		autogen($P);
+	} elsif (!$P->{user}{warning}{message} && $P->{query}->param('submitted')) {
+		save($P);
+	} else {
+		# load templates
+		my $I = items->new($P->{cache},$P->{dbh},9656);
+		for my $id (keys %{$I->{allItems}}) {
+			if ($I->{allItems}{$id}->{name} =~ /template$/) {
+				push @{$P->{user}{templates}}, { template => {name => $I->{allItems}{$id}->{name} }};
+			}
+		}
+		
+		
+
+		if (my $itemId = $P->{query}->param('itemId')) {
+			my $I = items->new($P->{cache},$P->{dbh},$P->{user}{user}{id});
+			if ($I->{allItems}{$itemId}) {
+				edit($P,$itemId);
+			}
+		} else {
+			create($P);
+		}
+	}
+
+	$appcount++;
+	if ($appcount > 200) {
+		exit;
+	}
+}
+
+sub edit {
+	my $P = shift;
+	my $itemId = shift;
+
+	my $image = Image::Magick->new;
+	$image->read($useritemdir."/$itemId.gif");
+	for my $i (0..24) {
+		my $i2 = $i*2;
+		for my $j (0..24) {
+			my $j2 = $j*2;
+			my $c = "rgb(".join(',',@{[ map{int($_/256)} split(',',$image->Get("pixel[$i2,$j2]"))]}[0..2]).")";
+			push @{$P->{user}{pixels}}, { pixel => {i => $i, j => $j, color => $c} };
+		}
+	}
+	my $I = items->new($P->{cache},$P->{dbh},$P->{user}{user}{id});
+	$P->{user}{item} = $I->{allItems}{$itemId};
+
+	my $behavior = $P->{dbh}->selectrow_hashref("SELECT * FROM user_item_info WHERE itemId = ?",undef,$itemId);
+	if ($behavior) {
+		($P->{user}{item}{behavior},$P->{user}{item}{behaviorcolor}) =  fixupBehavior(split /,/,$behavior->{behavior});
+		$P->{user}{item}{points} = $behavior->{points};
+	}
+
+	$P->{user}{page}{edit} = 1;
+
+	print $P->Header();
+	print processTemplate($P->{user},'items/create.html');
+}
+
+sub save {
+	my $P = shift;
+
+	my $name = $P->{query}->param('itemname');
+	my $description = $P->{query}->param('itemdescription');
+	my $pixels = $P->{query}->param('pixels');
+	my $points = $P->{query}->param('points') || 0;
+
+	my $image = Image::Magick->new;
+	$image->Set(size => '25x25');
+	$image->ReadImage('xc:white');
+
+	my $tcolor = $P->{query}->param('transparency');
+
+	local $"=undef;
+	for my $pixel (split /;/,$pixels) {
+		my ($px,$color) = split /-/,$pixel;
+		my @c;
+		for (split /,/,$color) {
+			s/\D//g;
+			push @c,uc sprintf("%02x",$_);
+		}
+		$image->Set("pixel$px" => "#@c");
+	}
+
+	warn "SET TRANSPARENT $tcolor: ".$image->Transparent(color => '#'.$tcolor);
+
+	warn "resize ".$image->Sample(width => 50, height => 50);
+
+	my $itemid;
+	unless ($itemid = $P->{query}->param('itemId')) {
+		$P->{dbh}->do("INSERT INTO user_items (name,description,ownerId,creatorId,type,location,createDate) VALUES (?,?,?,?,'user','drawer',NOW())",undef,$name,$description,$P->{user}{user}{id},$P->{user}{user}{id});
+		$itemid = $P->{dbh}->selectrow_array("SELECT last_insert_id()");
+
+		# give item
+		my $I = items->new($P->{cache},$P->{dbh},$P->{user}{user}{id});
+		$I->take($P->{dbh}->selectrow_hashref("SELECT * FROM user_items WHERE id = ?",undef,$itemid));
+
+		# spend points
+		my $points = points->new(dbh => $P->{dbh}, cache => $P->{cache});
+		$points->storeTransaction({
+			userid 	=> $P->{user}{user}{id},
+			points	=> -8,
+			type	=> 'item',
+			desc	=> "Created item $name",
+		});
+	} else {
+		$P->{dbh}->do("UPDATE user_items SET name = ?,description = ? WHERE id = ?",undef,$name,$description,$itemid);
+	}
+	warn "WRITE IMAGE $itemid: ".$image->Write("$useritemdir/$itemid.gif");
+
+	if ($P->{query}->param('mediatype') ne '') {
+		my $btype = $P->{query}->param('mediatype');
+		my $color = $P->{query}->param('bhCode');
+		($btype,$color) = fixupBehavior($btype,$color);
+
+		my $behavior;
+		if ($color) {
+			$behavior = "$btype,$color";
+		} else {
+			$behavior = "$btype,$itemid";
+		}
+
+		my $iinfoId = $P->{dbh}->selectrow_array("SELECT id FROM user_item_info WHERE itemId = ?",undef,$itemid);
+		if ($iinfoId) {
+			warn "UPDATING $iinfoId: BH $behavior";
+			$P->{dbh}->do("UPDATE user_item_info SET behavior=? WHERE id=?",undef,$behavior,$iinfoId);
+		} else {
+			$P->{dbh}->do("INSERT INTO user_item_info (itemId,points,behavior) VALUES (?,?,?)",undef,$itemid,0,$behavior);
+			my $points = points->new(dbh => $P->{dbh}, cache => $P->{cache});
+			$points->storeTransaction({
+				userid	=> $P->{user}{user}{id},
+				points	=> -3,
+				type	=> 'item',
+				desc	=> "Add item behavior $btype style with item $name",
+			});
+		}
+		my $I = items->new($P->{cache},$P->{dbh},$P->{user}{user}{id});
+		$I->enableItem($itemid);
+	}
+
+warn "POINTS $points";
+	if ($points) {
+		my $iinfoId = $P->{dbh}->selectrow_array("SELECT id FROM user_item_info WHERE itemId = ?",undef,$itemid);
+		if ($iinfoId) {
+			warn "UPDATING $iinfoId: POINTS $points";
+			$P->{dbh}->do("UPDATE user_item_info SET points=? WHERE id=?",undef,$points,$iinfoId);
+		} else {
+			warn "INSERTING POINTS $points for $name";
+			$P->{dbh}->do("INSERT INTO user_item_info (itemId,points) VALUES (?,?)",undef,$itemid,$points);
+		}
+
+	}
+	# kill autosave record for this design
+	if ($P->{query}->param('autosaveId')) {
+		$P->{dbh}->do("DELETE FROM item_autosave WHERE id = ?",undef,$P->{query}->param('autosaveId'));
+	}
+
+	if (length (my $handle = $P->{query}->param('sendAddress'))) {
+		$P->{user}{newtoy}{id} = $itemid;
+		&api::item::give($P);
+	}
+
+
+	
+	print $P->{query}->redirect("/profiles/$P->{user}{user}{linkhandle}/inventory?newtoy=$itemid");
+	return;
+}
+
+sub create {
+	my $P = shift;
+
+	# check points
+	if ($P->{user}{user}{popularity} < 50) {
+		$P->{user}{warning}{message} = "You don't have enough points to create an item!";
+	}
+
+	unless ($P->{user}{user}{id}) {
+		$P->forcelogin();
+	}
+
+	my $autosave = $P->{dbh}->selectrow_hashref("SELECT * FROM item_autosave WHERE userId=? ORDER BY id DESC LIMIT 1",undef,$P->{user}{user}{id});
+	$autosave->{pixels} =~ y/ []//d;
+	$P->{user}{autosave} = $autosave;
+
+
+	# load first 12 from inventory
+	my $I = items->new($P->{cache},$P->{dbh},$P->{user}{user}{id});
+
+	my $bsth = $P->{dbh}->prepare("SELECT behavior FROM user_item_info WHERE itemId = ?");
+	for (sort {$a->{type} cmp $b->{type} || $a->{name} cmp $b->{name}} $I->pocketItems,$I->drawerItems) {
+		$bsth->execute($_->{id});
+		if ($bsth->rows) {
+			next if length $bsth->fetchrow;
+		}
+		
+		push @{$P->{user}{itemlist}}, { item => $_ };
+	}
+	if (ref $P->{user}{itemlist} eq 'ARRAY') {
+		$P->{user}{itembox}{height} = int(scalar(@{$P->{user}{itemlist}})/7) * 100;
+		if (scalar(@{$P->{user}{itemlist}}) % 6 > 0) {
+			$P->{user}{itembox}{height} += 100;
+		}
+	}
+	if (ref $P->{user}{itemlist} eq 'ARRAY' && scalar(@{$P->{user}{itemlist}}) % 6 != 0) {
+		for (1 .. 6-(scalar(@{$P->{user}{itemlist}}) % 6)) {
+			push @{$P->{user}{blanks}}, {};
+		}
+	}
+
+
+	print $P->Header();
+	print processTemplate($P->{user},'items/create.html');
+}
+
+sub autogen {
+	my $P = shift;
+
+	unless ($P->{user}{user}{id}) {
+		print $P->{query}->redirect("/login.pl");
+		return;
+	}
+
+	my $type = $P->{query}->param('type');
+	my $id = $P->{query}->param('id');
+	($type,$id) = fixupBehavior($type,$id);
+	$P->{dbh}->do("INSERT INTO user_items (name,description,ownerId,creatorId,type,location,createDate) VALUES (?,?,?,'user','drawer',NOW())",undef,$type,"$type!",$P->{user}{user}{id},$P->{user}{user}{id});
+	my $itemid = $P->{dbh}->selectrow_array("SELECT last_insert_id()");
+
+	# make gif
+	my $cmd = qq|cp $systemitemdir/$template_types{$type}.gif $useritemdir/$itemid.gif|;
+	warn "COPY ($cmd): ".`$cmd`;
+
+	# give item
+	my $I = items->new($P->{cache},$P->{dbh},$P->{user}{user}{id});
+	$I->take($P->{dbh}->selectrow_hashref("SELECT * FROM user_items WHERE id = ?",undef,$itemid));
+	
+	$P->{dbh}->do("INSERT INTO user_item_info (itemId,points,behavior) VALUES (?,?,?)",undef,$itemid,0,"$type,$id");
+
+	print $P->{query}->redirect("/profiles/$P->{user}{user}{linkhandle}/inventory");
+	return;
+}
+
+sub fixupBehavior {
+	my @bh = @_;
+
+	if ($bh[0] eq 'rockyou') {
+		$bh[1] =~ s/.*?instanceid=(\d+)".*/$1/s;
+	} elsif ($bh[0] eq 'youtube') {
+		$bh[1] =~ s/.*?v=(.+?)(?:&.*|$)/$1/s;
+	} elsif ($bh[0] eq 'revver') {
+		$bh[1] =~ s#.*(video|broadcast)/(\d+)/.*#$2#s;
+	} elsif ($bh[0] eq 'ifilm') {
+		$bh[1] =~ s/.*flvBaseClip=(\d+).*/$1/s;
+		unless ($1) {
+			$bh[1] =~ s|.*ifilmdetail/(\d+).*|$1|s;
+		}
+	} elsif ($bh[0] eq 'flickr') {
+		$bh[1] =~ s|photos/(.+)|$1|s;
+	} elsif ($bh[0] eq 'webshots') {
+	} elsif ($bh[0] eq 'rss') {
+	} elsif ($bh[0] eq 'wallpaper') {
+	}
+
+	return @bh;
+}

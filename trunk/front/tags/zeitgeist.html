@@ -1,0 +1,50 @@
+<script language="javascript">
+function compareTags() {
+	submitRequest('tags.compare','','tags='+document.getElementById('ztags').value);
+}
+function handleCompareTags(response) {
+	try {
+	InfoBox.draw(response.getElementsByTagName('compare')[0].firstChild.nodeValue,'Your Comparison');
+	return false;
+	} catch(e) { alert('whoa!'); }
+}
+</script>
+
+
+<center><i>
+		"43.2% of all statistics are made up on the spot,
+		 98.7% of all people know that!"
+		<br/><i>- Anonymous</i>
+</i></center>
+
+<P>These stats, however, aren't made up.  This is <b><a href="/tags/iworkhere">our</a></b> snapshot of <b><a href="/browse/">your</a></b> tags!  The percentages are of all the tags in that category.  Have fun browsing!
+</p>
+
+<cms::fancylist over="compare">
+	<div class="pad10 corners greyborders fixie" style="margin-bottom:10px;">
+	<h2 class="subtitle"><cms::var type="tags" name="title">?</h2>
+	<cms::var type="tags" name="comp">
+	<b class="round666 tl"></b>
+	<b class="round666 tr"></b>
+	<b class="round666 bl"></b>
+	<b class="round666 br"></b>
+	</div>
+</cms::fancylist>
+
+
+<div id="zfoobox" class="corners greyborders" style="-moz-border-radius:20px;">
+	<div class="pad10">
+		<h2 class="subtitle">Enter your own comparison!</h2>
+		<span class="small">Enter the tags you want to compare separated by spaces:</span>
+		<input id="ztags" size="40"/><br />
+		<center>
+		<div>
+			<!--<a href="#" onclick="compareTags(); return false;" class="funbutton" style="margin-top: 10px; -moz-border-radius: 20px;">Compare! <script>document.write(roundedCorners('round369'));</script></a>-->
+			<div style="position:relative;left:50px;">
+			<script>makeButton('blue','Compare!','#','onclick="compareTags();return false;"','class="hundred"')</script>
+			</div>
+			<br clear="all"/>
+		</div>
+		</center>
+	</div>
+</div>

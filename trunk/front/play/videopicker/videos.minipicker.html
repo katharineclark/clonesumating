@@ -1,0 +1,46 @@
+
+<script src="http://<cms::var type="global" name="imgserver">/js/prototype.js" type="text/javascript"></script>
+<script src="http://<cms::var type="global" name="imgserver">/js/compiled.js?q=20060727" type="text/javascript"></script>
+<script language="javascript" src="http://update.videoegg.com/js/Player.js"></script>
+<script language="javascript" src="http://<cms::var type="global" name="imgserver">/js/videoEgg.js"></script>
+
+<style>
+	body { background: #FFFFFF; margin: 0px; padding: 0px;     font-family: "Trebuchet MS",Trebuchet,"Lucinda Grande", verdana, arial, helvetica, sans-serif;
+}
+	.photo { border: 1px solid #666; margin: 5px; }
+	.pickerbutton { padding: 6px; }
+	#uploader { background: #369; color: #FFF; font-weight: bold; padding: 10px; padding-left: 47px;}
+	.pad10 { padding: 10px; }
+	form { margin: 0px; padding: 0px; }
+        .small { font-size: 11px; line-height: 13px; font-weight: bold; text-align: center;}
+	#videopublisher { background: #666; padding: 10px; }
+</style>
+
+<body onload="if (parent.adjustIFrameSize) parent.adjustIFrameSize(window);" >
+
+	<div id="videopublisher"><cms::var type="page" name="videoPublisher"></div>
+
+	<cms::if type="page" name="less">
+		<A href="/videos.pl/minipicker?offset=<cms::var type="page" name="less">"><img src="http://<cms::var type="global" name="imgserver">/img/picker_newer.gif" width="25" height="100" alt="newer videos" border="0" class="pickerbutton"></a>
+	</cms::if>
+	<cms::ifnot type="page" name="less">
+		<img src="http://<cms::var type="global" name="imgserver">/img/blank.gif" width="25" height="100" class="pickerbutton">
+	</cms::ifnot>
+	<cms::fancylist over="videos">
+
+		<a href="/videos.pl/picked?id=<cms::var type="video" name="id">">
+		<script language="javascript">
+			videoEgg.drawThumb('<cms::var type="video" name="path">',100);
+		</script>
+		</a>
+
+	</cms::fancylist>
+    <cms::if type="page" name="more">
+        <A href="/videos.pl/minipicker?offset=<cms::var type="page" name="more">"><img src="http://<cms::var type="global" name="imgserver">/img/picker_older.gif" width="25" height="100" alt="older videos" border="0" class="pickerbutton"></a>
+    </cms::if>
+    <cms::ifnot type="page" name="more">
+       <img src="http://<cms::var type="global" name="imgserver">/img/blank.gif" width="25" height="100" class="pickerbutton">
+    </cms::ifnot>
+	<br />
+	<div class="small">Click a video to pick it for the contest!</div>
+</body>

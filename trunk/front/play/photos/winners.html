@@ -1,0 +1,53 @@
+<div id="contests">
+	<cms::if type="contest" name="itson" equals="1">
+		<h1>Watch out everyone, <a href="/profiles/<cms::var type="first" name="linkhandle">"><cms::var type="first" name="handle"></a> is in the lead!</h1>
+	</cms::if>
+	<cms::if type="contest" name="itson" equals="0">
+		<h1>Congratulations to <a href="/profiles/<cms::var type="first" name="linkhandle">"><cms::var type="first" name="handle"></a> for winning<br/>
+		the <cms::var type="contest" name="name"> contest!</h1>
+	</cms::if>
+
+	<div id="winners">
+		<table align="center">
+			<TR>
+				<TD valign="bottom" width="110">
+					<center>
+					<a href="<cms::if type="contest" name="itson" equals="1">/profiles/<cms::var type="second" name="linkhandle"></cms::if><cms::if type="contest" name="itson" equals="0">/picture.pl?id=<cms::var type="second" name="photoId">&contestId=<cms::var type="second" name="contestId"></cms::if>"><img style="margin-bottom: 10px;" src="http://<cms::var type="global" name="imgserver"><cms::if type="contest" name="itson" equals="1">/photos/<cms::var type="second" name="userId"></cms::if><cms::if type="contest" name="itson" equals="0">/photos/photoContest/<cms::var type="contest" name="id"></cms::if>/100/<cms::var type="second" name="photoId">.jpg" border="0" width="100" heigth="100"></a></center>
+					<img src="http://<cms::var type="global" name="imgserver">/img/column_head.gif">
+								<div style="width: 100px; background: url(/img/column_background.gif); height: 100px; text-align: center; margin-left: 6px; border:1px solid #666; border-top:0px;">
+					<span class="large">Second</span><br />
+					<span class="small" style="font-size:14px;"><a href="/profiles/<cms::var type="second" name="linkhandle">"><cms::var type="second" name="handle"></a><br/><cms::var type="second" name="votes"> votes!</span>
+					</div>
+				</td>
+				<TD valign="bottom" width="110">
+					<center><a href="<cms::if type="contest" name="itson" equals="1">/profiles/<cms::var type="first" name="linkhandle"></cms::if><cms::if type="contest" name="itson" equals="0">/picture.pl?id=<cms::var type="first" name="photoId">&contestId=<cms::var type="first" name="contestId"></cms::if>"><img style="margin-bottom: 10px;" src="http://<cms::var type="global" name="imgserver">/<cms::if type="contest" name="itson" equals="1">/photos/<cms::var type="first" name="userId"></cms::if><cms::if type="contest" name="itson" equals="0">/photos/photoContest/<cms::var type="contest" name="id"></cms::if>/100/<cms::var type="first" name="photoId">.jpg" border="0" width="100" heigth="100"></a></center>
+					<img src="http://<cms::var type="global" name="imgserver">/img/column_head.gif">
+					<div style="width: 100px; background: url(/img/column_background.gif); height: 150px; text-align: center; margin-left: 6px; border:1px solid #666; border-top:0px;">
+					<span class="large">First</span><br />
+					<span class="small" style="font-size:14px;"><a href="/profiles/<cms::var type="first" name="linkhandle">"><cms::var type="first" name="handle"></a><br/><cms::var type="first" name="votes"> votes!</span>
+					</div>
+				</td>
+				<TD valign="bottom" width="110">
+					<center><a href="<cms::if type="contest" name="itson" equals="1">/profiles/<cms::var type="third" name="linkhandle"></cms::if><cms::if type="contest" name="itson" equals="0">/picture.pl?id=<cms::var type="third" name="photoId">&contestId=<cms::var type="third" name="contestId"></cms::if>"><img  style="margin-bottom: 10px;" src="http://<cms::var type="global" name="imgserver">/<cms::if type="contest" name="itson" equals="1">/photos/<cms::var type="third" name="userId"></cms::if><cms::if type="contest" name="itson" equals="0">/photos/photoContest/<cms::var type="contest" name="id"></cms::if>/100/<cms::var type="third" name="photoId">.jpg" border="0" width="100" heigth="100"></a></center>
+					<img src="http://<cms::var type="global" name="imgserver">/img/column_head.gif">
+								<div style="width: 100px; background: url(/img/column_background.gif); height: 80px; text-align: center; margin-left: 6px; border:1px solid #666; border-top:0px;">
+					<span class="large">Third</span><br />
+					<span class="small" style="font-size:14px;"><a href="/profiles/<cms::var type="third" name="linkhandle">"><cms::var type="third" name="handle"></a><br/><cms::var type="third" name="votes"> votes!</span>
+					</div>
+				</td>
+			</tr>
+		</table>
+	</div>
+
+	<div id="entries">
+	<h1>All Entries:</h1>
+	<cms::ifloop type="entries">
+		<cms::fancylist over="entries">
+			<div class="entry">
+				<a title="<cms::var type="entry" name="handle"> (<cms::var type="entry" name="votes">)" href="/<cms::if type="contest" name="itson" equals="1">profiles/<cms::var type="entry" name="linkhandle"></cms::if><cms::if type="contest" name="itson" equals="0">picture.pl?id=<cms::var type="entry" name="photoId">&contestId=<cms::var type="entry" name="contestId"></cms::if>"><img border="0" src="http://<cms::var type="global" name="imgserver"><cms::if type="contest" name="itson" equals="1">/photos/<cms::var type="entry" name="userId"></cms::if><cms::if type="contest" name="itson" equals="0">/photos/photoContest/<cms::var type="entry" name="contestId"></cms::if>/100/<cms::var type="entry" name="photoId">.jpg"></a>
+			</div>
+		</cms::fancylist> 
+	</cms::ifloop>
+	</div>
+
+</div>

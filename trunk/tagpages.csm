@@ -1,0 +1,390 @@
+#!/usr/bin/perl
+
+use strict;
+use lib "lib";
+use warnings;
+ 
+use Profiles;
+use template2;
+use Users;
+use FCGI;
+use CGI::Fast;
+use Time::HiRes qw(gettimeofday tv_interval);
+
+
+my ($dbh);
+
+my %stoplist = qw(
+is 1
+and 1
+or 1
+);
+
+
+use POSIX qw(SIGTERM SIGINT SIGSEGV);
+POSIX::sigaction(SIGTERM, POSIX::SigAction->new(\&fastQuit)) or die "Error setting SIGTERM handler: $!\n";
+POSIX::sigaction(SIGINT, POSIX::SigAction->new(\&fastQuit)) or die "Error setting SIGINT handler: $!\n";
+POSIX::sigaction(SIGSEGV, POSIX::SigAction->new(\&fastQuit)) or die "Error setting SIGSEGV handler: $!\n";
+
+sub fastQuit {
+    warn "FASTQUIT CALLED FROM finder.csm. SIG@_";
+	exit(0);
+}
+
+
+
+runFinder();
+
+
+sub runFinder {
+
+	while (my $q = new CGI::Fast) {
+
+		my $P = Profiles->new(dbh=>$dbh,query=>$q);
+
+		if ($P->{query}->param('tags') && $P->{query}->param('tags') =~ /\@/) {
+			$P->{query}->param('query',$P->{query}->param('tags'));
+			$P->{query}->param('tags','');
+		}
+
+		if ($P->{query}->param('tags')) {
+				
+			tagSearch($P);		
+
+		} elsif ($P->{query}->param('query')) {
+			
+			nameSearch($P);
+
+		} else {
+			print $P->{query}->redirect('/tags/');
+		}
+	}
+
+}
+
+sub tagSearch {
+	my ($P) = @_;
+
+
+    $P->{user}{system}{tab} = "Tags";
+	my $tags = $P->{query}->param('tags');
+    $P->{user}{global}{pagetitle} = "People tagged $tags";
+
+	my @otags = split(/\s+/,$tags);
+	my $check;
+	if ($P->{user}{user}{id}) {
+		$check = $P->{dbh}->prepare("SELECT COUNT(*) FROM tagRef r inner join tag t on t.id=r.tagId WHERE profileId=$P->{user}{user}{id} AND t.value = ?");
+	}
+
+	my $meetingsth = $P->{dbh}->prepare("SELECT * FROM events WHERE tag = ?");
+
+	my @tags;
+	foreach my $tid (0 .. $#otags) {
+		if ($stoplist{$otags[$tid]}) {
+			next;
+		}
+		my %tag;
+		$tag{value} = $otags[$tid];
+		push(@{$P->{user}{tags}},{tag=>\%tag});
+		push @tags, $P->{dbh}->quote($otags[$tid]);
+
+		if ($P->{user}{user}{id}) {
+			$check->execute($otags[$tid]);
+			my $count = $check->fetchrow;
+			if ($count < 1) {
+				$P->{user}{tag}{addtag} ||= 1;
+				push @{$P->{user}{addtags}}, {tag => \%tag};
+			}
+		}
+		if ($otags[$tid] =~ /(.+?)_rsvp$/) {
+			$meetingsth->execute($1);
+			push @{$P->{user}{meetings}}, { meeting => $meetingsth->fetchrow_hashref } if $meetingsth->rows;
+		}
+	}
+	if ($P->{user}{user}{id}) {
+		$check->finish;
+	}
+
+
+	my @fields;
+	my $sex;
+	push(@fields,"count(tagRef.tagId) as count");
+	push(@fields,"createDate >= DATE_SUB(NOW(),INTERVAL 7 DAY) as isNew");
+	if ($P->{user}{user}{localQuery}) {
+		push(@fields,$P->{user}{user}{localQuery} . " as isLocal");
+	} else {
+		# generate local query
+		my $localquery=undef;
+		if ($P->{user}{user}{id}) {
+			my $U = Users->new(dbh => $P->{dbh}, cache => $P->{cache}, userId => $P->{user}{user}{id});
+			if (defined $U && length $P->{user}{user}{country}) {
+				if ($P->{user}{user}{country} eq "US") {
+					my @dists = qw(five ten twentyfive fifty);
+					my $d = 0;
+					my $sth;
+					do {
+						$sth = $P->{dbh}->prepare("SELECT $dists[$d] FROM zips WHERE zip=$P->{user}{user}{zipcode}");
+						$sth->execute;
+					} while ($sth->rows < 10 && $d++ < $#dists);
+					my $zips = $sth->fetchrow;
+					$localquery = $P->{dbh}->quote(qq| users.zipcode in ($zips) |);
+					$U->updateField(localQuery => $localquery);
+				} else {
+					my $query = $P->{dbh}->quote(qq| users.country = $P->{user}{user}{'country'} |);
+					$U->updateField(localQuery => $query);
+				}
+			}
+		}
+		if (!$localquery) {
+			push(@fields,"0 as isLocal");
+		}
+	}
+
+	if ($P->{query}->param('sex') || $P->{query}->cookie('sex')) {
+		$sex = $P->{query}->cookie('sex');
+		if (defined $P->{query}->param('sex')) {
+			$sex = $P->{query}->param('sex');
+		}
+		if ($sex eq "m" || $sex eq "f") {
+			push(@fields,"users.sex=" . $P->{dbh}->quote($sex) . " as isCorrectSex");
+		} else {
+			push(@fields,"1 as isCorrectSex");
+			$sex = '';
+		}
+	} else {
+		push(@fields,"1 as isCorrectSex");
+		$sex ='';
+	}
+
+# load the people I have thumb downed so they don't show up for me.
+
+	my @exclude = (0);
+	my $tagsInCommon;
+	if ($P->{user}{user}{id}) {
+		my $thumbdowned = $P->{dbh}->prepare("SELECT profileId FROM thumb WHERE userId=$P->{user}{user}{id} AND type='D';");
+		$thumbdowned->execute;
+		while (my $uid = $thumbdowned->fetchrow) {
+			push(@exclude,$uid);	
+		}
+		$thumbdowned->finish;
+# load all of my tags to get people who have tags in common
+
+
+    	push(@exclude,$P->{user}{user}{id});
+	
+		my @tids;
+		my $sql = qq|SELECT tagId FROM tagRef WHERE profileId=$P->{user}{user}{id} and source='O'|;
+		my $sth = $P->{dbh}->prepare($sql);
+		$sth->execute;
+		while (my $tid = $sth->fetchrow) {
+			push(@tids,$tid);
+		}
+		$sth->finish;
+
+		$tagsInCommon = $P->{dbh}->prepare(qq|select count(tagRef.tagId) as count FROM tagRef WHERE tagId IN (| . join(",",@tids) . qq|) and tagRef.source='O' and tagRef.profileId=?|);
+		my $tagCount = scalar(@tids);
+
+	} else {
+		$tagsInCommon = $P->{dbh}->prepare("SELECT 1");
+	}
+# get everyone who has all these tags with info about whether or not they are local, match gender query, etc.
+
+
+    my $sql = "SELECT distinct tagRef.profileId," . join(" , ",@fields) . " FROM tag inner join tagRef on tagRef.tagId=tag.id inner join users on tagRef.profileId=users.id WHERE users.status != -2 AND tag.value in (" . join(",",@tags) . ") AND tagRef.profileId NOT IN (" . join(",",@exclude) . ") GROUP BY tagRef.profileId HAVING count=" . scalar(@tags) . " order by RAND();";
+
+
+	my @points = ('isCorrectSex','isLocal','hasCommonTags','isNew');
+	my @people;
+	my %pots; # will hold people sorted into different categories
+
+
+	my $resultcount = 0;
+
+	my $sth = $P->{dbh}->prepare($sql);
+	$sth->execute;
+	my $t0 = [gettimeofday];
+	my @uids;
+	push(@uids,0);
+	while (my $person = $sth->fetchrow_hashref) {
+        $resultcount++;
+		if ($P->{user}{user}{id} && $person->{profileId} eq $P->{user}{user}{id}) {
+			next;
+		}
+		push(@uids,$person->{profileId});
+
+		$person->{$_} ||= 0 for @points;
+
+		if ($person->{isCorrectSex}) {
+			if ($person->{isLocal}) {
+				$tagsInCommon->execute($person->{profileId});
+				my $tic = $tagsInCommon->fetchrow;
+				$person->{tagsInCommon} = $tic;
+				if ($tic >= 8) {
+					$person->{hasCommonTags} = 1;
+					push @{$pots{hot}}, $person;
+				} else {
+					push @{$pots{local}}, $person;
+				}
+            } elsif ($person->{isNew}) {
+          	  push @{$pots{new}}, $person;
+			} else {
+				push @{$pots{low}}, $person;
+			}
+	#	} elsif ($person->{isNew}) {
+	#		push @{$pots{new}}, $person;
+		} else {
+			push @{$pots{general}}, $person;
+		}
+
+#		print "$$person{profile}{handle}:  sex: $$person{isCorrectSex} local: $$person{isLocal} tic: $$person{hasCommonTags} new: $$person{isNew}<BR />\n";
+	}
+	$sth->finish;
+
+	$P->{user}{page}{resultcount} = $resultcount;
+
+# OK, we want to find the best match. 
+	my %potsize;
+	$potsize{hot} = 10;
+	$potsize{local} = 12;
+	$potsize{low} = 12;
+	$potsize{new} = 6;
+	$potsize{general} = 6;
+
+
+    my $photosize = $P->{dbh}->prepare("SELECT height,width FROM photos WHERE id=?");
+	my $topspot = 0;
+	my $count = 0;
+	foreach my $pot ('hot','local','new','low','general') {
+
+		my $group = $pots{$pot};
+
+		my $lcount = 0;
+		for my $person (@$group) {
+
+        	my $User = Users->new(dbh => $P->{dbh}, cache => $P->{cache}, userId => $person->{profileId}) or next;
+        	#$person->{profile} = $User->profile;
+			if ($topspot ==0 && $User->{profile}->{photoId}) {
+				if (!$person->{tagsInCommon}) {	
+					if ($P->{user}{user}{id}) {
+       				$tagsInCommon->execute($person->{profileId});  
+			        my $tic = $tagsInCommon->fetchrow; 
+	                $person->{tagsInCommon} = $tic; 
+	                if ($tic >= 8) {
+	                    $person->{hasCommonTags} = 1;
+					}
+					}
+				}
+				$P->{user}{bestmatch} = $User->profile;
+                if ($pot ne "general" && $pot ne "low") {
+                    $P->{user}{bestmatch}{type} = $pot;
+                }
+				$P->{user}{mattributes} = $person;
+				if ($P->{user}{bestmatch}{photoId} ne "") {
+					$photosize->execute($P->{user}{bestmatch}{photoId});
+					my $dims = $photosize->fetchrow_hashref;
+					my ($xmult,$ymult,$xsize,$xoff);
+					if ($dims->{width}) {
+						my $xmult = 200 / $dims->{width};
+						if (($dims->{height} * $xmult) < 200) {
+							$ymult = 200 / $dims->{height};
+							$xsize = ($dims->{width} * $ymult) + 1;
+							$xoff = ($xsize / 2) - 100;	
+							$P->{user}{bmphoto}{xoff} = ($xoff / $xsize) * 100;
+							$P->{user}{bmphoto}{width} = int($xsize);
+						} else {
+							$P->{user}{bmphoto}{xoff} = 0;
+							$P->{user}{bmphoto}{width} = 200;
+							
+						}
+					} else {
+                            $P->{user}{bmphoto}{xoff} = 0;
+                            $P->{user}{bmphoto}{width} = 200;
+
+                    }
+				}
+				$topspot = 1;
+				next;
+			} else {
+                if ($pot ne "general" && $pot ne "low") {
+					$User->{profile}{type} = $pot;
+                }
+				push(@{ $P->{user}{people} },{profile => $User->profile});
+			}
+
+			#print "$$person{profile}{handle}:  sex: $$person{isCorrectSex} local: $$person{isLocal} tic: $$person{hasCommonTags} new: $$person{isNew}<BR />\n";
+		
+			$count++;
+			$lcount++;
+			if ($lcount >= $potsize{$pot}) { if (($pot eq "low" || $pot eq "general") && ($count < 21)) {} else {last;} }
+		}
+
+	}
+
+
+	$sql = qq|SELECT value,count(tagRef.profileId) as count FROM tag inner join tagRef ON tag.id=tagRef.tagId WHERE tagRef.profileId IN (| . join(",",@uids) . qq|) AND tag.value NOT IN (| . join(",",@tags) . qq|) GROUP BY tag.id HAVING count > 1 ORDER BY count DESC limit 100;|;
+	$sth = $P->{dbh}->prepare($sql);
+	$sth->execute;
+	while (my $tag = $sth->fetchrow_hashref) {
+		push(@{ $P->{user}{frequenttags} },{tag => $tag});
+	}
+	$sth->finish;
+
+
+	$P->{user}{page}{sex} = $sex;
+
+	my $sexcookie = $P->{query}->cookie(-name=>'sex',-value=>$sex,-domain=>'.consumating.com');
+
+	print $P->{query}->header(-cookie=>[$sexcookie]);
+	print processTemplate($P->{user},"tags/tagsearch.html");
+		
+}
+
+
+
+sub nameSearch {
+	my ($P) = @_;
+
+    $P->{user}{system}{tab} = "Browse";
+	my $query = $P->{query}->param('query');
+	
+# can we find this as a handle, if so, redirect
+
+	my $find = $P->{dbh}->prepare("SELECT handle,userId FROM profiles WHERE handle like '%$query%';");
+	$find->execute;
+	my @results;
+	my $count = 0;
+	while (my ($handle,$uid) = $find->fetchrow) {
+		if (lc($handle) eq lc($query)) {
+        	$handle = $P->{util}->linkify($handle);
+			print $P->{query}->redirect("/profiles/$handle");
+			return;
+		}	
+		
+	    my $User = Users->new(dbh => $P->{dbh}, cache => $P->{cache}, userId => $uid) or next;
+		push(@{ $P->{user}{results} },{profile => $User->profile});
+	}
+	$find->finish;
+
+	$find = $P->{dbh}->prepare("SELECT handle FROM users inner join profiles on users.id=profiles.userId WHERE username = ?;");
+	$find->execute($query);
+	if (my ($handle) = $find->fetchrow) {
+		$handle = $P->{util}->linkify($handle);
+		print $P->{query}->redirect("/profiles/$handle");
+		return;
+	}
+	$find->finish;
+
+
+	if ($query =~ /\@/) {
+		$P->{user}{page}{email} = $query;
+	}
+	$P->{user}{page}{resultcount} = $count;
+	$P->{user}{page}{query} = $query;
+
+	print $P->Header();
+	print processTemplate($P->{user},"tags/namesearch.html");
+
+}
+
+
+

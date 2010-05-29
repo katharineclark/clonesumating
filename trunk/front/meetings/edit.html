@@ -1,0 +1,385 @@
+<script type="text/javascript" src="http://<cms::var type="global" name="imgserver">/js/datetools.js"></script>
+<script>
+function edit(ele) {
+	if (typeof(ele) != 'object') {
+		ele = document.getElementById(ele);
+	}
+	ele.onclick=null;
+	var dat = ele.firstChild.nodeValue;
+	if ( ele.id.indexOf('date') == 0) {
+		ele.innerHTML='';
+		dateEntry('edit'+ele.id,ele.id,dat);
+		ele.innerHTML = ele.innerHTML + '<br/>';
+		timeEntry('edittime'+ele.id,ele.id,dat);
+	} else if (ele.id.indexOf('desc') == 0) {
+		var txt = document.createElement('textarea');
+		txt.id='edit'+ele.id;
+		txt.value = dat;
+		ele.innerHTML = '';
+		ele.appendChild(txt);
+	} else {
+		var inp = document.createElement('input');
+		inp.id='edit'+ele.id;
+		inp.value = dat;
+		ele.innerHTML='';
+		ele.appendChild(inp);
+	} 
+
+	var id = ele.id.match(/\d+/) || '';
+	document.getElementById('button'+id).style.display='inline';
+}
+
+function saveEdit(ele) {
+	var id = ele.id.match(/\d+/);
+	var dat = new Array();
+	dat.push('id='+id);
+	if (document.getElementById('editname'+id)) {
+		dat.push('name='+document.getElementById('editname'+id).value);
+		document.getElementById('editname'+id).parentNode.onclick=function(){edit(document.getElementById('name'+id))};
+		document.getElementById('editname'+id).parentNode.innerHTML = document.getElementById('editname'+id).value;
+	}
+	if (document.getElementById('editstreet'+id)) {
+		dat.push('street='+document.getElementById('editstreet'+id).value);
+		document.getElementById('editstreet'+id).parentNode.onclick=function(){edit(document.getElementById('street'+id))};
+		document.getElementById('editstreet'+id).parentNode.innerHTML = document.getElementById('editstreet'+id).value;
+	}
+	if (document.getElementById('editcity'+id)) {
+		dat.push('city='+document.getElementById('editcity'+id).value);
+		document.getElementById('editcity'+id).parentNode.onclick=function(){edit(document.getElementById('city'+id))};
+		document.getElementById('editcity'+id).parentNode.innerHTML = document.getElementById('editcity'+id).value;
+	}
+	if (document.getElementById('editstate'+id)) {
+		dat.push('state='+document.getElementById('editstate'+id).value);
+		document.getElementById('editstate'+id).parentNode.onclick=function(){edit(document.getElementById('state'+id))};
+		document.getElementById('editstate'+id).parentNode.innerHTML = document.getElementById('editstate'+id).value;
+	}
+	if (document.getElementById('editzipcode'+id)) {
+		dat.push('zipcode='+document.getElementById('editzipcode'+id).value);
+		document.getElementById('editzipcode'+id).parentNode.onclick=function(){edit(document.getElementById('zipcode'+id))};
+		document.getElementById('editzipcode'+id).parentNode.innerHTML = document.getElementById('editzipcode'+id).value;
+	}
+	if (document.getElementById('edittag'+id)) {
+		dat.push('tag='+document.getElementById('edittag'+id).value);
+		document.getElementById('edittag'+id).parentNode.onclick=function(){edit(document.getElementById('tag'+id))};
+		document.getElementById('edittag'+id).parentNode.innerHTML = document.getElementById('edittag'+id).value;
+	}
+	if (document.getElementById('editdescription'+id)) {
+		dat.push('description='+document.getElementById('editdescription'+id).value);
+		document.getElementById('editdescription'+id).parentNode.onclick=function(){edit(document.getElementById('description'+id))};
+		document.getElementById('editdescription'+id).parentNode.innerHTML = document.getElementById('editdescription'+id).value;
+	}
+	if (document.getElementById('editdate'+id+'_year')) {
+		dat.push('date='+getDateEntry('editdate'+id)+' '+getTimeEntry('edittimedate'+id));
+		document.getElementById('editdate'+id+'_year').parentNode.onclick=function(){edit(document.getElementById('date'+id))};
+		document.getElementById('editdate'+id+'_year').parentNode.innerHTML = getDateEntry('editdate'+id)+' '+getTimeEntry('edittimedate'+id);
+	}
+	if (document.getElementById('editenddate'+id+'_year')) {
+		dat.push('date='+getDateEntry('editenddate'+id)+' '+getTimeEntry('edittimeenddate'+id));
+		document.getElementById('editenddate'+id+'_year').parentNode.onclick=function(){edit(document.getElementById('enddate'+id))};
+		document.getElementById('editenddate'+id+'_year').parentNode.innerHTML = getDateEntry('editenddate'+id)+' '+getTimeEntry('editendtimedate'+id);
+	}
+
+	new Ajax.Request('/api',{
+		method: 'post',
+		parameters:'method=meetings.edit&'+dat.join('&')
+	});
+}
+
+function saveNew() {
+	var dat = new Array();
+
+// handle required fields
+	if (!document.getElementById('location_tbd').checked) {
+        if (document.getElementById('venue').value.length == 0) {
+            dat.push('Venue');
+        }
+        if (document.getElementById('street').value.length == 0) {
+            dat.push('Street Address');
+        }
+	}
+    if (document.getElementById('name').value.length == 0) {
+            dat.push('Name');
+    }
+    if (document.getElementById('tag').value.length == 0) {
+            dat.push('Tag');
+    }
+	if (document.getElementById('description').value.length == 0) {
+			dat.push('Description');
+	}
+    if (document.getElementById('city').value.length == 0) {
+        dat.push('City');
+    }
+    if (document.getElementById('state').value.length == 0) {
+       dat.push('State or Province');
+    }
+
+	if (dat.length) {
+		alert("I think you're forgetting something:\n"+dat.join('\n'));
+		return false;
+	}
+
+
+// collect data
+	dat.push('name='+document.getElementById('name').value);
+    dat.push('description='+document.getElementById('description').value);
+    dat.push('tag='+document.getElementById('tag').value);
+
+	if (!document.getElementById('location_tbd').checked) {
+		dat.push('venue='+document.getElementById('venue').value);
+		dat.push('street='+document.getElementById('street').value);
+		dat.push('zipcode='+document.getElementById('zipcode').value);
+	} 
+
+    dat.push('state='+document.getElementById('state').value);
+    dat.push('city='+document.getElementById('city').value);
+	if (!document.getElementById('time_tbd').checked) {
+		dat.push('date='+getDateEntry('date')+' '+getTimeEntry('time'));
+	}
+	if (document.getElementById('id').value != '') {
+		dat.push('id='+document.getElementById('id').value);
+	}
+
+
+	apiRequest('meetings.save',dat.join('&'),handleNew);
+
+	return false;
+}
+function getXMLValues(response,name) {
+	var eles = response.getElementsByTagName(name);
+	return eles[0].firstChild.nodeValue;
+}
+
+
+function handleNew(obj) {
+	var resp = obj.responseXML;
+	try {
+		var id = getXMLValues(resp,'id');
+		document.location='/meetings.pm/event?id=' + id;
+	} catch(e){alert(e.message)}
+}
+
+
+function handleNew_old(obj) {
+	var resp = obj.responseXML;
+	try {
+	var id = getXMLValues(resp,'id');
+	var html = new Array();
+	var tr = document.createElement('tr');
+	var td = document.createElement('td'); td.onclick=function(){edit(document.getElementById('city'+id))}; td.id='city'+id; td.innerHTML = getXMLValues(resp,'city');
+	tr.appendChild(td);
+	var td = document.createElement('td'); td.onclick=function(){edit(document.getElementById('description'+id))}; td.id='description'+id; td.innerHTML = getXMLValues(resp,'description');
+	tr.appendChild(td);
+	var td = document.createElement('td'); td.onclick=function(){edit(document.getElementById('date'+id))}; td.id='date'+id; td.innerHTML = getXMLValues(resp,'date');
+	tr.appendChild(td);
+	var td = document.createElement('td');
+	var inp = document.createElement('input');
+	inp.style.display='none';
+	inp.type='button';
+	inp.id='button'+id;
+	inp.onclick=function(){saveEdit(document.getElementById('button'+id))};
+	inp.value='Save';
+	td.appendChild(inp);
+	tr.appendChild(td);
+	document.getElementById('listTable').appendChild(tr);
+	}catch(e){alert(e.message)}
+}
+
+function cancelEvent() {
+	var c = new Array();
+	c.push("<div class='infoBoxOptionWrapper'><a href='#' class='infoBoxOption' onclick='confirmCancel();InfoBox.clear();return false;'><div class='ibp'>Cancel</div></a>");
+	c.push("<div class='infoBoxOptionDesc'>Cancel this event.</div></div><br clear='all' />");
+	c.push("<div class='infoBoxOptionWrapper'><a href='#' class='infoBoxOption' onclick='InfoBox.clear();return false;'><div class='ibp'>Abort</div></a>");
+	c.push("<div class='infoBoxOptionDesc'>Nevermind!</div></div><br clear='all' />");
+	InfoBox.draw(c.join(''),'Cancel your ConsuMeeting');
+}
+function confirmCancel() {
+	apiRequest("meetings.cancel","id=<cms::var type="meeting" name="id">",function(){document.location.href='/meetings'});
+}
+
+function activate(obj) {
+	obj.className="io_active";
+	return true;
+}
+
+function deactivate(obj) {
+	obj.className="io_inactive";
+	return true;
+}
+
+
+function locationtbdclick(obj) {
+	if (obj.checked) {
+		document.getElementById('venue').disabled = true;
+		document.getElementById('street').disabled = true;
+		document.getElementById('zipcode').disabled = true;
+
+		document.getElementById('venue').value = "";
+		document.getElementById('street').value = "";
+		document.getElementById('zipcode').value = "";
+
+		document.getElementById('venue').className = "io_disabled";
+		document.getElementById('street').className = "io_disabled"; 
+		document.getElementById('zipcode').className = "io_disabled";
+
+
+	} else {
+
+		document.getElementById('venue').disabled = false;
+		document.getElementById('street').disabled = false;
+		document.getElementById('zipcode').disabled = false;
+
+
+		document.getElementById('venue').className = "io_inactive";
+		document.getElementById('street').className = "io_inactive"; 
+		document.getElementById('zipcode').className = "io_inactive";
+
+
+	}
+	return true;
+}
+
+
+function timetbdclick(obj) {
+
+	if (obj.checked) {
+
+			document.getElementById('date_month').disabled = true;
+			document.getElementById('date_month').className = "io_disabled";
+			document.getElementById('date_day').disabled = true;
+			document.getElementById('date_day').className = "io_disabled";
+			document.getElementById('date_year').disabled = true;
+			document.getElementById('date_year').className = "io_disabled";
+			document.getElementById('time_hour').disabled = true;
+			document.getElementById('time_hour').className = "io_disabled";
+			document.getElementById('time_minute').disabled = true;
+			document.getElementById('time_minute').className = "io_disabled";
+			document.getElementById('time_ap').disabled = true;
+			document.getElementById('time_ap').className = "io_disabled";
+	} else {
+			document.getElementById('date_month').disabled = false;
+			document.getElementById('date_month').className = "io_inactive";
+			document.getElementById('date_day').disabled = false;
+			document.getElementById('date_day').className = "io_inactive";
+			document.getElementById('date_year').disabled = false;
+			document.getElementById('date_year').className = "io_inactive";
+			document.getElementById('time_hour').disabled = false;
+			document.getElementById('time_hour').className = "io_inactive";
+			document.getElementById('time_minute').disabled = false;
+			document.getElementById('time_minute').className = "io_inactive";
+			document.getElementById('time_ap').disabled = false;
+			document.getElementById('time_ap').className = "io_inactive";
+	}
+	return true;
+
+} 
+
+</script>
+
+
+<div id="meetings">
+
+	<h1><a href="/meetings/">Meetings</a> &#187; <cms::if type="page" name="edit" equals="1">Edit Your</cms::if><cms::ifnot type="page" name="edit" equals="1">New</cms::ifnot> Meeting
+		<cms::if type="page" name="edit" equals="1">
+			<span class="small"><a href="/meetings?id=<cms::var type="meeting" name="id">">View this Meeting</a></span>
+		</cms::if>
+	</h1>
+
+	<form id="editform">
+		<div id='leftform'>
+			<input id="id" type="hidden" value="<cms::var type="meeting" name="id">">
+			<div class="formfield">
+				Event Name:<br/>
+				<input id="name" value="<cms::var type="meeting" name="name">" onFocus="activate(this);" onBlur="deactivate(this);" class="io_inactive">
+			</div>
+			<div class="formfield">
+				Description:<br/>
+				<textarea id="description" wrap="virtual" onFocus="activate(this);" onBlur="deactivate(this);" class="io_inactive"><cms::var type="meeting" name="description"></textarea>
+			</div>
+			<div class="formfield">
+				Event Tag:<br/>
+				<input id="tag" value="<cms::var type="meeting" name="tag">" onFocus="activate(this);" onBlur="deactivate(this);" class="io_inactive"><br />
+				<span class="small">(the event tag will be used to identify people who have RSVPed)</span>
+			</div>
+			<div class="formfield">
+				Sponsor: <br />
+				<B><cms::var type="user" name="handle"></b>
+			</div>
+		</div>
+		<div id='rightform'>
+			 <div class="formfield">
+				<table cellspacing="0" cellpadding="0" border="0">
+					<TR>
+						<TD width="200">
+							City:
+						</td>
+						<td width="20">&nbsp;</td>
+						<Td width="110">State/Province:</td>
+					</tr>
+					<TR>
+						<TD><input id="city" value="<cms::var type="meeting" name="city">" onFocus="activate(this);" onBlur="deactivate(this);" class="io_inactive"></TD>
+						<TD>&nbsp;</td>
+						<TD>
+							<input id="state" value="<cms::var type="meeting" name="state">" onFocus="activate(this);" onBlur="deactivate(this);" class="io_inactive">
+						</TD>
+					</TR>
+				</table>
+			</div>
+			<div class="formfield">
+				<div style="float: right;"><input id="location_tbd" onClick="return locationtbdclick(this);" value="1" type="checkbox" class="checkbox"> Decide Later</div>
+				Venue:<br />
+				<input id="venue" value="<cms::var type="meeting" name="venue">" onFocus="activate(this);" onBlur="deactivate(this);" class="io_inactive">
+			</div>
+			<div class="formfield">
+				Street:<br />        
+				<input id="street" value="<cms::var type="meeting" name="street">" onFocus="activate(this);" onBlur="deactivate(this);" class="io_inactive">
+			</div>
+			<div class="formfield">
+				Zip Code (US only!):<br />
+				<input id="zipcode" value="<cms::var type="meeting" name="zipcode">" onFocus="activate(this);" onBlur="deactivate(this);" class="io_inactive">
+			</div>
+			<div class="formfield" style="margin-top: 20px;">
+				<div style="float: right;"><input id="time_tbd" value="1" type="checkbox" onClick="return timetbdclick(this);" class="checkbox"> Decide Later</div>
+				Date:<br />
+				<div id="date<cms::var type="meeting" name="id">"></div>
+			</div>
+			<div class="formfield">
+				Time: <br />
+				<div id="time<cms::var type="meeting" name="id">"></div>
+			</div>
+			<div class="formfield" style="margin-top: 20px;">
+				<input type="button" value="Save" onclick="return saveNew(this)">
+				<br /><Br />
+				<P><B>Be careful!</b>  Details about this event will be available to the public.  Do not list your
+				home address or any personally identifiable information!  Always meet in a safe, public place and
+				make sure someone knows where you'll be.</p>
+			</div>
+			<cms::if type="meeting" name="id">
+				<input type="button" value="Cancel this meeting" onclick="cancelEvent();return false;">
+			</cms::if>
+		</div>
+	</form>
+	<br clear="all"/>
+</div>
+
+<script>
+
+	dateEntry('date','date<cms::var type="meeting" name="id">','<cms::var type="meeting" name="date">');
+	timeEntry('time','time<cms::var type="meeting" name="id">','<cms::var type="meeting" name="time">');
+
+	<cms::ifnot type="meeting" name="venue">
+		// turn on location tbd checkbox
+		document.getElementById('location_tbd').checked = true;
+		locationtbdclick(document.getElementById('location_tbd'));
+	</cms::ifnot>
+	<cms::ifnot type="meeting" name="date">
+		// turn on time tbd checkbox
+		document.getElementById('time_tbd').checked= true;
+		timetbdclick(document.getElementById('time_tbd'));
+	</cms::ifnot>
+	<cms::if type="meeting" name="date" equals="0000-00-00 00:00:00">
+		// turn on time tbd checkbox
+		document.getElementById('time_tbd').checked= true;
+		timetbdclick(document.getElementById('time_tbd'));
+	</cms::if>
+
+	</script>

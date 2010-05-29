@@ -1,0 +1,76 @@
+<script>
+function pager(offset) {
+	var url = '/play/questions/index.pl?query=1&offset='+offset;
+	http.open('GET',url,true);
+	http.onreadystatechange=handlePager;
+	http.send(null);
+}
+function handlePager() {
+	if (http.readyState == 4) {
+		var res = http.responseXML;
+		var cont = new Array();
+		var qs = res.getElementsByTagName('question');
+		if (qs && qs.length) {
+			for (var i=0;i<qs.length;i++) {
+				if (document.all) 
+					cont.push(qs[i].childNodes[0].data);
+				else
+					cont.push(qs[i].childNodes[1].data);
+			}
+		}
+		document.getElementById('prev').innerHTML = '';
+		document.getElementById('next').innerHTML = '';
+		try {
+			var prev = res.getElementsByTagName('prev')[0].firstChild.nodeValue;
+			var next = res.getElementsByTagName('next')[0].firstChild.nodeValue;
+		}catch(e){}
+
+		if (prev > -1) {
+			document.getElementById('prev').innerHTML = '<a href="#" onclick="pager('+prev+');return false;">Previous</a>';
+		}
+		if (next > -1) {
+			document.getElementById('next').innerHTML = '<a href="#" onclick="pager('+next+');return false;">Next</a>';
+		}
+
+		document.getElementById('questions').innerHTML = cont.join('');
+
+		document.location='#list';
+	}
+}
+</script>
+
+
+<div id="contests">
+	<h1>There are <B><cms::var type="page" name="questioncount"> questions</b> to answer.</h1>
+
+	<!-- this week's question -->
+	<h2>This week: <a href="/qow.pl"><cms::var type="question" name="question"></a></h2>
+	<cms::var type="question" name="responses"> people have answered already! <A href="/qow.pl#actionbox">Answer right now!</a>
+
+	<div id="questionlist">
+		<h2>Question Archive</h2>
+		<div id="questions">
+			<cms::ifnotloop type="questions">
+				<P>There are no questions left to answer.</p>
+			</cms::ifnotloop>
+			<cms::fancylist over="questions">
+				<div class="question <cms::var type="list" name="evenodd">">
+					<span class="medium"><a href="/qow.pl?question=<cms::var type="question" name="id">"><cms::var type="question" name="question"></a></span><br />
+					<span class="small"><cms::var type="question" name="responses"> responses so far<cms::ifnot type="question" name="answered" equals="0">, including yours!</cms::ifnot><cms::if type="question" name="answered" equals="0">.  Add yours now!</cms::if></span>
+				</div>
+			</cms::fancylist>
+		</div>
+		<div id="prev" style="float:left;"></div>
+		<div id="next" style="float:right;"><a href="#" onclick="pager(11);return false;">Next</a></div>
+		<br clear="all" />
+	</div>
+
+</div>
+
+<div id="extras">
+		<div class="pod">
+			<ul>
+				<li><a href="/play/photos/">Typing not your thing?  Upload a photo!</a></li>
+			</ul>
+		</div>
+</div>

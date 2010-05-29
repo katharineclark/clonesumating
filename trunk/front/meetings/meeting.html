@@ -1,0 +1,666 @@
+<script src="http://<cms::var type="global" name="imgserver">/js/logic.view.js"></script>
+<script src="http://<cms::var type="global" name="imgserver">/js/Pager.js" type="text/javascript"></script>
+<script>
+
+var postsPerPage = 100;
+
+var thisprofileid = <cms::var type="meeting" name="sponsorId">;
+
+var deleteImage = new Image();
+deleteImage.src = "http://<cms::var type="global" name="imgserver">/img/delete_tag.gif";
+
+// overwriting profile handler
+var submitting=0;
+var handlingNew = 0;
+var getNewInterval=null;
+var getNewClearTimeout=null;
+var checkResponseSpinnerTimeout=null;
+function submitTopicResponse() {
+	try {var topicId = document.getElementById('topicId').value;}catch(e){}
+	var handle = currentuserhandle;
+	var linkhandle = currentuserlinkhandle;
+
+	try {
+
+		
+		if (!document.getElementById('topicResponse').value.length) { alert('You need to say something if you want to respond!'); return false; }
+		var d = document.createElement('div');
+		d.id='newresponse';
+		d.style.border='1px outset #369';
+		d.style.padding='3px';
+		var pr = document.createElement('div');
+		pr.id = 'previewSpan';
+		pr.style.position='relative';
+		pr.style.cssFloat='left';
+		pr.style.top='-16px';
+		pr.style.left='0px';
+		pr.innerHTML = '<b class="small" style="color:#CCC;margin-left:10px;padding:5px;"><pre>[ Preview ]</pre></b>';
+		d.appendChild(pr);
+		d.appendChild(document.createElement('br'));
+
+		var h2 = document.createElement('h2');
+		h2.id='previewSubtitle';
+		h2.className = 'subtitle';
+		h2.innerHTML = '<a href="/profiles/' + linkhandle + '">' + handle + '</a> said,';
+		h2.style.position='relative';
+		h2.style.left='-50px';
+		d.appendChild(h2);
+
+		var p = document.createElement('p');
+		p.id="newparagraph";
+		p.innerHTML = prepResponse();
+		d.appendChild(p);
+		d.appendChild(document.createElement('br'));
+
+		var nr = document.getElementById('newresponses');
+		nr.appendChild(d);
+
+		responseCount++;
+
+		if (responseCount % postsPerPage == 0) {
+			var newpage = addPageButton();
+		} 
+
+		document.getElementById('saveButton').onclick=function(){retryTopicResponse();saveResponse();return false;};
+		document.getElementById('previewButton').onclick=function(){retryTopicResponse();return false;};
+
+		submitting=1;
+		handlingNew=1;
+
+		if (newpage) {
+			changePage(newpage);
+		}
+	} catch(e){alert('error 9DF2: '+e.message)}
+
+	return false;
+}
+function prepResponse() {
+	var rr = document.getElementById('topicResponse').value;
+	var parts = rr.split('\n');
+	var ret = new Array();
+	for (var i=0;i<parts.length;i++) {
+		ret.push(parts[i]);
+		ret.push('<br>');
+	}
+	return ret.join('');
+}
+function retryTopicResponse() {
+	document.getElementById('newparagraph').innerHTML = prepResponse();
+	return false;
+}
+function saveResponse() {
+	try {var topicId = document.getElementById('topicId').value;}catch(e){}
+
+	if (!document.getElementById('topicResponse').value.length) { return false; }
+
+	document.getElementById('responsearea').style.display='none';
+	document.getElementById('responsewait').style.display='block';
+	document.getElementById('newresponse').style.border='none';
+	$('previewSpan').parentNode.removeChild($('previewSpan'));
+	$('previewSubtitle').style.left='0px';
+	$('previewSubtitle').id='';
+	$('previewButton').onclick=function(){submitTopicResponse();return false;};
+	$('saveButton').onclick=function(){submitTopicResponse();saveResponse();return false;};
+
+	apiRequest('topic.response','a=1&b=2&topicId='+topicId+'&response='+encodeURIComponent(prepResponse()),handleProfileResponse);
+	checkResponseSpinnerTimeout = setTimeout('checkResponseSpinner()',15000);
+	return false;
+}
+
+function checkResponseSpinner() {
+	if (submitting == 1 && document.getElementById('responsewait').style.display=='block') {
+		alert('Whoops!  Something went wrong.  Please submit your response again!');
+		document.getElementById('responsewait').style.display='none';
+		document.getElementById('responsearea').style.display='block';
+		document.getElementById('newresponses').innerHTML=''
+	}
+}
+
+function handleProfileResponse(response) {
+	response = response.responseXML;
+	clearTimeout(checkResponseSpinnerTimeout);
+	submitting=0;
+	try {
+		if (response.getElementsByTagName('responseId')) {
+			document.getElementById('topicResponse').value='';
+			document.getElementById('responsewait').style.display='none';
+			document.getElementById('responsearea').style.display='block';
+			try {var topicId = document.getElementById('topicId').value;}catch(e){}
+
+			var rid = response.getElementsByTagName('responseId')[0].firstChild.nodeValue;
+			document.getElementById('lastResponseId').value = rid;
+
+			var e = document.getElementById('newresponse').cloneNode(true);
+			e.id = 'response'+rid;
+			document.getElementById('newresponse').parentNode.removeChild(document.getElementById('newresponse'));
+
+
+			if (responseCount % 2 == 0) {
+				e.className = 'responseOdd';
+			} else {
+				e.className = 'responseEven';
+			}
+
+			if (currentuserid == thisprofileid) {
+				// add delete button
+				var a = document.createElement('div');
+				a.style.cssText='float:left;position:relative;top:3px;z-index:9999;padding-right:3px;';
+				var i = document.createElement('img');
+				i.src = deleteImage.src;
+				i.onclick=function(){deleteTopicResponse(this);};
+				i.id='responseimg'+rid;
+				a.appendChild(i);
+				e.childNodes[1].insertBefore(a,e.childNodes[1].childNodes[0]);
+			}
+
+			// add permalink
+			// permalink is now in the timestamp
+			/*
+			var s = document.createElement('span');
+			s.className = 'small';
+			s.innerHTML = '<a href="/profiles/<cms::var type="topic" name="linkhandle"/topics?id=<cms::var type="topic" name="id">&responseoffset='+offset+'#link'+rid+'">Permalink</a>';
+			e.appendChild(s);
+			*/
+			
+
+			var newdiv = document.createElement('div');
+			newdiv.appendChild(e);
+			$('responsesArea').appendChild(newdiv);
+			toggleWatch(topicId,1,1);
+// alert('RC '+responseCount);
+			if (responseCount % postsPerPage == 0) {
+				var newpage = addPageButton();
+			} 
+
+			try { $('noResponses').style.display='none'; }catch(e){}
+			if (newpage) {
+				changePage(newpage);
+			}
+		} else {
+			alert('We screwed up, please try again!');
+			document.getElementById('newresponses').innerHTML=''
+			document.getElementById('responsewait').style.display='none';
+			document.getElementById('responsearea').style.display='block';
+		}
+	} catch(e){
+		alert('Error 9DF3: '+e.message)
+		try {
+			document.getElementById('newresponses').innerHTML=''
+			document.getElementById('responsewait').style.display='none';
+			document.getElementById('responsearea').style.display='block';
+		} catch(e){}
+	}
+	handlingNew = 0;
+
+	<cms::if type="user" name="auto_topics" equals="1">
+	clearTimeout(getNewClearTimeout);
+	getNewClearTimeout = setTimeout('clearInterval('+getNewInterval+');',60000 * 5);
+	</cms::if>
+
+}
+
+function handleResponseDelete(input) {
+	var response = input.responseXML;
+	try {
+		var did = response.getElementsByTagName('deletedId')[0].getAttribute('id');
+		var todel = document.getElementById('response'+did);
+		todel.parentNode.removeChild(todel);
+	}catch(e){}
+}
+
+
+function toggleWatch(id,on,nosubmit) {
+
+	if (on) {
+		if (!nosubmit) {
+			submitRequest('topic.addWatch','','topicId='+id);
+		}
+		document.getElementById('watched').style.display='block';
+		document.getElementById('notwatched').style.display='none';
+	} else {
+		if (!nosubmit) {
+			submitRequest('topic.removeWatch','','topicId='+id);
+		}
+		document.getElementById('watched').style.display='none';
+		document.getElementById('notwatched').style.display='block';
+	}
+
+	return false;
+}
+
+
+function addTopicTag() {
+	var tag = document.getElementById('tag').value;
+	if (tag != '') {
+		submitRequest('topic.tag','topicTag','');
+		var tags = document.getElementById('topicTags');
+		document.getElementById('tag').value='';
+		tags.innerHTML =  tags.innerHTML + '<div class="topictag"><b><a href="/weekly/conversations.csm/search?query=' + tag + '">'+tag+'</a><br /><span class="small">&rarr; added by you!</span></b></div>';
+		if (document.getElementById('notags')) {
+			document.getElementById('notags').style.display='none';
+		}
+	} 
+	return false;
+}
+
+
+function deleteTopicTag(tag) {
+	try {var topicId = document.getElementById('topicId').value;}catch(e){}
+	submitRequest('topic.deleteTagById','','topicId='+topic+'&tagId='+tag);
+	var tag = document.getElementById('tag'+tag);
+	tag.style.display='none';
+}
+
+function handleTopicDeleteTagById(xml) {
+//	alert('deleted');
+}
+
+function handleTopicTag(xml) {
+
+//	alert('added!');
+
+}
+
+function getNew() {
+	if (handlingNew) {
+		//alert('handling new...');
+		return false;
+	}
+	try {var topicId = document.getElementById('topicId').value;}catch(e){}
+	var last = getLast();
+	// alert('getting new: '+last);
+	if (last > 0 || last == '') {
+		var parms = 'method=topic.checkNew&topicId='+topicId+'&lastId='+last;
+		var ma = new Ajax.Request('http://<cms::var type="global" name="wwwserver">/api',{method:'get',parameters:parms,onComplete:handleNewResponses});
+	}
+}
+function getLast() {
+	try{
+		var divs = document.getElementsByTagName('div');
+		var last=document.getElementById('lastResponseId').value;
+		//alert('last is '+last);
+		return last;
+	}catch(e){
+		alert('getNew error: '+e.message);
+		<cms::if type="user" name="auto_topics" equals="1">
+		clearInterval(getNewInterval);
+		</cms::if>
+	}
+}
+function handleNewResponses(input) {
+	handlingNew=1;
+	try {
+		if (input && input.responseText) {
+			if (input.responseText == '<nogo/>') {
+				handlingNew=0;
+				return;
+			}
+			var target = document.getElementById('responsesArea');
+			var resp = input.responseText;
+			if (resp.length) {
+				var dt = new Date();
+				var id = getLast();
+				var ids = resp.match(/response\d+/g);
+				target.innerHTML = target.innerHTML + resp;
+				if (ids && ids.length) {
+					for (var i=0;i<ids.length;i++) {
+						Effect.SlideDown(ids[i],{duration:2});
+					}
+				}
+			}
+			try {$('noResponses').style.display='none'; }catch(e){}
+			if (input.responseXML.getElementsByTagName('script') && input.responseXML.getElementsByTagName('script')[0]) {
+				eval(input.responseXML.getElementsByTagName('script')[0].firstChild.nodeValue);
+			} else {
+				if (document.getElementById('script'+ids[ids.length-1]) && document.getElementById('script'+ids[ids.length-1]).innerHTML) {
+					eval(document.getElementById('script'+ids[ids.length-1]).innerHTML);
+				}
+			}
+		}
+	}catch(e){
+		alert('error HNR1: '+e.message);
+	}
+	handlingNew=0;
+}
+
+var offset = <cms::var type="topic" name="offset">;
+var responseCount = <cms::var type="topic" name="responseCount">;
+var page = <cms::var type="topic" name="currentPage">;
+var lastpage = <cms::var type="topic" name="lastPage">;
+
+
+function changePage(number,query) {
+	var pages = document.getElementsByClassName('currentpage');
+	var offpages = document.getElementsByClassName('page');
+	if (number > pages.length+offpages.length)
+		number = pages.length+offpages.length;
+
+	offset = (number-1) * postsPerPage;
+	changePageIndicator();
+	new Ajax.Updater('responsesArea',
+		'/api?method=topic.getResponses&page='+number+'&topicId=<cms::var type="topic" name="id">&offset='+offset+'&query='+query,
+		{ asynchronous:true,method:'get',evalScripts:true }
+	);
+	document.location='#top';	
+}
+
+function changePageIndicator() {
+	$('loadingImage').style.display='block';
+	page = parseInt(offset / postsPerPage) + 1;
+	var pages = document.getElementsByClassName('currentpage');
+	for (var i=0;i<pages.length;i++) {
+		pages[i].className = 'page';
+	}
+	var pages = document.getElementsByClassName('page');
+	if (page > pages.length)
+		page = pages.length;
+
+	document.getElementById('topicPage'+page).className = 'currentpage';
+	document.getElementById('topicPage2'+page).className = 'currentpage';
+
+	<cms::if type="user" name="auto_topics" equals="1">
+	if (page == lastpage) {
+		if (!getNewInterval) {
+			//alert('setting interval from CPI');
+			getNewInterval = setInterval('getNew()',5000);
+		} else {
+			//alert('already have interval when trying to set! '+getNewInterval);
+		}
+		getNewClearTimeout = setTimeout('clearInterval('+getNewInterval+');',60000 * 5);
+	} else {
+		//alert('clearing interval: '+getNewInterval);
+		clearInterval(getNewInterval);
+	}
+	</cms::if>
+}
+
+function addPageButton() {
+	try {
+		var d = document.getElementById('topicNav').cloneNode(true);
+		var newpage = parseInt(responseCount / postsPerPage) - -1;
+		d.id = 'topicPage'+newpage;
+		d.innerHTML = newpage;
+		d.className='page';
+		d.onclick=function() { changePage(newpage) };
+		document.getElementById('topicNav').appendChild(d);
+		document.getElementById('topicNavBottom').appendChild(d);
+		lastpage++;
+	} catch(e) { alert('error APB1: '+e.message) }
+	return newpage;
+}
+
+function deleteTopicResponse(e) {
+	if (!e || !e.id) {
+		if (e && e.target) e = e.target;
+		else if (e.srcElement) e = e.srcElement;
+	}
+
+	var rid = e.id.substring(11);
+//alert("RID IS "+rid);
+	var rdiv = document.getElementById('response'+rid);
+//alert('OBJ IS '+rdiv);
+	var ds = document.getElementsByClassName('div');
+	for (var i=0;i<ds.length;i++) {
+		if (ds[i].id.indexOf('response') == 0) {
+			alert('loop: '+ds[i].id);
+		}
+	}
+
+	var p = rdiv.parentNode;
+	p.parentNode.removeChild(p);
+
+	new Ajax.Request('/api',{method:'get',parameters:'method=topic.deleteResponse&responseId='+rid+'&eventId=<cms::var type="meeting" name="id">&limit=none',onComplete:null});
+	return false;
+}
+
+function searchThisConversation(ele) {
+	try {
+		var query = document.getElementById('thisTopicSearch').value;
+		var lastFound = parseInt(document.getElementById('thisTopicSearchLast').value);
+		var direction = ele.id == 'thisTopicSearchBack' ? 'DESC' : 'ASC';
+		var params = 'query='+query+'&topicId=<cms::var type="topic" name="id">&lastFound='+lastFound+'&dir='+direction;
+		apiRequest('topic.search',params,topicSearchHandler);
+	}catch(e){alert('error STC1: '+e.message)}
+}
+
+function topicSearchHandler(r) {
+	var response = r.responseXML;
+	try {
+		var id = response.getElementsByTagName('id')[0].firstChild.nodeValue;
+		if (parseInt(id) > -1) {
+			changePage(parseInt(id),document.getElementById('thisTopicSearch').value);
+			var last = response.getElementsByTagName('last')[0].firstChild.nodeValue;
+			document.getElementById('thisTopicSearchLast').value = last;
+			document.getElementById('moreSearching').style.display='block';
+		} else {
+			InfoBox.draw('No Results Found','Search Error');
+		}
+	} catch(e) {
+		alert('error TSH1: '+e.message);
+	}
+	return true;
+}
+
+function reply(rid,handle) {
+	var v = $F('topicResponse');
+	var url = document.getElementById('permalink'+rid).href.replace(/dev/,'www');
+	var newstring = '<a href="'+url+'"> @'+handle+'</a>: ';
+	$('topicResponse').value = v + newstring;
+	document.location.href = '#respond';
+}
+
+
+<cms::if type="topic" name="onLastPage" equals="1" nest>
+<cms::if type="user" name="auto_topics" equals="1">
+getNewInterval = setInterval(getNew,8000);
+//alert('start GNI: '+getNewInterval);
+getNewClearTimeout = setTimeout('clearInterval('+getNewInterval+');',60000 * 5);
+</cms::if>
+</cms::if type="topic" name="onLastPage">
+
+function addRsvpPic() {
+	var t = $('attendeeListHolder');
+	var i = document.createElement('img');
+	i.src = 'http://<cms::var type="global" name="imgserver">/photos/'+currentuserid+'/50/'+currentuserphotoid+'.jpg';
+	i.align='left';
+	i.border=0;
+	var a = document.createElement('a');
+	a.id='rsvpPic'+currentuserid;
+	//a.style.cssFloat='left';
+	//a.style.padding='5px;';
+	a.href='/profiles/'+currentuserlinkhandle;
+	a.appendChild(i);
+	if (t.innerHTML.indexOf('Noone has rsvp') > -1) {
+		t.innerHTML = '';
+	}
+	t.appendChild(a);
+}
+function dropRsvpPic() {
+	var t = $('attendeeListHolder');
+	t.removeChild(document.getElementById('rsvpPic'+currentuserid));
+	if (t.childNodes.length == 0) {
+		t.innerHTML = "Noone has rsvp'd yet!";
+	}
+}
+
+function toggleTag(tag,on) {
+	var cnt = $('attendeeCount').innerHTML;
+	if (on) {
+		submitRequest('meetings.rsvp','','tag='+tag);
+		document.getElementById('coming').style.display='block';
+		document.getElementById('notcoming').style.display='none';
+		cnt = cnt - -1;
+		addRsvpPic();
+	} else {
+		submitRequest('meetings.de_rsvp','','tag='+tag);
+		document.getElementById('coming').style.display='none';
+		document.getElementById('notcoming').style.display='block';
+		cnt = cnt -1;
+		dropRsvpPic();
+	}
+
+	$('attendeeCount').innerHTML = cnt;
+	return false;
+}
+
+
+</script>
+
+
+<div id="meetings">
+
+	<h1><A href="/meetings/">Meetings</a> &#187; <cms::var type="meeting" name="name"></h1>
+	<div id="meeting">
+		<div id="info">
+			<P><cms::var type="meeting" name="description" paragraphs></p>
+		</div>
+		<div id="topicNav">
+			<P>There <cms::wc type="topic" name="responseCount" s="is" p="are"> <cms::var type="topic" name="responseCount"> <cms::wc type="topic" name="responseCount" s="response" p="responses">.</p>
+			<div id="topicPages">
+				<cms::fancylist over="topicPages">
+					<div id="topicPage<cms::var type="pager" name="number">" class="<cms::if type="pager" name="current" equals="1">current</cms::if>page" onclick="changePage(<cms::var type="pager" name="number">);">
+						<cms::var type="pager" name="number">
+					</div>
+				</cms::fancylist><br clear="left" />
+			</div>
+		</div>
+		<div id="loadingImage" style="text-align: center; display: none;">
+			<span class="small" style="color: #CCC;">loading messages... <img src="http://<cms::var type="global" name="imgserver">/img/topic-loader-loading.gif" align="absmiddle"/></span>
+		</div>
+
+		<input type="hidden" id="lastResponseId" value="<cms::var type="lastresponse" name="responseId">"/>
+		<script type="text/javascript" language="javascript">
+		<!-- 
+			$('lastResponseId').value = <cms::var type="lastresponse" name="responseId">;
+		// -->
+		</script>
+
+		<div id="responsesArea">
+			<cms::fancylist over="responses">
+				<div>
+					<a name="link<cms::var type="response" name="responseId">"><![CDATA[&nbsp;]]></a>
+					<div id="response<cms::var type="response" name="responseId">" class="<cms::if type="list" name="even">responseEven</cms::if><cms::if type="list" name="odd">responseOdd</cms::if>">
+						<cms::if type="response" name="myprofile">
+							<div style="float:left;position:relative;top:3px;z-index:9999;padding-right:3px;">
+								<img src="http://<cms::var type="global" name="imgserver">/img/delete_tag.gif" onclick="deleteTopicResponse(this);" id="responseimg<cms::var type="response" name="responseId">">
+							</div>
+						</cms::if>
+						<h2><a href="/profiles/<cms::var type="response" name="linkhandle">"><cms::var type="response" name="handle"></a> said, <span class="small">(<a id="permalink<cms::var type="response" name="responseId">" href="/meetings?id=<cms::var type="topic" name="userId">&responseoffset=<cms::var type="topic" name="offset">#link<cms::var type="response" name="responseId">"><cms::var type="response" name="timesince"> ago</a>) <a href="#" onclick='reply(<cms::var type="response" name="responseId">,"<cms::var type="response" name="eschandle">");return false;'>reply</a></span></h2>
+
+						<p><cms::var type="response" name="response" paragraphs></p>
+						<br clear="all" />
+					</div>
+				</div>
+			</cms::fancylist>
+		</div>
+
+		<cms::ifnotloop type="responses">
+			<div id="noResponses">
+				<h2>Nobody has responded to this topic yet!</h2>
+				<h2>Maybe you should be the first...</h2>
+			</div>
+		</cms::ifnotloop>
+
+		<div id="newresponses_header" style="display:none;"><b>New Responses:</b></div>
+		<div id="newresponses"></div>
+
+		<div id="topicNavBottom">
+				<cms::fancylist over="topicPages">
+					<div id="topicPage2<cms::var type="pager" name="number">" class="<cms::if type="pager" name="current" equals="1">current</cms::if>page" onclick="changePage(<cms::var type="pager" name="number">);">
+						<cms::var type="pager" name="number">
+					</div>
+				</cms::fancylist><br clear="left" />
+		</div>
+
+		<cms::if type="user" name="id" nest>
+			<cms::if type="topic" name="enabled" equals="1" nest>
+				<a name="respond"></a>
+				<div id="responsewait"><img src="http://<cms::var type="global" name="imgserver">/img/wheel.gif"></div>
+				<div id="responsearea">
+					<h2>Enter your response:</h2>
+					<textarea id="topicResponse" wrap="virtual"></textarea>
+					<input type="hidden" id="topicId" value="<cms::var type="topic" name="id">"/>
+					<input type="hidden" id="notMyTopic" value="0<cms::ifnot type="profile" name="myprofile">1</cms::ifnot>"/>
+					<P>This comment will be <b>public</b.</p>
+					<input type="button" id="saveButton" onclick="submitTopicResponse();saveResponse();return false;" value="Say It!">
+					<input type="button" id="previewButton" onclick="submitTopicResponse();return false;" value="Preview It!">
+				</div>
+			</cms::if type="topic" name="enabled">
+		</cms::if type="user" name="id">
+	</div> <!-- meeting -->
+
+	<div id="extras">
+		<div id="details" class="pod">
+			<table cellspacing="0" cellpadding="0" border="0">
+				<TR class="eventfield">
+					<TD class="eventlabel" valign="top">
+						Where:
+					</TD>
+					<TD class="info">
+						<cms::var type="meeting" name="city">,
+				<cms::if type="meeting" name="venue">
+					at <cms::var type="meeting" name="venue">
+				</cms::if>
+				<cms::ifnot type="meeting" name="venue">
+					Location TBD<br />
+					<span class="small">(<a href="#respond">suggest one below</a>)</span>
+				</cms::ifnot>
+					</TD>
+				</TR>
+				<TR class="eventfield" valign="top">
+					<TD class="eventlabel">                        When:
+					</TD>
+					<TD class="info">
+						<cms::if type="meeting" name="date" equals="0000-00-00 00:00:00">
+							Date TBD<br />
+							<span class="small">(<a href="#respond">suggest one below</a>)</span>
+						</cms::if>
+						<cms::ifnot type="meeting" name="date" equals="0000-00-00 00:00:00">
+							<cms::var type="meeting" name="date" datetime>
+						</cms::ifnot>                    </TD>   
+				</TR>
+				<TR class="eventfield">
+					<Td class="EventLabel" valign="top">Host:</td>
+					<TD class="info"><a href="/profiles/<cms::var type="profile" name="linkhandle">"><cms::var type="profile" name="handle"></a><br />
+					<img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="profile" name="id">/50/<cms::var type="profile" name="photoId">.jpg">
+					</TD>
+				</TR>
+			</table>
+			<cms::if type="meeting" name="mymeeting" equals="1">
+				<div id="editlink">You're in charge!  <a href="/meetings/edit?id=<cms::var type="meeting" name="id">">Edit this event.</a></div>
+			</cms::if>
+
+			<cms::if type="user" name="id">
+					<div id='coming' style='<cms::if type="meeting" name="coming" equals="0" nest>display:none;</cms::if type="meeting" name="coming">'>
+						<a href="#" onclick="return toggleTag('<cms::var type="meeting" name="tag">',0);">I'm coming! Click to cancel RSVP</a>
+					</div>
+					<div id='notcoming' style='<cms::if type="meeting" name="coming" equals="1" nest>display:none;</cms::if type="meeting" name="coming">'>
+						<a href="#" onclick="return toggleTag('<cms::var type="meeting" name="tag">',1);" class="small">Click to RSVP</a>
+					</div>
+
+					<div id='watched' style='<cms::if type="page" name="watch" equals="0" nest>display: none;</cms::if type="page" name="watch">'>
+						<a href="#" onClick="toggleWatch(<cms::var type="topic" name="id">,0);return false;" class="small">YOU ARE WATCHING. Click to stop.</a>            
+					</div>            
+					<div id='notwatched' style='<cms::if type="page" name="watch" equals="1" nest>display: none;</cms::if type="page" name="watch">'>
+						<a href="#" onClick="toggleWatch(<cms::var type="topic" name="id">,1);return false;" class='small'>WATCH THIS TOPIC</a>            
+					</div>        
+			</cms::if>
+		</div>
+
+		<div id='attendeeList' class="pod">
+			<h2>There <cms::wc type="meeting" name="attendees" s="is" p="are"> <span id="attendeeCount" class="blue"><cms::var type="meeting" name="attendees"></span> <cms::wc type="meeting" name="attendees" s="person" p="people"></span> attending:</h2>
+			<div id="attendeeListHolder" >
+				<cms::ifloop type="attendees">
+					<cms::fancylist over="attendees">
+						<a id="rsvpPic<cms::var type="profile" name="id">" href="/profiles/<cms::var type="profile" name="linkhandle">"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="profile" name="userId">/50/<cms::var type="profile" name="photoId">.jpg" border="0" align="left" style="border: 2px solid #333; margin: 3px;" width="50" heigh="50" /></a>
+					</cms::fancylist>
+				</cms::ifloop>
+				<cms::ifnotloop type="attendees">
+					You can be the first!
+				</cms::ifnotloop>
+			</div>
+			<br clear="left" />
+			<P><a href="/invite/index.pl?type=meeting&typeId=<cms::var type="meeting" name="id">&tagsIn=<cms::var type="meeting" name="tag">_rsvp">Invite your friends</a></p>
+		</div>
+	</div> <!-- extras -->
+</div> <!-- meetings -->

@@ -1,0 +1,131 @@
+<link rel="stylesheet" href="http://<cms::var type="global" name="imgserver">/css/styles.profile.css" type="text/css" >
+<script src="http://<cms::var type="global" name="imgserver">/js/Profile.js" type="text/javascript"></script>
+<script>
+var Profile = new Profile(<cms::var type="profile" name="userId">);
+var thisprofileid = <cms::var type="profile" name="id">;
+function showMessage(id) {
+	new Ajax.Updater(
+		'message'+id,
+		'/api?method=messages.getMessage&messageId='+id,
+		{
+			method: 'get',
+			asynchronous:true
+		}
+	);
+	document.getElementById('message'+id).style.display='inline';
+}
+function expandAll() {
+	apiRequest('messages.expandAll','target='+thisprofileid,showAllMessages);
+	return false;
+}
+function showAllMessages(r) {
+	var response = r.responseXML;
+	entries = response.getElementsByTagName('message');
+	for (var i=0;i<entries.length;i++) {
+		var id = entries[i].getAttribute('id');
+		var txt = entries[i].firstChild.nodeValue;
+		document.getElementById('message'+id).innerHTML = txt;
+		document.getElementById('message'+id).style.display='inline';
+	}
+}
+
+function spammer() {
+	var c = new Array();
+	c.push("Is this really spam?  If you choose OK, this conversation thread will be deleted and the person reported to admins.<br/>");
+	c.push("<div class='infoBoxOptionWrapper'><a href='#' onClick='killSpammer();InfoBox.clear();' class='infoBoxOption'><div class='ibp'>Delete</div></a>");
+	c.push("<div class='infoBoxOptionDesc'>Delete this conversation and report as spam.</div></div><BR clear='all' />");
+	c.push("<div class='infoBoxOptionWrapper'><a href='#' onClick='InfoBox.clear();return false;' class='infoBoxOption'><div class='ibp'>Cancel</div></a>");
+	c.push("<div class='infoBoxOptionDesc'>Don\'t delete this conversation.</div></div><BR clear='all' />");
+
+	c.push('</form>');
+	InfoBox.draw(c.join(''),'Delete and Report Spam');
+}
+function killSpammer() {
+	apiRequest('messages.spammer','userId='+thisprofileid,spammerReturn);
+}
+function spammerReturn() {
+	document.location.href='/messages.pl/inbox';
+}
+</script>
+<div id="profile">
+    <div id="profileNav">
+        <a href="/profiles/<cms::var type="profile" name="linkhandle">"><cms::var type="profile" name="handle"> &#187;</a>
+        <a href="/profiles/<cms::var type="profile" name="linkhandle">/topics">Conversations</a>
+        <a href="/profiles/<cms::var type="profile" name="linkhandle">/messages">Send Note</a>
+        <A href="/profiles/<cms::var type="profile" name="linkhandle">/answers">Answers</a>
+        <a href="/profiles/<cms::var type="profile" name="linkhandle">/photos">Photos</a>
+        <a href="/profiles/<cms::var type="profile" name="linkhandle">/tags">Tags</a>
+        <a href="/profiles/<cms::var type="profile" name="linkhandle">/inventory">Toy Box<sup style="color: #FFFF99;font-size: 10px;">&nbsp;new</sup></a>
+    </div>
+<div id="inbox">
+
+	<h1>Your conversation with <cms::var type="profile" name="handle"></h1>
+	<cms::ifnotloop type="messages">
+		<P class="medium">There are no notes to or from this person. Yet.</p>
+	</cms::ifnotloop>
+
+    <div class="message">
+    <a href="#" onclick="expandAll();return false;">Expand all messages</a>
+    </div>
+	<cms::fancylist over="messages">
+	<cms::if type="message" name="firstUnread"><a name="recent"></a></cms::if>
+	<div class="message <cms::var type="list" name="evenodd">">
+		<h2 <cms::ifnot type="message" name="text">onclick="showMessage(<cms::var type="message" name="id">);"</cms::ifnot>><cms::var type="message" name="handle"> said, <span class="small">(Message from <cms::var type="message" name="date" datetime>)</span></h2>
+		<cms::if type="message" name="text" nest>
+		<p><cms::var type="message" name="text" paragraphs></p>
+		</cms::if type="message" name="text">
+		<cms::ifnot type="message" name="text" nest>
+		<div style="display:none;" id="message<cms::var type="message" name="id">"></div>
+		</cms::ifnot type="message" name="text">
+	</div>
+	</cms::fancylist>
+	<div class="message">
+	<a href="#" onclick="expandAll();return false;">Expand all messages</a>
+	</div>
+
+<!-- write a note box -->
+
+	<h2>Write a note to <cms::var type="profile" name="handle"></h2>
+
+	<cms::ifnotloop type="messages">
+			<cms::ifnot type="user" name="points" equals="0" nest>
+				<a href="#" id="spendok" onClick="document.getElementById('noteform').style.display='block'; document.getElementById('spendok').style.display='none'; return false;">Click here to start the conversation.</a>
+			</cms::ifnot type="user" name="points">
+			<cms::if type="user" name="points" equals="0" nest>
+					<P>Unfortunately, you've reached your monthly limit on contacting new people.  Each month, you can start conversations with 10 new people.  This is to prevent people from spamming.  You will get more messages on the first of next month.</p>
+			</cms::if type="user" name="points">
+		</p>
+	</cms::ifnotloop>
+
+	<div id="noteform" <cms::ifnotloop type="messages">style="display: none;"</cms::ifnotloop>>
+		<form method="post" action="/messages.pl/sendMessage" id="sendMessageForm">
+		<input type="hidden" name="from" value="<cms::var type="user" name="id">">
+		<input type="hidden" name="to" value="<cms::var type="profile" name="userId">">
+		<textarea name="message" wrap="virtual"></textarea><br />
+		<input type="submit" value="Send this note to <cms::var type="profile" name="eschandle">">
+		</form>
+	</div>
+
+</div>
+
+<div id="extras">
+
+    <div id="smallabout">
+            <a href="/profiles/<cms::var type="profile" name="linkhandle">"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="profile" name="userId">/50/<cms::var type="profile" name="photoId">.jpg" width="50" height="50" border="1" align="left" hspace="5"></a><a href="/profiles/<cms::var type="profile" name="linkhandle">"><cms::var type="profile" name="handle"></a> is a <cms::var type="profile" name="age">-year old <cms::if type="profile" name="sex" equals="M">guy</cms::if><cms::if type="profile" name="sex" equals="F">girl</cms::if> in <cms::var type="profile" name="city"><cms::if type="profile" name="country" equals="US">, <cms::var type="profile" name="state"></cms::if><cms::ifnot type="profile" name="country" equals="US">, <cms::var type="profile" name="country"></cms::ifnot>.
+            <cms::var type="profile" name="cpronoun"> was last active on <cms::var type="profile" name="lastActive" date>.
+            <cms::var type="profile" name="cpronoun"> is
+            <cms::if type="profile" name="relationshipStatus" equals="1">single.</cms::if>
+            <cms::if type="profile" name="relationshipStatus" equals="2">in an <i>open</i> relationship.</cms::if>
+            <cms::if type="profile" name="relationshipStatus" equals="3">in a relationship.</cms::if>
+        </div>
+
+		<input type="button" value="Report Spam" onclick="spammer();return false;">
+
+</div>
+
+</div>
+<script>
+<cms::fancylist over="itemBehaviors">
+	Profile.setBehavior(<cms::var type="item" name="id">,'<cms::var type="item" name="behavior">');
+</cms::fancylist>
+</script>

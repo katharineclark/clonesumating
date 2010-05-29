@@ -1,0 +1,23 @@
+<responsesDocument>
+<cms::fancylist over="responses">
+<a name="link<cms::var type="response" name="responseId">"><![CDATA[&nbsp;]]></a>
+<div id="response<cms::var type="response" name="id">" class="<cms::if type="list" name="even">responseEven</cms::if><cms::if type="list" name="odd">responseOdd</cms::if>">
+<div style="height:1px;line-height:1px;"><![CDATA[&nbsp;]]></div>
+	<cms::if type="response" name="myprofile" equals="1">
+		<div style="float:left;position:relative;top:3px;z-index:9999;padding-right:3px;">
+			<img src="http://<cms::var type="global" name="imgserver">/img/delete_tag.gif" onclick="deleteTopicResponse(this);" id="responseimg<cms::var type="response" name="responseId">"/>
+		</div>
+	</cms::if>
+	<h2 class="subtitle"><a href="/profiles/<cms::var type="response" name="linkhandle">"><cms::var type="response" name="handle"></a> said, <span class="small">(<a id="permalink<cms::var type="response" name="responseId">" href="/profiles/<cms::var type="topic" name="linkhandle">/topics?id=<cms::var type="topic" name="id">&amp;responseoffset=<cms::var type="topic" name="offset">#link<cms::var type="response" name="responseId">">Message from <cms::var type="response" name="timesince"> ago</a>) <a href="#" onclick='reply(<cms::var type="response" name="responseId">,"<cms::var type="response" name="eschandle">");return false;'>reply</a></span></h2>
+
+	<p><cms::var type="response" name="response" paragraphs></p>
+<br />
+</div>
+</cms::fancylist>
+<script>
+$('loadingImage').style.display='none';
+<cms::ifnot type="search" name="query" equals="">
+document.location.href = '#'+$('thisTopicSearchLast').value;
+</cms::ifnot>
+</script>
+</responsesDocument>

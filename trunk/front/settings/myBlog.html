@@ -1,0 +1,89 @@
+<style>
+	.blogapi {  background:#F0F0F0; border-bottom: 2px solid #CCC; padding: 5px; margin-bottom: 3px;}
+	#mtextras { display: none; }
+	#wpextras { display: none; }
+</style>
+<script>setTab('tabblog');</script>
+<cms::ifnotloop type="blogs">
+YOU SHOULD ADD YOUR BLOG. IT IS TEH AWESOME.
+</cms::ifnotloop>
+
+<cms::ifnot type="user" name="id">
+
+	<center>
+	<h1><a href="/register.pl">Get started &rarr;</a></h1>
+	</center>
+
+</cms::ifnot>
+<cms::if type="user" name="id" nest>
+
+<cms::if type="page" name="saved" nest>
+<p class="alert">Your blog settings have been saved!</p>
+</cms::if type="page" name="saved">
+
+<cms::if type="page" name="error" nest>
+	<p class="alert">Oh no!  We couldn't find your blog.  Please make sure your username and password are correct and that you've selected the right blogging service.  If you are using MovableType, make sure you entered the full address of your blog.</p>
+</cms::if type="page" name="error">
+
+<form method="post" action="/settings/myBlog.pl/update" id="blogUpdateForm">
+	<cms::fancylist over="blogs">
+		<div class="blogapi">
+			<span class="medium"><a href="<cms::var type="blog" name="blogurl">"><cms::var type="blog" name="blogname"></a></span> <span class="small"><a href="/settings/myBlog.pl/disconnect?blogId=<cms::var type="blog" name="id">" onClick="return confirm('Are you sure you want to disconnect this blog from your account?');">disconnect this blog</a></span><br />
+			<input type="hidden" name="blog<cms::var type="blog" name="id">" value="<cms::var type="blog" name="id">">
+			Post my: <input name="postQow_<cms::var type="blog" name="id">" value="Y" type="checkbox" class="checkbox" <cms::if type="blog" name="postQow" equals="Y">checked</cms::if>> question answers | 
+			<input name="postTopic_<cms::var type="blog" name="id">" value="Y" type="checkbox" class="checkbox" <cms::if type="blog" name="postTopic" equals="Y">checked</cms::if>> conversation topics | 
+			<input name="postPhoto_<cms::var type="blog" name="id">" value="Y" type="checkbox" class="checkbox" <cms::if type="blog" name="postPhoto" equals="Y">checked</cms::if>> photo contest entries
+		</div>
+	</cms::fancylist>
+<cms::ifloop type="blogs">
+	<div style="text-align: right;">
+	<input type="submit" value="Save!">
+	<br clear="all"/>
+	</div>
+</cms::ifloop>
+</form>
+
+<div style="margin-top: 10px; margin-bottom: 10px;"><B>Note:</b> This service is in <b>beta</b>!  If you experience difficulties in setting up your blog or with the content that gets posted to your blog, please <A href="/profiles/feedback_zombie">send a message to the Feedback Zombie</a>.  Thanks for trying out the new stuff!</div>
+
+<div class="actionBox">
+<h2>Add a New Blog</h2>
+<form method="post" action="/settings/myBlog.pl/save" onSubmit="return validateForm();" id="newBlogForm">
+<P><B>What blog software do you use?</b><Br />
+<select name="type" onChange="if(this.options[this.selectedIndex].value=='movabletype') { document.getElementById('mtextras').style.display='block'; } else {document.getElementById('mtextras').style.display='none';} if(this.options[this.selectedIndex].value=='wordpress') { document.getElementById('wpextras').style.display='block'; } else {document.getElementById('wpextras').style.display='none';}">
+<option value="blogger">Blogger or Blogspot</option>
+<option value="livejournal">LiveJournal</option>
+<option value="movabletype">Movable Type</option>
+<option value="wordpress">WordPress</option>
+<option value="typepad">Typepad</option>
+</select></p>
+
+<P><B>What username do you use to login to your blog?</b><br />
+<input name="username" id="username"></p>
+
+<P><B>What is your blog password?</b><br />
+<input name="password" type="password" id="password"></p>
+
+<div id="mtextras">
+<P><B>What is your blog's web address?</b><br />
+<input name="apiurl" value="http://"></p>
+</div>
+
+<div id="wpextras">
+<P><B>What is the URL of your WordPress XML-RPC client?</b><Br />
+(It will typically be something like http://<i>www.myblog.com</i>/wordpress/xmlrpc.php)
+<input name="wpapiurl" value="http://"></p>
+</div>
+
+
+<div style="text-align: right;">
+	<input type="submit" value="+ Add">
+</div>
+</form>
+</div>
+
+
+
+
+
+
+</cms::if type="user" name="id">

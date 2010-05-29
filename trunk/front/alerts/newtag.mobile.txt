@@ -1,0 +1,1 @@
+You were just tagged "<cms::var type="tag" name="value">"<cms::if type="tagger" name="handle"> by <cms::var type="tagger" name="handle">! To tag back reply to this with "<cms::var type="tagger" name="userId"> new_tag_here"</cms::if><cms::ifnot type="tagger" name="handle"> anonymously</cms::ifnot>

@@ -1,0 +1,304 @@
+<style>
+	.inventory { line-height: 1px; width: 360px; height: 120px; }
+	.tile { width: 60px; height: 60px; background: url(http://<cms::var type="global" name="imgserver">/img/toys/inventory_tile.gif); float: left; }
+	.tile img { margin: 5px; border: none; width: 50px; height: 50px; }
+
+	#purchaseImgArea {
+		text-align:center;
+		width: 350px;
+		background: url(http://<cms::var type="global" name="imgserver">/img/toys/toypurchase_confirm.gif);
+		margin: 5px;
+		height: 155px;
+	}
+</style>
+<!--[if IE]>
+<style>
+.tile {
+	overflow: hidden;
+}
+</style>
+<![endif]-->
+
+<script language='javascript'>
+function getItemInfo(userId,itemId) {
+	new Ajax.Request('/api',{
+		method:'get',
+		parameters:'method=item.getInfo&userId='+userId+'&itemId='+itemId,
+		onComplete:showItemInfo
+	});
+	return false;
+}
+function showItemInfo(r) {
+	var response = r.responseXML;
+	var names = new Array();
+	var name;
+	var type;
+	try {
+		if (response.getElementsByTagName('previousOwner')[0].firstChild) {
+			names['previousOwner'] = response.getElementsByTagName('previousOwner')[0].firstChild.nodeValue;
+			names['linkpreviousOwner'] = response.getElementsByTagName('linkpreviousOwner')[0].firstChild.nodeValue;
+		}
+		names['creator'] = response.getElementsByTagName('creator')[0].firstChild.nodeValue;
+		names['linkcreator'] = response.getElementsByTagName('linkcreator')[0].firstChild.nodeValue;
+		names['id'] = response.getElementsByTagName('id')[0].firstChild.nodeValue;
+		names['ownerId'] = response.getElementsByTagName('ownerId')[0].firstChild.nodeValue;
+		names['creatorId'] = response.getElementsByTagName('creatorId')[0].firstChild.nodeValue;
+
+		name = response.getElementsByTagName('name')[0].firstChild.nodeValue;
+		if (response.getElementsByTagName('description')[0].firstChild)
+			description = response.getElementsByTagName('description')[0].firstChild.nodeValue;
+		else
+			description = '';
+		type = response.getElementsByTagName('type')[0].firstChild.nodeValue;
+		if (response.getElementsByTagName('points')[0].firstChild)
+			points = response.getElementsByTagName('points')[0].firstChild.nodeValue;
+		else
+			points = 0;
+		if (response.getElementsByTagName('behavior')[0].firstChild) {
+			behavior = response.getElementsByTagName('behavior')[0].firstChild.nodeValue;
+			if (behavior != 'none') {
+				var fst = behavior.substring(1,1);
+				if (fst == 'a' || fst == 'e' || fst == 'i' || fst == 'o' || fst == 'u') {
+					behavior = '<B>Special:</B> This toy contains a '+behavior;
+				} else {
+					behavior = '<B>Special:</b> This toy contains a '+behavior;
+				}
+			} else {
+				behavior = '';
+			}
+		} else
+			behavior = '';
+
+
+
+		// this is until point transactions are set
+		points = 0;
+	}catch(e){}
+
+	try {
+		$('selectedImg').src='http://<cms::var type="global" name="imgserver">/img/items/'+type+'/'+(type == 'user' ? names['id'] : name)+'.gif';
+
+		$('selectedName').innerHTML = name;
+		$('selectedDescription').innerHTML = description;
+		$('selectedBehavior').innerHTML = behavior;
+		$('selectedCreatedby').innerHTML = 'The '+name+' was created by <a href="/profiles/'+names['linkcreator']+'">'+names['creator']+'</a>.  See <a href="/profiles/'+names['linkcreator']+'/inventory">all of '+names['creator']+'\'s toys</a>.';
+		if (names['ownerId'] == currentuserid) {
+			$('selectedPurchaselink').innerHTML = 'You already own this!';
+			$('selectedPurchaselink').onclick = function() { return false; }
+		} else if (names['creatorId'] == currentuserid) {
+			$('selectedPurchaselink').innerHTML = 'You created this!';
+			$('selectedPurchaselink').onclick = function() { return false; }
+		} else {
+			$('selectedPurchaselink').innerHTML = 'Snag this toy';
+			$('selectedPurchaselink').onclick = function() { purchaseSelected(names['ownerId'],names['id']);return false; };
+		}
+
+		$('defaultInfo').style.display='none';
+		$('selectedInfo').style.display='inline';
+		if (points == 1) {
+			$('selectedPoints').innerHTML = points + 'points';
+		} else if (points == 0) {
+			$('selectedPoints').innerHTML = '<B>Free!</B>';
+		} else {
+			$('selectedPoints').innerHTML = points + 'points';
+		}
+
+	}catch(e){alert(e.message)}
+}
+
+function purchaseSelected(ownerId,itemId) {
+	apiRequest('item.getInfo','userId='+ownerId+'&itemId='+itemId,purchaseConfirm);
+	return false;
+}
+function purchaseConfirm(r) {
+	var response = r.responseXML;
+
+	try {
+		var id = response.getElementsByTagName('id')[0].firstChild.nodeValue;
+		var ownerId = response.getElementsByTagName('ownerId')[0].firstChild.nodeValue;
+		var linkowner = response.getElementsByTagName('linkowner')[0].firstChild.nodeValue;
+		var owner = response.getElementsByTagName('owner')[0].firstChild.nodeValue;
+		var ownerPhotoId = response.getElementsByTagName('ownerPhotoId')[0].firstChild.nodeValue;
+
+		var name = response.getElementsByTagName('name')[0].firstChild.nodeValue;
+		var type = response.getElementsByTagName('type')[0].firstChild.nodeValue;
+		if (response.getElementsByTagName('points')[0].firstChild)
+			var points = response.getElementsByTagName('points')[0].firstChild.nodeValue;
+		else
+			var points = 0;
+
+		points = 'free';
+		var plural = points == 1 ? '' : 's';
+
+		$('purchaseImg').src = 'http://<cms::var type="global" name="imgserver">/img/items/'+type+'/'+(type == 'user' ? id : name)+'.gif';
+		$('purchasePoints').innerHTML = '<center><font size="72" color="white">'+points+'</font><br/>points</center>';
+		$('purchaseLink').onclick=function() {completePurchase(id,points,ownerId)};
+
+		// this is until point transactions are set
+		//$('purchaseLink').innerHTML = 'Yes, I want to trade '+points+' popularity point'+plural+' for a '+name;
+		$('purchaseLink').innerHTML = 'Yes, I want it!';
+
+		$('sellerImg').src = 'http://<cms::var type="global" name="imgserver">/photos/'+ownerId+'/100/'+ownerPhotoId+'.jpg';
+
+		$('purchaseDiv').style.display='inline';
+		$('viewAll').style.display='none';
+		$('viewSubset').style.display='none';
+		$('rightSide').style.display='none';
+	} catch(e){
+		alert('error PC1: '+e.message)
+	}
+}
+	
+function completePurchase(itemId,points,ownerId) {
+	apiRequest('item.purchase','itemId='+itemId+'&points='+points+'&ownerId='+ownerId,finishPurchase);
+	return false;
+}
+function finishPurchase(r) {
+	seeall();
+}
+
+function seemore(type,offset) {
+	if (!offset) offset = 0;
+	new Ajax.Request('/api',{
+		method:'get',
+		parameters:'method=item.storeMore&type='+type+'&offset='+offset,
+		onComplete:showMore
+	});
+	return false;
+}
+
+function showMore(r) {
+	$('viewSubset').innerHTML = r.responseText;
+	$('viewAll').style.display='none';
+	$('purchaseDiv').style.display='none';
+	$('viewSubset').style.display='inline';
+}
+
+function seeall() {
+	$('viewAll').style.display='inline';
+	$('purchaseDiv').style.display='none';
+	$('viewSubset').style.display='none';
+	$('rightSide').style.display='inline';
+}
+
+function bgover(ele) {
+	ele.style.backgroundImage='url("http://<cms::var type="global" name="imgserver">/img/toys/inventory_tile_hover.gif")';
+}
+function bgout(ele) {
+	ele.style.backgroundImage='url("http://<cms::var type="global" name="imgserver">/img/toys/inventory_tile.gif")';
+}
+</script>
+
+<div>
+			<h1>Toy Store</h1>
+
+	<div style="display:none;margin-bottom: 20px;" id="purchaseDiv">
+		<h1>Let's make a deal!</h1>
+		<br clear="all"/>
+		<center>
+			<img style="float:left;margin-left:60px;margin-top:30px;" src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="user" name="id">/100/<cms::var type="user" name="photoId">.jpg"/>
+			<div id="purchaseImgArea" style="float:left;">
+				<div style="margin-left:100px;margin-top:30px;margin-right:100px;text-align:center;">
+					<img id="purchaseImg" style="float:left;margin-top:10px;"/>
+					<div id="purchasePoints" style="float:right;color:#FFF;">
+					</div>
+				</div>
+			</div>
+			<img id="sellerImg" src="" style="float:left;margin-top:30px;"/>
+		</center>
+		<br clear="all"/>
+		<h2><A id="purchaseLink" href="#">Yes, I want to trade 5 popularity points for a Black iPod</a></h2>
+
+		<br />
+		<h2><a href="#" onclick="seeall();">Nevermind, I don't want this afterall.</a></h2>
+	</div>
+
+	<div style="float: left; width: 360px;padding:0px;">
+		<div style="margin-bottom: 20px;" id="viewSubset" style="width:360px;display:none;"></div>
+		<div id="viewAll">
+			<div style="margin-bottom: 20px;">
+				<h2>Featured Toys</h2>
+				<div class="inventory">
+					<cms::fancylist over="featuredItems">
+						<div id="item<cms::var type="item" name="id">" class="tile" onmouseover='bgover(this);' onmouseout='bgout(this);'>
+							<a id='itemlink<cms::var type="item" name="id">' href='#' onmouseover='bgover(this.parentNode);' onmouseout='bgout(this.parentNode);' onclick="getItemInfo(<cms::var type="item" name="ownerId">,<cms::var type="item" name="id">);return false">
+								<img title="<cms::var type="item" name="name">" id='itemimg<cms::var type="item" name="id">' src="http://<cms::var type="global" name="imgserver">/img/items/<cms::var type="item" name="type">/<cms::if type="item" name="type" equals="system"><cms::var type="item" name="name"></cms::if><cms::if type="item" name="type" equals="user"><cms::var type="item" name="id"></cms::if>.gif<cms::if type="item" name="new">?t=<cms::var type="item" name="new"></cms::if>"> </a> </div>  </cms::fancylist>
+					<cms::fancylist over="featuredBlanks">
+						<div class="tile blank"></div>
+					</cms::fancylist>
+				</div>
+			</div>
+
+
+			<div style="margin-bottom: 20px;">
+				<h2>Popular Toys <span class="small"><A href="#" onclick="seemore('popular');return false;">See more...</a></span></h2>
+				<div class="inventory">
+					<cms::fancylist over="popularItems">
+						<div id="item<cms::var type="item" name="id">" class="tile" onmouseover='bgover(this);' onmouseout='bgout(this);'>
+							<a id='itemlink<cms::var type="item" name="id">' href='#' onmouseover='bgover(this.parentNode);' onmouseout='bgout(this.parentNode);' onclick="getItemInfo(<cms::var type="item" name="ownerId">,<cms::var type="item" name="id">);return false">
+								<img title="<cms::var type="item" name="name">" id='itemimg<cms::var type="item" name="id">' src="http://<cms::var type="global" name="imgserver">/img/items/<cms::var type="item" name="type">/<cms::if type="item" name="type" equals="system"><cms::var type="item" name="name"></cms::if><cms::if type="item" name="type" equals="user"><cms::var type="item" name="id"></cms::if>.gif<cms::if type="item" name="new">?t=<cms::var type="item" name="new"></cms::if>"> </a> </div>  </cms::fancylist>
+					<cms::fancylist over="popularBlanks">
+						<div class="tile blank"></div>
+					</cms::fancylist>
+				</div>
+
+			</div>
+
+
+
+			<div style="margin-bottom: 20px;">
+				<h2>Newest Toys <span class="small"><A href="#" onclick="seemore('recent');return false;">See more...</a></span></h2>
+				<div class="inventory">
+					<cms::fancylist over="recentItems">
+						<div id="item<cms::var type="item" name="id">" class="tile" onmouseover='bgover(this);' onmouseout='bgout(this);'>
+							<a id='itemlink<cms::var type="item" name="id">' href='#' onmouseover='bgover(this.parentNode);' onmouseout='bgout(this.parentNode);' onclick="getItemInfo(<cms::var type="item" name="ownerId">,<cms::var type="item" name="id">);return false">
+								<img title="<cms::var type="item" name="name">" id='itemimg<cms::var type="item" name="id">' src="http://<cms::var type="global" name="imgserver">/img/items/<cms::var type="item" name="type">/<cms::if type="item" name="type" equals="system"><cms::var type="item" name="name"></cms::if><cms::if type="item" name="type" equals="user"><cms::var type="item" name="id"></cms::if>.gif<cms::if type="item" name="new">?t=<cms::var type="item" name="new"></cms::if>"> </a> </div>  </cms::fancylist>
+					<cms::fancylist over="recentBlanks">
+						<div class="tile blank"></div>
+					</cms::fancylist>
+				</div>
+			</div>
+		</div> <!-- viewAll -->
+	</div> <!-- float left -->
+
+	<div id="rightSide" style="float: left; width: 320px; margin-left: 20px;">
+		<div id="defaultInfo">
+			<img src="http://<cms::var type="global" name="imgserver">/img/store-default.gif">
+			<div style="background: #369; color: #FFF;">
+				<div class="pad10">
+				Click on any toy to see more information and snag one for yourself! Then:
+	
+				<ul style="list-style-type:square;"><li>Send a virtual gift</li>
+				<li>Create, collect and trade your own toys</li>
+				<li>Find special toys to customize your profile!</li>
+				</ul>
+	
+				<h2>Pick a toy from the left, or...</h2>
+        		<h2>&#187; <A href="/toys/create.csm" style="color:#FFF; text-decoration: underline;">Make a New Toy</a></h2>  
+		        <h2>&#187; <a href="/profiles/<cms::var type="user" name="linkhandle">/inventory" style="color:#FFF; text-decoration: underline;">View Your Inventory</a></h2>
+
+
+				</div>
+			</div>
+		</div>
+
+		<div id="selectedInfo" style="display:none;">
+			<div style="width: 100px; height: 100px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px; border: 1px solid #CCC; background: #F0F0F0; float: left;">
+				<img id="selectedImg" src="http://<cms::var type="global" name="imgserver">/img/items/user/174016.gif" width="100" height="100">
+			</div>
+			<P><h2 id="selectedName" >Black iPod</h2></p>
+			<P>Price: <span id="selectedPoints">2 points</span></p>
+
+			<P <cms::ifnot type="user" name="id">style="display: none;"></cms::ifnot>><a href="#" id="selectedPurchaselink">Snag this toy</a></p>
+
+			<br clear="All" />
+			
+			<P id="selectedDescription">Item description goes here.  The Black iPod will add a cool flash music player to your page!  OMG!</p>
+			<P id="selectedBehavior">Item behavior goes here. The Black iPod will sing you a tune!</p>
+
+			<P id="selectedCreatedby" style="color: #CCC;">The Black iPod was created by <a href="#">Internet Rockstar</a>.  See <A href="#">more of his toys</a> (goes to personal inventory).</p>
+		</div>
+
+	</div>
+
+</div>

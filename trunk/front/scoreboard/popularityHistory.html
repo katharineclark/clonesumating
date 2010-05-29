@@ -1,0 +1,29 @@
+<script type="text/javascript" src="/popular/javascript/JavaScriptFlashGateway.js"></script>
+          <script type="text/javascript">
+var lcId = new Date().getTime();
+var flashProxy = new FlashProxy(lcId, "JavaScriptFlashGateway.swf");
+          </script>
+          
+      
+
+          <script type="text/javascript">
+/*
+
+SET THESE VARIABLES TO CUSTOMIZE THE DATE SLIDER
+
+*/
+var date_range='today';
+var line_color = '666666';
+var box_color = 'CCCCCC';
+var bar_color = '336699';
+var slider_variable = 'Points';
+//var file_name = '/popular/pophistory.<cms::var type="user" name="id">';
+var file_name = '/popular/pophistory.pl/data';
+
+
+	var sample = new FlashTag("date_slider_open.swf?date_range="+date_range+"&file_name="+file_name+"&box_color="+box_color+"&bar_color="+bar_color+"&line_color="+line_color+"&slider_variable="+slider_variable, 575, 130);
+      sample.setFlashvars("lcId=" + lcId);
+	  sample.setFlashvars("flashSource=http://www.measuremap.com/developer/slider/&contentLicense=http://creativecommons.org/licenses/by/2.0/");
+      sample.write(document);
+          </script>
+

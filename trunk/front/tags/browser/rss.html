@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?> 
+<rss version="2.0">
+<channel>
+<title>ConsuCode Search Results</title>
+<link>http://consumating.com</link>
+<description>Fresh hipsters looking for love, syndicated in ugly XML</description> 
+<pubDate />
+<lastBuildDate />
+
+<cms::fancylist over="results">
+
+<item>
+<title><cms::var type="user" name="handle"></title>
+<link>http://consumating.com/profiles/<cms::var type="user" name="linkhandle"></link>
+<description>
+&lt;p&gt;&lt;img src="http://www.consumating.com/photos/<cms::var type="user" name="id">/100/<cms::var type="user" name="photoId">.jpg" alt="User Photo!" height="100" width="100" border="1" hspace="10" align="absmiddle"&gt;
+<cms::var type="user" name="handle">, a <cms::if type="user" name="sex" equals="M">boy</cms::if><cms::if type="user" name="sex" equals="F">girl</cms::if> in <cms::var type="user" name="city">, <cms::var type="user" name="state">.&lt;/p&gt;
+</description>
+</item>
+
+</cms::fancylist>
+
+</channel>
+</rss>

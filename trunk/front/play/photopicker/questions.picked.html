@@ -1,0 +1,21 @@
+<style>
+	body { background: #FFFFFF;      font-family: "Trebuchet MS",Trebuchet,"Lucinda Grande", verdana, arial, helvetica, sans-serif; }
+	img { border: 1px solid #666; margin: 5px;}
+    .medium { font-size: 18px; }
+</style>
+<body>
+<div style="width: 110px; float: left;">
+	<img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="user" name="id">/100/<cms::var type="photo" name="id">.jpg">
+</div>
+<div style="width: 400px; float: left; margin-left: 10px; padding-top: 10px;">
+	<span class="medium">You have chosen the photo to the left!</span>
+	<p><A href="/photos.pl/minipicker">Choose another one?</a></p>
+	<P><a href="#" onClick="window.parent.document.getElementById('photoId').value='0'; window.location='/photos.pl/minipicker';">Remove Photo</a></p>
+</div>
+<script>
+// set the main photo id
+
+		window.parent.document.getElementById('photoId').value = <cms::var type="photo" name="id">;
+
+</script>
+</body>

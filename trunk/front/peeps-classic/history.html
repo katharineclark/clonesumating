@@ -1,0 +1,154 @@
+<style>
+	.peep { margin-bottom: 20px; }
+	.pic { border: 1px solid #666; margin-right: 20px; }
+	.breakdown { margin-left: 20px; margin-top: 20px; margin-bottom: 40px;}
+	.hotbox { float: left; padding-top: 10px; padding-right: 15px;}
+</style>
+<script src="http://<cms::var type="global" name="imgserver">/js/logic.view.js"></script>
+<script src="http://<cms::var type="global" name="imgserver">/js/csmSelect.js"></script>
+<script>
+function toggleHot(id) {
+
+    var img = document.getElementById("hot" + id);
+    //var note = document.getElementById("daysleft" + id);    
+	if (img.src.indexOf('hot_on') > 0) {        submitRequest('user.removeFromHotList','','userId=' + id);        img.src = 'http://<cms::var type="global" name="imgserver">/img/hot_off.gif';
+        //note.innerHTML = "This person will eventually fade off of your Updates page.";
+    } else {
+            submitRequest('user.addToHotList','','userId=' + id);        img.src='http://<cms::var type="global" name="imgserver">/img/hot_on.gif';
+        //note.innerHTML = 'On your Updates page forever.';
+    }
+    
+    return false;
+}
+
+var mode1 = new Array('<img src="http://<cms::var type="global" name="imgserver">/img/peeps_select_hotlist.gif" height="28" width="150" border="0">','<img src="http://<cms::var type="global" name="imgserver">/img/peeps_select_ups.gif" height="28" width="150" border="0" alt="People I Up\'d">','<img src="http://<cms::var type="global" name="imgserver">/img/peeps_select_tagged.gif" height="28" width="150" border="0">','<img src="http://<cms::var type="global" name="imgserver">/img/peeps_select_everyone.gif" height="28" width="150" border="0">');
+var mode2 = new Array('hotlist','thumbs','tags','everyone');
+
+var mode = new csmSelect('mode',mode1,mode2,'<cms::var type="page" name="mode">','document.getElementById("foo").submit();');
+</script>
+
+
+
+<cms::ifnot type="page" name="onlinenow" equals="0">
+<h1 align="center" style="margin-bottom: 20px;"><span class="blue"><cms::var type="page" name="onlinenow"></span> of your peeps <cms::wc type="page" name="onlinenow" s="is" p="are"> online right now!</h1>
+</cms::ifnot>
+<cms::if type="page" name="onlinenow" equals="0">
+<h1 id="pagetitle" style="margin-bottom: 20px;">My Peeps</h1>
+</cms::if>
+
+<div style="width: 260px; float: right; margin-left: 20px;">
+	<div class="pad10">
+	<P><h2 class="subtitle">Who Are My Peeps?</h2>
+	The people on your peeps page are your Consumating neighbors.  They're the
+	people whose answers you liked, the people you've tagged, and the people
+	you've got on your hotlist.</p>
+
+	<P><h2 class="subtitle">How Does It Work?</h2>
+	When you give someone a thumbs up or add a tag to someone's profile,
+	they will be added to your peeps for <b>1 week</b>.  Think of it like
+	a trial period.   Every time you give another thumb up or another tag,
+	their term on your peeps page is extended by a week.   If you don't
+	give them positive reenforcement, they'll disappear from your peeps.
+	</p>
+	
+	<P><b>Remember:</b> If you want someone to stay on your peeps page forever, make sure
+	to add them to hot list.</p>
+
+	</div>
+</div>
+
+
+<h1>You Recently Peeped: <span class="small"><A href="/updates/">My Peeps & Their Updates</a></h1>
+
+<h2>TODAY</h2>
+<div class="breakdown">
+<cms::ifnotloop type="today">
+<P>You didn't give any thumbs up on this day.</p>
+</cms::ifnotloop>
+<cms::fancylist over="today">
+<div class="peep">
+  <div class="hotbox"><a href="#" title="Toggle Hot List" onClick="return toggleHot(<cms::var type="profile" name="userid">);"><cms::if type="profile" name="onmyhotlist" equals="1"><img src="http://<cms::var type="global" name="imgserver">/img/hot_on.gif" border="0" align="left" id="hot<cms::var type="profile" name="userid">"></cms::if><cms::ifnot type="profile" name="onmyhotlist" equals="1"><img src="http://<cms::var type="global" name="imgserver">/img/hot_off.gif" border="0" align="left" id="hot<cms::var type="profile" name="userid">"></cms::ifnot></a></div>
+    <h2><a href="/profiles/<cms::var type="profile" name="linkhandle">"><img src="/photos/<cms::var type="profile" name="userId">/50/<cms::var type="profile" name="photoId">.jpg" width="50" height="50" align="left" border="0" class="pic"></a> <cms::var type="profile" name="handle"></h2>
+    <cms::if type="reason" name="reason" equals="photocontest">
+    You thought <cms::var type="profile" name="handle"> had an <a href="/picture.pl?id=<cms::var type="reason" name="photoId">">awesome <cms::var type="data" name="shortname"></a>.
+    </cms::if>
+    <cms::if type="reason" name="reason" equals="profilethumb">
+    You gave a thumbs up to <cms::var type="profile" name="handle">'s <a href="/profiles/<cms::var type="profile" name="linkhandle">">profile</a>.
+    </cms::if>
+    <cms::if type="reason" name="reason" equals="question">
+    You liked <a href="/profiles/<cms::var type="profile" name="linkhandle">#<cms::var type="reason" name="responseId">"><cms::var type="profile" name="handle">'s answer</a> to, "<a href="/qow.pl?question=<cms::var type="data" name="id">"><cms::var type="data" name="question"></a>"
+    </cms::if>
+    <cms::if type="reason" name="reason" equals="tag">
+    You tagged <cms::var type="profile" name="handle">, <a href="/tags/<cms::var type="data" name="value">"><cms::var type="data" name="value"></a>.    </cms::if>
+</div>
+
+</cms::fancylist>
+</div>
+
+<h2>YESTERDAY</h2>
+<div class="breakdown">
+<cms::ifnotloop type="yesterday">
+<P>You didn't give any thumbs up on this day.</p>
+</cms::ifnotloop>
+<cms::fancylist over="yesterday">
+<div class="peep">
+  <div class="hotbox"><a href="#" title="Toggle Hot List" onClick="return toggleHot(<cms::var type="profile" name="userid">);"><cms::if type="profile" name="onmyhotlist" equals="1"><img src="http://<cms::var type="global" name="imgserver">/img/hot_on.gif" border="0" align="left" id="hot<cms::var type="profile" name="userid">"></cms::if><cms::ifnot type="profile" name="onmyhotlist" equals="1"><img src="http://<cms::var type="global" name="imgserver">/img/hot_off.gif" border="0" align="left" id="hot<cms::var type="profile" name="userid">"></cms::ifnot></a></div>
+    <h2><a href="/profiles/<cms::var type="profile" name="linkhandle">"><img src="/photos/<cms::var type="profile" name="userId">/50/<cms::var type="profile" name="photoId">.jpg" width="50" height="50" align="left" border="0" class="pic"></a> <cms::var type="profile" name="handle"></h2>
+    <cms::if type="reason" name="reason" equals="photocontest">
+    You thought <cms::var type="profile" name="handle"> had an <a href="/picture.pl?id=<cms::var type="reason" name="photoId">">awesome <cms::var type="data" name="shortname"></a>.
+    </cms::if>
+    <cms::if type="reason" name="reason" equals="profilethumb">
+    You gave a thumbs up to <cms::var type="profile" name="handle">'s <a href="/profiles/<cms::var type="profile" name="linkhandle">">profile</a>.
+    </cms::if>
+    <cms::if type="reason" name="reason" equals="question">
+    You liked <a href="/profiles/<cms::var type="profile" name="linkhandle">#<cms::var type="reason" name="responseId">"><cms::var type="profile" name="handle">'s answer</a> to, "<a href="/qow.pl?question=<cms::var type="data" name="id">"><cms::var type="data" name="question"></a>"
+    </cms::if>
+    <cms::if type="reason" name="reason" equals="tag">
+    You tagged <cms::var type="profile" name="handle">, <a href="/tags/<cms::var type="data" name="value">"><cms::var type="data" name="value"></a>.    </cms::if>
+</div>
+</cms::fancylist>
+</div>
+
+<h2>2 DAYS AGO</h2>
+<div class="breakdown">
+<cms::ifnotloop type="2daysago"><P>You didn't give any thumbs up on this day.</p></cms::ifnotloop>
+<cms::fancylist over="2daysago">
+<div class="peep">
+  <div class="hotbox"><a href="#" title="Toggle Hot List" onClick="return toggleHot(<cms::var type="profile" name="userid">);"><cms::if type="profile" name="onmyhotlist" equals="1"><img src="http://<cms::var type="global" name="imgserver">/img/hot_on.gif" border="0" align="left" id="hot<cms::var type="profile" name="userid">"></cms::if><cms::ifnot type="profile" name="onmyhotlist" equals="1"><img src="http://<cms::var type="global" name="imgserver">/img/hot_off.gif" border="0" align="left" id="hot<cms::var type="profile" name="userid">"></cms::ifnot></a></div>
+    <h2><a href="/profiles/<cms::var type="profile" name="linkhandle">"><img src="/photos/<cms::var type="profile" name="userId">/50/<cms::var type="profile" name="photoId">.jpg" width="50" height="50" align="left" border="0" class="pic"></a> <cms::var type="profile" name="handle"></h2>
+    <cms::if type="reason" name="reason" equals="photocontest">
+    You thought <cms::var type="profile" name="handle"> had an <a href="/picture.pl?id=<cms::var type="reason" name="photoId">">awesome <cms::var type="data" name="shortname"></a>.
+    </cms::if>
+    <cms::if type="reason" name="reason" equals="profilethumb">
+    You gave a thumbs up to <cms::var type="profile" name="handle">'s <a href="/profiles/<cms::var type="profile" name="linkhandle">">profile</a>.
+    </cms::if>
+    <cms::if type="reason" name="reason" equals="question">
+    You liked <a href="/profiles/<cms::var type="profile" name="linkhandle">#<cms::var type="reason" name="responseId">"><cms::var type="profile" name="handle">'s answer</a> to, "<a href="/qow.pl?question=<cms::var type="data" name="id">"><cms::var type="data" name="question"></a>"
+    </cms::if>
+    <cms::if type="reason" name="reason" equals="tag">
+    You tagged <cms::var type="profile" name="handle">, <a href="/tags/<cms::var type="data" name="value">"><cms::var type="data" name="value"></a>.    </cms::if>
+</div>
+</cms::fancylist>
+</div>
+
+<h2>EARLIER...</h2>
+<div class="breakdown">
+<cms::ifnotloop type="thisweek"><P>You didn't give any thumbs up earlier this week.</p></cms::ifnotloop>
+<cms::fancylist over="thisweek">
+<div class="peep">
+  <div class="hotbox"><a href="#" title="Toggle Hot List" onClick="return toggleHot(<cms::var type="profile" name="userid">);"><cms::if type="profile" name="onmyhotlist" equals="1"><img src="http://<cms::var type="global" name="imgserver">/img/hot_on.gif" border="0" align="left" id="hot<cms::var type="profile" name="userid">"></cms::if><cms::ifnot type="profile" name="onmyhotlist" equals="1"><img src="http://<cms::var type="global" name="imgserver">/img/hot_off.gif" border="0" align="left" id="hot<cms::var type="profile" name="userid">"></cms::ifnot></a></div>
+    <h2><a href="/profiles/<cms::var type="profile" name="linkhandle">"><img src="/photos/<cms::var type="profile" name="userId">/50/<cms::var type="profile" name="photoId">.jpg" width="50" height="50" align="left" border="0" class="pic"></a> <cms::var type="profile" name="handle"></h2>
+    <cms::if type="reason" name="reason" equals="photocontest">
+    You thought <cms::var type="profile" name="handle"> had an <a href="/picture.pl?id=<cms::var type="reason" name="photoId">">awesome <cms::var type="data" name="shortname"></a>.
+    </cms::if>
+    <cms::if type="reason" name="reason" equals="profilethumb">
+    You gave a thumbs up to <cms::var type="profile" name="handle">'s <a href="/profiles/<cms::var type="profile" name="linkhandle">">profile</a>.
+    </cms::if>
+    <cms::if type="reason" name="reason" equals="question">
+    You liked <a href="/profiles/<cms::var type="profile" name="linkhandle">#<cms::var type="reason" name="responseId">"><cms::var type="profile" name="handle">'s answer</a> to, "<a href="/qow.pl?question=<cms::var type="data" name="id">"><cms::var type="data" name="question"></a>"
+    </cms::if>
+    <cms::if type="reason" name="reason" equals="tag">
+    You tagged <cms::var type="profile" name="handle">, <a href="/tags/<cms::var type="data" name="value">"><cms::var type="data" name="value"></a>.    </cms::if>
+</div>
+</cms::fancylist>
+</div>

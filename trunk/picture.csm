@@ -1,0 +1,43 @@
+#!/usr/bin/perl
+
+use lib "lib";
+ 
+use strict;
+use Profiles;
+use template2;
+use FCGI;
+use CGI::Fast;
+
+
+
+my ($dbh);
+
+use POSIX qw(SIGTERM SIGINT SIGSEGV);
+POSIX::sigaction(SIGTERM, POSIX::SigAction->new(\&fastQuit)) or die "Error setting SIGTERM handler: $!\n";
+POSIX::sigaction(SIGINT, POSIX::SigAction->new(\&fastQuit)) or die "Error setting SIGINT handler: $!\n";
+POSIX::sigaction(SIGSEGV, POSIX::SigAction->new(\&fastQuit)) or die "Error setting SIGSEGV handler: $!\n";
+
+sub fastQuit {
+    warn "FASTQUIT CALLED FROM picture.csm. SIG@_";
+	exit(0);
+}
+
+
+
+while (my $cgi = new CGI::Fast) {
+
+	my $P = Profiles->new(dbh=>$dbh,query=>$cgi);
+
+	my $id = $P->{query}->param('id');
+	my $sth = $P->{dbh}->prepare("SELECT photos.userId,photos.id,handle FROM photos,profiles WHERE photos.id=$id and photos.userId=profiles.userId");
+	$sth->execute;
+	$P->{user}{photo} = $sth->fetchrow_hashref;
+	$sth->finish;
+
+	$P->{user}{photo}{contest} = $P->{query}->param('contestId') || 0;
+
+	$P->{user}{photo}{linkhandle} = $P->{util}->linkify($P->{user}{photo}{handle});
+
+	print $P->Header();
+	print processTemplate($P->{user},"picture.html");
+}

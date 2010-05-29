@@ -1,0 +1,89 @@
+<h1 id="pagetitle">Consumating is more fun when everyone you know is here!</h1>
+
+<h2 class="subtitle">Method 1</h2>
+<P>Cut and paste this link into your IM, email, blog, MySpace account, or anywhere you can stick a link.  Anyone who clicks it will be on the fast track to your Peeps page!</p>
+<textarea style="height: 50px;">
+http://www.consumating.com/profiles/<cms::var type="user" name="linkhandle">/invite?v=<cms::var type="email" name="verification">
+</textarea>
+
+<br /><br />
+
+<h2 class="subtitle">Method 2</h2>
+<P>Enter your friend's email addresses below, and we'll send them a nice invitation to join the site.  When they do, we'll add them to your Peeps, and give a round of thumbs-up to everyone.</p>
+<form method="post" action="/invite/index.pl/send" id="sendForm">
+<input type="hidden" name="type" value="<cms::var type="form" name="type">"/>
+<input type="hidden" name="typeId" value="<cms::var type="form" name="typeId">"/>
+
+<div class="corners greyborders" style="background:#FFFF99; width: 100%;">
+	<div class="pad10">
+		<table cellpadding="5">
+			<TR>
+				<TH width="150">email addresses</th>
+				<TH width="500">tag 'em - just put a space between each tag</th>
+			</tr>
+<TR>
+	<TD>
+		<input name="email1">
+	</td>
+	<td>
+		<input name="tags1" value="<cms::var type="form" name="tags1">">
+	</td>
+</tr>
+<TR>
+	<TD>
+		<input name="email2">
+	</td>
+	<td>
+		<input name="tags2" value="<cms::var type="form" name="tags2">">
+	</td>
+</tr>
+<TR>
+	<TD>
+		<input name="email3">
+	</td>
+	<td>
+		<input name="tags3" value="<cms::var type="form" name="tags3">">
+	</td>
+</tr>
+<TR>
+	<TD>
+		<input name="email4">
+	</td>
+	<td>
+		<input name="tags4" value="<cms::var type="form" name="tags4">">
+	</td>
+</tr>
+<TR>
+	<TD>
+		<input name="email5">
+	</td>
+	<td>
+		<input name="tags5" value="<cms::var type="form" name="tags5">">
+	</td>
+</tr>
+<tr>
+	<td colspan="2" align="right">
+	<div style="float:right;">
+	<script>makeButton('blueonyellow','Consumate My Friends!','#','onclick="$(\'sendForm\').submit();return false;"','class="twohundred"');</script>
+	</div>
+	<br clear="all"/>
+	</td>
+</tr>
+</table>
+		</div>
+		<b class="round666 tl"></b>
+		<b class="round666 tr"></b>
+		<b class="round666 bl"></b>
+		<b class="round666 br"></b>
+</div>
+
+<P>We'll be honest.  We want you to invite all of your friends to join the site so that we can form a hipster army and take over the world.  Sorry!  It's the truth.</p>
+
+<P>When you invite your friends to join, they will <B>automatically be added to your hot list, and given a thumbs up from you</b>.  You'll get an automatic thumbs up from them too, so you'll get a <a href="/popular/">popularity</a> bump just for being the kind of person who invites people to web sites ... our kind of person!  Your friends will automatically show up on your <A href="/updates/">updates page</a> along with all the other weirdos you've given thumbs up.
+
+<P>You can always <A href="/invite/">invite more people</a> by clicking the invite link at the bottom of every page, or you can
+simply send your invite link to your friends via IM or as a link on your blog.</p>
+
+
+
+</form>

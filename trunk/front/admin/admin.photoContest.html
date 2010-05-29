@@ -1,0 +1,45 @@
+<script>
+function editContest(cid) {
+	var name= document.getElementById('name'+cid).innerHTML;
+	var shortname= document.getElementById('shortname'+cid).innerHTML;
+	var longname= document.getElementById('longname'+cid).innerHTML;
+	var bensname= document.getElementById('bensname'+cid).innerHTML;
+	var othername= document.getElementById('othername'+cid).innerHTML;
+	var tagname= document.getElementById('tagname'+cid).innerHTML;
+	var description= document.getElementById('description'+cid).innerHTML;
+	var startDate= document.getElementById('startDate'+cid).innerHTML;
+	
+	var c = new Array();
+	c.push('<form method="post" action="/admin/photoContest.pl/save">');
+	c.push('<input type="hidden" name="contestId" value="'+cid+'"/>');
+	c.push('Name: <input type="text" name="name" value="'+name+'"/><br/>');
+	c.push('Short Name: <input type="text" name="shortname" value="'+shortname+'"/><br/>');
+	c.push('Long Name: <input type="text" name="longname" value="'+longname+'"/><br/>');
+	c.push('Ben\'s Name: <input type="text" name="bensname" value="'+bensname+'"/><br/>');
+	c.push('Other Name: <input type="text" name="othername" value="'+othername+'"/><br/>');
+	c.push('Tag Name: <input type="text" name="tagname" value="'+tagname+'"/><br/>');
+	c.push('Description: <input name="desc" type="text" value="'+description+'"/><br/>');
+	c.push('Start date: <input name="date" type="text" value="'+startDate+'"/><br/>');
+	c.push('<input type="submit" name="submit" value="Submit"/>');
+	InfoBox.draw(c.join(''),'Edit Contest');
+}
+</script>
+<h1>Photo Contest</h1>
+Create new:
+<form method='post' action='/admin/photoContest.pl/save'>
+Name: <input type="text" name="name" id="name" value=""/><br/>
+Short Name: <input type="text" name="shortname" id="shortname" value=""/><br/>
+Long Name: <input type="text" name="longname" id="longname" value=""/><br/>
+Ben's Name: <input type="text" name="bensname" id="bensname" value=""/><br/>
+Other Name: <input type="text" name="othername" id="othername" value=""/><br/>
+Tag Name: <input type="text" name="tagname" id="tagname" value=""/><br/>
+Description: <input name="desc" type="text" id="desc" value=""/><br/>
+Start date: <input name="date" type="text" id="date" value=""/><br/>
+<input type="submit" name="submit" value="Submit"/>
+</form>
+<br clear="all"/>
+
+<h1>The List</h1>
+<cms::fancylist over="contests">
+<span id="name<cms::var type="contest" name="id">"><cms::var type="contest" name="name"></span> - <span style='font-size:smaller;'><span id="description<cms::var type="contest" name="id">"><cms::var type="contest" name="description"></span> - <span id="startDate<cms::var type="contest" name="id">" style="display:none;"><cms::var type="contest" name="startDate"></span><cms::var type="contest" name="startDate" date></span> (<a href='/admin/photoContest.pl/changeState?contestId=<cms::var type="contest" name="id">&itson=<cms::var type="contest" name="changeState">'><cms::if type="contest" name="itson" equals="1">End</cms::if><cms::if type="contest" name="itson" equals="0">Start</cms::if></a>) (<a href='#' onclick='editContest(<cms::var type="contest" name="id">);return false;'>Edit</a>)<br/>
+</cms::fancylist>

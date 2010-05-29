@@ -1,0 +1,79 @@
+<div id="conversationmanager">		
+
+	<h1>Conversations<cms::if type="user" name="id">&nbsp;&nbsp;<span class="normal"><a href="/talk/mine">View My Conversations</a></cms::if></h1>
+
+	<div id="hottopics">
+		<h2>Hot Topics</h2>
+		<cms::fancylist over="hottopics">
+		<div class="topic <cms::var type="list" name="evenodd">">
+		  <div class="userpic">
+                <a href="/profiles/<cms::var type="profile" name="linkhandle">" title="view this profile"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="profile" name="id">/50/<cms::var type="profile" name="photoId">.jpg" class="pic" border="0" width="50" height="50"></a>
+          </div>
+		  <div class="content">
+			<span class="small"><a href="/profiles/<cms::var type="profile" name="linkhandle">"><cms::var type="profile" name="handle"></a> said,</span><br />
+			<a href="/profiles/<cms::var type="profile" name="linkhandle">/topics?id=<cms::var type="topic" name="id">"><cms::var type="topic" name="question"></a><br />
+			<Br clear="all" / >
+			<div class="meta"><b><cms::var type="topic" name="responses"> recent <cms::wc type="topic" name="responses" s="comment" p="comments"></b>, last <b><cms::var type="topic" name="timesince"></b> ago.</div>
+		  </div>
+		</div>
+		</cms::fancylist>
+	</div>
+
+	<div id="extras">
+		
+		<div class="pod" id="channels"> 
+		<h2>What do you want to talk about?</h2>
+			<cms::fancylist over="profileChannels">
+				<div class="channel">
+					<a href="/talk/channel?id=<cms::var type="channel" name="id">"><cms::var type="channel" name="name"></a><br />
+				</div>
+			</cms::fancylist>
+		</div>              
+
+        <cms::if type="user" name="id" nest>
+            <div style="background: #FFFF99; border: 1px #FF9966 solid; padding: 3px; margin-bottom: 5px;">
+            <span class="small">Looking for conversations you're already a part of?  <A href="/talk/mine">Look no further!</a></span>
+            </div>
+
+			<cms::ifloop type="peepstopics">
+				<div class="pod" id="peepstopics">
+					<h2>Topics from My Peeps</h2>
+					<cms::fancylist over="peepstopics">
+						<div class="topic <cms::var type="list" name="evenodd">">
+							<div class="userpic">
+								<a href="/profiles/<cms::var type="profile" name="linkhandle">" title="view this profile"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="profile" name="id">/50/<cms::var type="profile" name="photoId">.jpg" class="pic" border="0" width="50" height="50"></a>
+							</div>
+							<div class="content">
+								<A href="/profiles/<cms::var type="profile" name="linkhandle">"><cms::var type="profile" name="handle"></a> said,<br />
+								<a href="/profiles/<cms::var type="profile" name="linkhandle">/topics?id=<cms::var type="topic" name="id">"><cms::var type="topic" name="question"></a>
+								<div class="meta">
+									<b><cms::var type="topic" name="responses"> <cms::wc type="topic" name="responses" s="comment" p="comments"></b>
+								</div>
+							</div>
+							<br clear="all" />
+						</div>
+					</cms::fancylist>
+				</div>	
+			</cms::ifloop>
+		</cms::if type="user" name="id">
+
+		<div class="pod" id="newtopics">
+			<h2>Newest Topics</h2>
+			<cms::fancylist over="topics">
+				<div class="topic <cms::var type="list" name="evenodd">">
+					<div class="userpic">
+						<a href="/profiles/<cms::var type="profile" name="linkhandle">" title="view this profile"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="profile" name="id">/50/<cms::var type="profile" name="photoId">.jpg" class="pic" border="0" width="50" height="50"></a>
+					</div>
+					<div class="content">
+						<a href="/profiles/<cms::var type="profile" name="linkhandle">"><cms::var type="profile" name="handle"></a> said,<br />
+						<a href="/profiles/<cms::var type="profile" name="linkhandle">/topics?id=<cms::var type="topic" name="id">"><cms::var type="topic" name="question"></a>
+						<div class="meta">
+							<b><cms::var type="topic" name="responses"> <cms::wc type="topic" name="responses" s="comment" p="comments"></b>
+						</div>
+					</div>
+					<br clear="all" />
+				</div>	
+        </cms::fancylist>
+		</div>
+	</div> <!-- extras -->
+</div> <!-- conversationmanager -->

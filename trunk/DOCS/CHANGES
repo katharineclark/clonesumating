@@ -1,0 +1,14 @@
+Clonesumating 05/30/2010
+
+* Removed references to propietary module CNET::lib (previously used to set lib paths for a non-standard perl install)
+
+* Updated module references to 
+	- Apache::Const -> Apache2::Const
+	- Apache::RequestReq -> Apache2::RequestReq
+
+
+
+
+
+
+http://code.google.com/p/clonesumating/

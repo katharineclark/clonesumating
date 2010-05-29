@@ -1,0 +1,23 @@
+<cms::var type="user" name="handle"> has invited you to a party!  
+Click below to RSVP.
+=> http://www.consumating.com/meetings?id=<cms::var type="meeting" name="id">
+
+What:	<cms::var type="meeting" name="name">
+When:	<cms::ifnot type="meeting" name="date" equals="0000-00-00 00:00:00"><cms::var type="meeting" name="date" datetime></cms::ifnot><cms::if type="meeting" name="date" equals="0000-00-00 00:00:00">To Be Decided</cms::if>
+Where:	<cms::if type="meeting" name="venue"><cms::var type="meeting" name="venue"></cms::if><cms::ifnot type="meeting" name="venue">To Be Decided</cms::ifnot>
+Description:
+
+<cms::var type="meeting" name="description">.
+
+Click below to RSVP.
+=> http://www.consumating.com/meetings?id=<cms::var type="meeting" name="id">
+
+<cms::var type="user" name="handle"> can be found here:
+
+http://www.consumating.com/profiles/<cms::var type="user" name="linkhandle">
+
+And you can explore everything here:
+
+http://www.consumating.com/
+
+See you soon!

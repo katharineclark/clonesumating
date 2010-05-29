@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?> 
+<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+<channel>
+<title><cms::var type="profile" name="handle">'s Answers to Consumating.com's Questions</title>
+<link>http://consumating.com/profiles/<cms::var type="profile" name="linkhandle"></link>
+<description>Fresh hipsters looking for love, syndicated in ugly XML</description> 
+<pubDate />
+<lastBuildDate />
+
+<cms::fancylist over="items">
+
+<item>
+<pubDate><cms::var type="item" name="date"></pubDate>
+<cms::if type="item" name="type" equals="question" nest>
+	<title><cms::var type="question" name="question"></title>
+	<link>http://consumating.com/profiles/<cms::var type="question" name="linkhandle">#<cms::var type="question" name="id"></link>
+	<description>
+	<cms::var type="question" name="answer" nohtml>
+	</description>
+	<content:encoded><![CDATA[
+	<P><cms::var type="question" name="answer" paragraphs></p>
+	]]></content:encoded>
+</cms::if type="item" name="type">
+<cms::if type="item" name="type" equals="contest" nest>
+	<title><cms::var type="contest" name="name"></title>
+	<link>http://consumating.com/weekly/photo/index.pl<cms::ifnot type="contest" name="itson" equals="1">/winners?id=<cms::var type="contest" name="id"></cms::ifnot></link>
+	<description><cms::var type="contest" name="description"></description>
+	<content:encoded>
+		<img src="http://img.consumating.com/photos/<cms::if type="contest" name="itson" equals="1">photoContest/<cms::var type="contest" name="id"></cms::if><cms::ifnot type="contest" name="itson" equals="1"><cms::var type="contest" name="userId"></cms::ifnot>/large/<cms::var type="contest" name="photoId">.jpg"/>
+	</content:encoded>
+</cms::if type="item" name="type">
+</item>
+
+</cms::fancylist>
+
+</channel>
+</rss>

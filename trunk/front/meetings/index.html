@@ -1,0 +1,57 @@
+<div id="meetings">
+	<h1>Meetings</h1>
+
+	<P><a href="/meetings/edit">Host a Meeting</a></p>
+
+	<cms::if type="user" name="id" nest>
+		<h2>MY MEETINGS</h2> 
+		(Get Calendar in <a href="webcal://<cms::var type="global" name="wwwserver">/meetings/ical?uid=<cms::var type="user" name="id">&key=<cms::var type="user" name="feedkey">">iCal</a>, <a href="http://www.google.com/calendar/render?cid=http%3A//<cms::var type="global" name="wwwserver">/meetings/ical%3Fuid%3D<cms::var type="user" name="id">%26key%3D<cms::var type="user" name="feedkey">">Google Calendar</a>, or <A href="http://<cms::var type="global" name="wwwserver">/meetings/ical?uid=<cms::var type="user" name="id">&key=<cms::var type="user" name="feedkey">">any app that supports iCal</a>.)
+		<cms::ifnotloop type="mymeetings">
+			<P>You have not RSVPed to any meetings.</p>
+		</cms::ifnotloop>
+		<cms::fancylist over="mymeetings">
+			<div id="mymeeting<cms::var type="meeting" name="id">" class="meeting <cms::var type="list" name="evenodd">">
+				<img src='http://<cms::var type="global" name="imgserver">/photos/<cms::var type="user" name="id">/50/<cms::var type="user" name="photoId">.jpg'/>
+				<h3><a href='/meetings?id=<cms::var type="meeting" name="id">'><cms::var type="meeting" name="name"></a></h3>
+				<cms::var type="meeting" name="city">, <cms::ifnot type="meeting" name="datesort" equals="0"><cms::var type="meeting" name="date" datetime></cms::ifnot><cms::if type="meeting" name="datesort" equals="0">TBD</cms::if><br />
+				<a href="/tags/<cms::var type="meeting" name="tag">_rsvp"><cms::var type="meeting" name="attendees"> <cms::wc type="meeting" name="attendees" s="person" p="peeps"></a><br/>
+				hosted by <a href='/profiles/<cms::var type="user" name="linkhandle">'><cms::var type="user" name="handle"></a>
+				<br clear="all"/>
+				"<cms::var type="meeting" name="description">"
+			</div>
+		</cms::fancylist>
+
+	<h2>MEETINGS WHERE MY PEEPS WILL BE</h2>
+	(Get Calendar in    <a href="webcal://<cms::var type="global" name="wwwserver">/meetings/ical?peeps=1&uid=<cms::var type="user" name="id">&key=<cms::var type="user" name="feedkey">">iCal</a>, <a href="http://www.google.com/calendar/render?cid=http%3A//<cms::var type="global" name="wwwserver">/meetings/ical%3Fpeeps%3D1%26uid%3D<cms::var type="user" name="id">%26key%3D<cms::var type="user" name="feedkey">">Google Calendar</a>, or <A href="http://<cms::var type="global" name="wwwserver">/meetings/ical?peeps=1&uid=<cms::var type="user" name="id">&key=<cms::var type="user" name="feedkey">">any app that supports iCal</a>.)
+			
+		<cms::ifnotloop type="peepsmeetings">
+			<P>Your peeps are lame... they have no parties planned!</p>
+		</cms::ifnotloop>
+		<cms::fancylist over="peepsmeetings">
+			<div id="peepsmeeting<cms::var type="meeting" name="id">" class="meeting <cms::var type="list" name="evenodd">">
+				<img src='http://<cms::var type="global" name="imgserver">/photos/<cms::var type="user" name="id">/50/<cms::var type="user" name="photoId">.jpg'/>
+				<h3><a href='/meetings?id=<cms::var type="meeting" name="id">'><cms::var type="meeting" name="name"></a></h3>
+				<cms::var type="meeting" name="city">, <cms::ifnot type="meeting" name="datesort" equals="0"><cms::var type="meeting" name="date" datetime></cms::ifnot><cms::if type="meeting" name="datesort" equals="0">TBD</cms::if><br />
+				<a href="/tags/<cms::var type="meeting" name="tag">_rsvp"><cms::var type="meeting" name="attendees"> <cms::wc type="meeting" name="attendees" s="person" p="peeps"></a><br/>
+				hosted by <a href='/profiles/<cms::var type="user" name="linkhandle">'><cms::var type="user" name="handle"></a>
+				<br clear="all"/>
+				"<cms::var type="meeting" name="description">"
+			</div>
+		</cms::fancylist>
+	</cms::if type="user" name="id">
+
+	<h2>ALL MEETINGS</h2>
+	(Get Calendar in <a href="webcal://<cms::var type="global" name="wwwserver">/meetings/ical">iCal</a>, <a href="http://www.google.com/calendar/render?cid=http%3A//<cms::var type="global" name="wwwserver">/meetings/ical">Google Calendar</a>, or <A href="http://<cms::var type="global" name="wwwserver">/meetings/ical">any app that supports iCal</a>)
+		<cms::fancylist over="allmeetings">
+			<div id="allmeeting<cms::var type="meeting" name="id">" class="meeting <cms::var type="list" name="evenodd">">
+				<img src='http://<cms::var type="global" name="imgserver">/photos/<cms::var type="user" name="id">/50/<cms::var type="user" name="photoId">.jpg'/>
+				<h3><a href='/meetings?id=<cms::var type="meeting" name="id">'><cms::var type="meeting" name="name"></a></h3>
+				<cms::var type="meeting" name="city">, <cms::ifnot type="meeting" name="datesort" equals="0"><cms::var type="meeting" name="date" datetime></cms::ifnot><cms::if type="meeting" name="datesort" equals="0">TBD</cms::if><br />
+				<a href="/tags/<cms::var type="meeting" name="tag">_rsvp"><cms::var type="meeting" name="attendees"> <cms::wc type="meeting" name="attendees" s="person" p="peeps"></a><br/>
+				hosted by <a href='/profiles/<cms::var type="user" name="linkhandle">'><cms::var type="user" name="handle"></a>
+				<br clear="all"/>
+				"<cms::var type="meeting" name="description">"
+			</div>
+		</cms::fancylist>
+
+</div> <!-- meetings -->

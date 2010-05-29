@@ -1,0 +1,25 @@
+<link rel="Stylesheet" href="<cms::var type="global" name="imgserver">/css/styles.css" type="text/css" >
+<body>
+    <div id="photopicker" class="photos">
+		<h2>Your Entry</h2>
+		<div id="myphoto">
+			<img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="user" name="id">/100/<cms::var type="photo" name="id">.jpg">
+			<cms::if type="entry" name="ups">
+				<P>Your entry has received<br /> 
+					<cms::var type="entry" name="ups"> <cms::wc type="entry" name="ups" s="up" p="ups">
+					<br /> and<br />
+					<cms::var type="entry" name="downs"> <cms::wc type="entry" name="downs" s="down" p="downs">.
+				<p>
+			</cms::if>
+			<p><A href="/photos.pl/minipicker?mode=photocontest&show=20">Choose another one?</a></p>
+			<P><a href="#" onClick="window.parent.document.getElementById('photoId').value='0'; window.location='/photos.pl/minipicker?mode=photocontest&show=20';">Remove Photo</a></p>
+		</div>
+		<cms::if type="page" name="remind">
+			<P><B>Important!</b> To complete your entrance into this contest, click the button below!</p>
+		</cms::if>
+		<script>
+			// set the main photo id
+			window.parent.document.getElementById('photoId').value = <cms::var type="photo" name="id">;
+		</script>
+	</div>
+</body>

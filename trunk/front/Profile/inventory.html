@@ -1,0 +1,346 @@
+<link rel="stylesheet" href="http://<cms::var type="global" name="imgserver">/css/OLDProfilestyles.css" type="text/css" >
+<script src="http://<cms::var type="global" name="imgserver">/js/CsmInPlaceEditor.js" type="text/javascript"></script>
+<script src="http://<cms::var type="global" name="imgserver">/js/Profile.js" type="text/javascript"></script>
+<script type="text/javascript">
+var Profile = new Profile(<cms::var type="profile" name="userId">);
+</script>
+
+<div id="profile">
+    <div id="profileNav">
+        <a href="/profiles/<cms::var type="profile" name="linkhandle">"><cms::var type="profile" name="handle"> &#187;</a>
+        <a href="/profiles/<cms::var type="profile" name="linkhandle">/topics">Conversations</a>
+        <a href="/profiles/<cms::var type="profile" name="linkhandle">/messages">Send Note</a>
+        <A href="/profiles/<cms::var type="profile" name="linkhandle">/answers">Answers</a>
+        <a href="/profiles/<cms::var type="profile" name="linkhandle">/photos">Photos</a>
+        <a href="/profiles/<cms::var type="profile" name="linkhandle">/tags">Tags</a>
+        <a href="/profiles/<cms::var type="profile" name="linkhandle">/inventory">Toy Box<sup style="color: #FFFF99;font-size: 10px;">&nbsp;new</sup></a>
+    </div>
+</div>
+
+<style>
+	#themedropper { 
+		background: url(http://<cms::var type="global" name="imgserver">/img/toys/themedropper.gif) no-repeat; 
+		width: 129px; 
+		height: 108px; 
+		float: right;   
+		margin-bottom: 20px;
+	}
+	#givedropper { 
+		background: url(http://<cms::var type="global" name="imgserver">/img/toys/givedropper.gif) no-repeat; 
+		width: 129px; 
+		height: 108px; 
+		z-index: 0;
+	}
+	#givePipe {
+		position: absolute;
+		top: 186px;
+		left: -393px;
+		z-index: 9999;
+	}
+	#slottheme { width: 54px; height: 54px; margin-left: 23px; margin-top: 29px; }
+	#giveawayDrop { width: 54px; height: 54px; margin-left: 23px; margin-top: 29px; }
+	.themedropspotfilled { width: 54px; height: 54px; margin-left: 23px; margin-top: 29px; background: url(http://<cms::var type="global" name="imgserver">/img/toys/themedropper_filled.gif); }
+	#inspector { width: 360px; float: right; margin-top: 10px; margin-bottom: 20px; }
+	#inspectortop { width: 360px; height: 145px; background: url(http://<cms::var type="global" name="imgserver">/img/toys/inspector_top.gif) no-repeat; }
+	#inspectordropper { width: 108px; height: 108px; float: left; margin-left: 5px; margin-top: 5px;}
+	.id_empty { background: url(http://<cms::var type="global" name="imgserver">/img/toys/inspector_dropper_empty.gif) no-repeat;  }
+	.id_filled { background: url(http://<cms::var type="global" name="imgserver">/img/toys/inspector_dropper_filled.gif) no-repeat; }
+	#inspectordropper img {
+		margin: 8px;
+	}
+
+
+	#inspectorinfobox { width: 238px; height: 108px; background: url(http://<cms::var type="global" name="imgserver">/img/toys/inspector_infobox.gif) no-repeat; float: left; margin-left: 2px; margin-top: 5px;}
+	#itemInfo { 
+		padding: 10px; 
+		width: 238px;
+	}
+
+	#inspectorbottom { 
+		width: 360px; 
+		height: 62px; 
+		background: url(http://<cms::var type="global" name="imgserver">/img/toys/inspector_bottom.gif) no-repeat; 
+	}
+
+	#inventory { line-height: 1px; width: 360px; }
+	.tile { width: 60px; height: 60px; background: url(http://<cms::var type="global" name="imgserver">/img/toys/inventory_tile.gif); float: left; }
+	.tile img { margin: 5px; border: none; width: 50px; height: 50px; }
+	#inspectorbuttons { text-align: right; margin-right: 7px; margin-top: 2px; }
+	#inspectorbuttons a { 
+		display: none;
+	}
+
+
+	.themeitem { margin-top: 2px; margin-left: 2px; }
+	.inspectoritem { margin-top: 4px; margin-left: 4px; }
+	#toybox { 
+		position: relative;
+		left: 20px;
+		top: -20px;
+		width: 900px;
+		height: 130px; 
+		background: url(http://<cms::var type="global" name="imgserver">/img/toybox-dropper.gif);  
+	}
+	.dashtoyslot { 
+		width: 100px; 
+		height: 100px; 
+		float: left;  
+	}
+	.first { 
+		margin-left: 100px; 
+	}
+	.dashtoyslot img { margin: 25px; }
+</style>
+<!--[if IE]>
+<script>
+function handleEnableItem(response) {
+	var items = response.getElementsById('item');
+	for (var i=0;i<items.length;i++) {
+		var item = items[i];
+		var id = item.getAttribute('id');
+		var enabled = item.getAttribute('enabled');
+
+		if (enabled == 1) {
+			document.getElementById('item'+id).style.borderColor = 'red';
+		} else {
+			document.getElementById('item'+id).style.borderColor = 'blue';
+		}
+	}
+	document.getElementById('itemInfo').innerHTML = 'Click an item to view more information.';
+}
+</script>
+<![endif]-->
+<script language='javascript' src='http://<cms::var type="global" name="imgserver">/js/itemFunctions.js'></script>
+<script language='javascript'>
+
+function bgover(ele) {
+	ele.style.backgroundImage='url("http://<cms::var type="global" name="imgserver">/img/toys/inventory_tile_hover.gif")';
+}
+function bgout(ele) {
+	ele.style.backgroundImage='url("http://<cms::var type="global" name="imgserver">/img/toys/inventory_tile.gif")';
+}
+
+function saveYouTube() {
+	var url = $('youtubeURL').value;
+	if (!url.length) {
+		$('inputspan').innerHTML = "<font color='red'>You need to enter a URL!</font>";
+		return false;
+	}
+	var p1 = url.split('&');
+	var p2 = p1[0].split('=');
+	document.location.href="/items/create.csm/api?type=youtube&id="+p2[1];
+}
+function addYouTube() {
+	var c= new Array();
+	c.push('<span id="inputspan"></span>');
+	c.push('Enter the URL of your YouTube video page (i.e. http://www.youtube.com/watch?v=rIeVe3uiYek):<br/>');
+	c.push('<input class="hundred" id="youtubeURL">');
+	c.push('<a href="#" class="funbutton" style="-moz-border-radius:20px;" onclick="saveYouTube(); return false;">Create!</a>');
+	InfoBox.draw(c.join(''),'New YouTube Toy');
+}
+
+</script>
+
+<div id="inventoryPage">
+<div id="toyboxWrapper">
+	<div id="toybox" class="toyboxdropper">
+		<cms::fancylist over="dashboardItems">
+		<div id="slot<cms::var type="iter" name="position">" class="dashtoyslot <cms::if type="iter" name="position" equals="1"> first</cms::if>">
+			<cms::ifnot type="item" name="noitem" equals="1"><img width="50" height="50" id='slotimg<cms::var type="item" name="id">' src="http://<cms::var type="global" name="imgserver">/img/items/<cms::var type="item" name="type">/<cms::if type="item" name="type" equals="system"><cms::var type="item" name="name"></cms::if><cms::if type="item" name="type" equals="user"><cms::var type="item" name="id"></cms::if>.gif"></cms::ifnot>
+		</div>
+		<cms::if type="page" name="myprofile">
+		<script>new Draggable("slotimg<cms::var type="item" name="id">",{revert:true});</script>
+		</cms::if>
+		</cms::fancylist>
+		<br clear="all" />
+	</div>
+</div>
+
+<script>
+<cms::if type="page" name="myprofile">
+for (var i=1;i<8;i++) {
+	Droppables.add('slot'+i,{
+		onDrop: function(element,dropper) {
+			dropper.innerHTML = '';
+			var id = element.id.substring(4);
+			if (id.indexOf('img') == 0) {
+				id = id.substring(3);
+			}
+			var img = document.getElementById('itemimg'+id).cloneNode(true);
+			img.id=dropper.id+'_img';
+			dropper.appendChild(img);
+			// alert('dropped item '+id+' on slot '+dropper.id.substring(4));
+			new Ajax.Request('/api',{
+				method: 'get',
+				parameters:'method=item.dashboardPosition&position='+dropper.id.substring(4)+'&itemId='+id,
+				onComplete:function(){return true;}
+			});
+		}
+	});
+}
+</cms::if>
+</script>
+
+<div id="inspector">
+	<div id="inspectortop">
+		<div id="inspectordropper" class="id_empty">
+		</div>
+<script>
+Droppables.add('inspectordropper',{
+	onDrop: function(element,dropper) {
+		var id = element.id.substring(4);
+		if (id.indexOf('img') == 0) {
+			id = id.substring(3);
+			$('storebutton').style.display='inline';
+			$('storebutton').onclick = function(e){storeItem(id);return false;};
+		}
+
+		var imgsrc = document.getElementById('itemimg'+id).src;
+		var img = '<img src="'+imgsrc+'" width="90" height="90"/>';
+		$('inspectordropper').innerHTML = img;
+		$('inspectordropper').style.className = 'id_filled';
+		$('itemInfo').innerHTML = '';
+		$('editbutton').style.display='none';
+		$('clonebutton').style.display='none';
+		$('trashbutton').style.display='none';
+		$('pocketbutton').style.display='none';
+
+		var ownerid = document.getElementById('owner'+id).value;
+		getItemInfo(ownerid,id);
+		dropper.className = 'id_filled';
+	}
+});
+</script>
+		<div id="inspectorinfobox">
+			<div id="itemInfo">
+			</div>
+		</div>
+				<br clear="all" />
+		<div id="inspectorbuttons">
+				<A id="editbutton" href="#" title="Edit"><img src="http://<cms::var type="global" name="imgserver">/img/toys/inspector_editbutton.gif" alt="Edit" border="0"></a>
+				<A id="pocketbutton" href="#" title="Pocket"><img src="http://<cms::var type="global" name="imgserver">/img/toys/inspector_pocketbutton.gif" alt="Pocket" border="0"></a>
+				<A id="storebutton" href="#" title="Pocket"><img src="http://<cms::var type="global" name="imgserver">/img/toys/inspector_hidebutton.gif" alt="Store" border="0"></a>
+				<A id="clonebutton" href="#" title="Clone"><img src="http://<cms::var type="global" name="imgserver">/img/toys/inspector_clonebutton.gif" alt="Clone" border="0"></a>
+				<A id="trashbutton" href="#" title="Trash"><img src="http://<cms::var type="global" name="imgserver">/img/toys/inspector_trashbutton.gif" alt="Trash" border="0"></a>
+				<A id="purchasebutton" href="#" title="Trash"><img src="http://<cms::var type="global" name="imgserver">/img/toys/inspector_snagbutton.gif" alt="Purchase" border="0"></a>
+		</div>
+
+	</div>
+	<div id="inventory">
+		<cms::fancylist over="itemlist"><div id="item<cms::var type="item" name="id">" class="tile" onmouseover='bgover(this);' onmouseout='bgout(this);'><a id='itemlink<cms::var type="item" name="id">' href='#' onmouseover='bgover(this.parentNode);' onmouseout='bgout(this.parentNode);'><img id='itemimg<cms::var type="item" name="id">' src="http://<cms::var type="global" name="imgserver">/img/items/<cms::var type="item" name="type">/<cms::if type="item" name="type" equals="system"><cms::var type="item" name="name"></cms::if><cms::if type="item" name="type" equals="user"><cms::var type="item" name="id"></cms::if>.gif<cms::if type="item" name="new">?t=<cms::var type="item" name="new"></cms::if>"></a></div></cms::fancylist><cms::fancylist over="blanks"><div class="tile blank"></div></cms::fancylist>
+	</div>
+	<br clear="all" />
+	<form id="inventoryForm">
+		<cms::fancylist over="itemlist">
+			<input type="hidden" id="owner<cms::var type="item" name="id">" value="<cms::var type="item" name="ownerId">"/>
+			<script>new Draggable("item<cms::var type="item" name="id">",{revert:true});</script>
+		</cms::fancylist>
+	</form>
+	<div id="inspectorbottom">
+	</div>
+</div>
+<div id="blank" class="new blank tile" style="display:none;"></div>
+
+<div id="themedropper">
+	<div id="slottheme" class="themedropspotfilled">
+		<cms::if type="themeItem" name="id" nest><img style="padding:2px;" id="slotimgtheme" src="http://<cms::var type="global" name="imgserver">/img/items/<cms::var type="themeItem" name="type">/<cms::if type="themeItem" name="type" equals="system"><cms::var type="themeItem" name="name"></cms::if><cms::if type="themeItem" name="type" equals="user"><cms::var type="themeItem" name="id"></cms::if>.gif"></cms::if type="themeItem" name="id">
+	</div>
+
+	<cms::if type="page" name="myprofile" nest>
+	<div id="givePipe">
+		<img src="http://<cms::var type="global" name="imgserver">/img/toys/itemPipeHorizontal.gif"/>
+	</div>
+	<br clear="right"/>
+	<div id="givedropper">
+		<div id="giveawayDrop"></div>
+	</div>
+	<div id="giveawayInfo" style="width:200px;position:absolute;left:-200px;top:125px;display:none;z-index:9999; background: #FFF; padding: 5px;">
+		Give a toy to someone.  <br/>Toys are better than e-cards!
+		<br clear="all"/>
+		<div id="giveawayFinder">
+			<form method="get" id="giveawayform">
+			<input type="hidden" name="giveawayItemId" id="giveawayItemId">
+			<input autocomplete="off" type="text" name="query" id="giveawayname" value="handle or email" onClick="if(this.value=='handle or email') {this.value='';}" style="width:150px; border: outset 1px #FC9;">
+			<div id="giveawayname-popup" class="autocomplete" style="z-index:9999;margin-left:5px;"><span></span></div>
+			<script type="text/javascript">
+			if (!ie)
+				autocomplete('giveawayname','giveawayname-popup','/api?method=autocomplete.handle&name=giveawayname-popup','');
+			</script>
+			</form>
+			<div><script>makeButton('blue','Give the toy!','#','onclick="giveawayItem();return false;"');</script></div>
+		</div>
+	</div>
+	</cms::if type="page" name="myprofile">
+
+<div id="pluginShower" style="display:none;width:330px;border:1px solid green;margin-left:-230px;">
+	<div id="panel" style="position:relative;left:315px;z-index:9999;">
+		<a  href="#" onclick="Effect.BlindUp('pluginShower');$('pluginContent').innerHTML='';return false;">
+			<img style="border:none;" src="http://<cms::var type="global" name="imgserver">/img/delete_tag.gif"/>
+		</a>
+	</div>
+	<div id="pluginContent">
+	</div>
+</div>
+
+</div>
+
+
+<cms::if type="page" name="myprofile">
+<script type="text/javascript">
+Droppables.add('giveawayDrop',{
+	onHover: function() {  },
+	onDrop: function(element,dropper) {
+		var id = element.id.substring(4);
+		var src = document.getElementById('itemimg'+id).src;
+		dropper.innerHTML = '';
+		var img = document.getElementById('itemimg'+id).cloneNode(true);
+		img.id = 'slottheme_img';
+		dropper.appendChild(img);
+
+		$('giveawayItemId').value = id;
+		$('giveawayInfo').style.display='block';
+	}
+});
+
+Droppables.add('slottheme',{
+	onDrop: function(element,dropper) {
+		var id = element.id.substring(4);
+		var src = document.getElementById('itemimg'+id).src;
+		if (src.indexOf('theme.gif') > -1 && src.indexOf('/system/') > -1) {
+			dropper.innerHTML = '';
+			var img = document.getElementById('itemimg'+id).cloneNode(true);
+			img.id = 'slottheme_img';
+			dropper.appendChild(img);
+			new Ajax.Request('/api',{
+				method:'get',
+				parameters:'method=item.dashboardPosition&position=theme&itemId='+id,
+				onComplete:function(){return true;}
+			});
+		} else {
+			alert("This toy isn't a theme!");
+			return false;
+		}
+	}
+});
+
+</script>
+</cms::if>
+			
+<p style="margin-top: 0px; margin-bottom: 20px; ">&nbsp;</p>
+<h2 style="margin-left: 10px;"><cms::var type="profile" name="handle">'s Inventory</h2>
+<P style="margin-left: 10px;">Drag and drop toys from the inventory to the right onto the
+drop spot to more details.</p>
+
+<h2 style="margin-left: 10px;">&#187; <a href="/toys/create.csm">Create a New Toy</a></h2>
+<h2 style="margin-left: 10px;">&#187; <a href="/toys/store.csm">Snag Cool Toys from our Store</a></h2>
+<h2 style="margin-left: 10px;">&#187; <a href="/about/help/index.pl?topic=toys">Watch our Training Videos</a</h2>
+<br clear="all" />
+
+<script type="text/javascript">
+<!--
+<cms::fancylist over="itemBehaviors">
+Profile.setBehavior(<cms::var type="item" name="id">,'<cms::var type="item" name="behavior">');
+</cms::fancylist>
+//-->
+</script>
+</div>

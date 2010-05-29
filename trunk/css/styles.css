@@ -1,0 +1,308 @@
+body { padding: 10px;  font-family: trebuchet ms;}
+
+a {  text-decoration: none;}
+
+#userbar { background: #666; padding: 10px; }
+#overheard { background: #CCC; padding: 10px; }
+
+#tabs { background: #F0F0F0; padding: 10px;  }
+#tabs a { font-size: 18px; padding: 5px;}
+#tabs ul { margin: 0px; padding: 0px; }
+#tabs li {float:left; list-style-type:none; margin-left: 10px; text-align: center; }
+#tabs .currentTab { background: #666; color: #FFF; -moz-border-radius: 5px;}
+#tabs .currentTab:hover { background: #666; color: #FFF; }
+#finder { float: left; margin-left: 20px; }
+#main { background: #FFF; padding: 10px;}
+
+
+
+#main { font-size: 12px; }
+#main #dashboard { }
+#main #dashboard #welcome { background: #FFFF99; padding: 10px;}
+#main #dashboard #featuredContent { width: 500px;  float: left; }
+#main #dashboard .post { padding: 10px; border: 1px dashed #333; margin-bottom: 20px; }
+#main #dashboard .post .userpic { width: 60px; float: left; }
+#main #dashboard .post .content {  }
+#main #dashboard .post .meta { background: #F0F0F0; }
+#main #dashboard .post .actions { background: #CCC; margin-top: 10px;} 
+#main #dashboard #extras #mytags .tag { overflow: hidden; white-space:nowrap;  }
+#main #dashboard #extras #mytags .even { background: #F0F0F0; }
+#main #dashboard #extras #mytags .odd { background: #FFF; }
+
+#main #dashboard #extras #meetings ul {  margin: 0px; padding: 0px; }
+#main #dashboard #extras #meetings li {  list-style-type:none; }
+#main #dashboard #extras #meetings .even { background: #F0F0F0; }
+#main #dashboard #extras #meetings .odd { background: #FFF; }
+
+
+#main #extras { width: 300px; margin-left: 20px; float: left;}
+#main #extras .pod { margin-bottom: 10px; border-bottom: dashed #333 3px; padding-bottom: 10px;}
+#main .large { font-size: 18px; }
+#main .medium { font-size: 14px; }
+#main .small { font-size: 11px; }
+
+
+
+
+
+#main #peeps-classic { }
+#main #peeps-classic #onlinenow { width: 300px; float: left; margin-right: 20px; border: 1px solid #333;}
+#main #peeps-classic #updates { width: 500px; float: left; }
+#main #peeps-classic #updates .update { margin-bottom: 20px; border: 1px dashed #333; padding: 10px;} 
+#main #peeps-classic #updates .update .userinfo { margin-bottom: 10px;}
+#main #peeps-classic #updates .update .userinfo .userpic { width: 100px; height: 100px; float: left; margin-right: 10px; border: 1px solid #666; }
+#main #peeps-classic #updates .post {  padding: 10px; border: 1px dashed #CCC; margin-bottom: 20px; }
+#main #peeps-classic #updates .post .actions { background: #CCC; margin-top: 10px; }
+#main #peeps-classic #updates .post .meta { background: #F0F0F0; }
+#main #peeps-classic #updates .update .tags { background: #CCC; }
+
+
+#main #conversationmanager { } 
+#main #conversationmanager #conversations { float: left; width: 500px; }
+#main #conversationmanager #conversations .topic { margin-bottom:10px; border: 1px #CCC solid; padding: 10px; background: #F0F0F0; }
+#main #conversationmanager #conversations .topic .userpic { width: 60px; float: left; }
+#main #conversationmanager #conversations .topic .content { }
+#main #conversationmanager #conversations .topic .content .headline {  font-size: 18px; }
+#main #conversationmanager #conversations .topic .content .meta {  background: #FFFF99 repeat-x url(/img/yellowfade.gif); border: 1px #FF9966 solid;  color: #999; padding: 10px; margin-top: 5px; text-align: center; }
+#main #conversationmanager #conversations .topic .content .expired { border:1px solid #CCC; width:233px;text-align:center; } 
+#main #conversationmanager #conversations .topic .content .comments { margin-top: 10px; }
+#main #conversationmanager #conversations .topic .content .comments .headline {  font-size: 14px; }
+#main #conversationmanager #conversations .topic .content .actions { margin-top: 10px; }
+#main #conversationmanager #conversations .topic .content .actions a {  border: 1px solid #CCC; border-bottom: 0px; padding: 5px; display: block; float: left; margin-right: 5px;}
+#main #conversationmanager #conversations .topic .content .actions a:hover{ background: #FFFF99;  text-decoration: none; display: block; float: left; margin-right: 5px;}
+
+#main #conversationmanager #extras #channels { border: 1px solid #CCC; background: #F0F0F0; }
+#main #conversationmanager #extras #channels .channel { border-left: 10px solid #333; background: #F0F0F0; padding: 5px; border-right: 10px solid #333; }
+#main #conversationmanager #extras #channels .currentchannel { background: #333; color: #F0F0F0; }
+#main #conversationmanager #extras #channels .currentchannel a { color: #F0F0F0; }
+#main #conversationmanager #extras #channels #search { padding: 10px;}
+
+#main #conversationmanager #extras #hottopics .odd,#main #conversationmanager #extras #newtopics .odd,#main #conversationmanager #extras #peepstopics .odd   { background: #FFF; }
+#main #conversationmanager #extras #hottopics .even,#main #conversationmanager #extras #newtopics .even,#main #conversationmanager #extras #peepstopics .even   { background: #F0F0F0; }
+
+#main #conversationmanager #hottopics { width: 500px; float: left; }
+#main #conversationmanager #hottopics .topic { padding: 10px; }
+#main #conversationmanager #hottopics .topic .userpic { width: 60px; float: left; }
+
+#main #conversationmanager #extras #hottopics { width: 300px; float: none; }
+#main #conversationmanager #extras .topic { padding: 5px; }
+
+#main #conversationmanager #extras #peepstopics .topic .userpic { width: 60px; float: left; }
+#main #conversationmanager #extras #peepstopics .topic .content { }
+#main #conversationmanager #extras #peepstopics .topic .meta { font-color: #CCC; }
+
+#main #conversationmanager #extras #newtopics .topic .userpic { width: 60px; float: left; }
+#main #conversationmanager #extras #newtopics .topic .content { }
+#main #conversationmanager #extras #newtopics .topic .meta { font-color: #CCC; }
+
+#main #conversationmanager #channel { width: 500px; float: left; }
+#main #conversationmanager #channel #promo {  margin-bottom: 20px; }
+
+
+
+#main #conversationmanager #channel .topic { padding: 10px; border: 1px dashed #333; margin-bottom: 20px; }
+#main #conversationmanager #channel .topic .userpic { width: 60px; float: left; }
+#main #conversationmanager #channel .topic .content { }
+#main #conversationmanager #channel .topic .content .headline { font-size: 18px;}
+#main #conversationmanager #channel .topic .meta {  background: #F0F0F0;}
+#main #conversationmanager #channel .topic .actions { background: #CCC; margin-top: 10px; }
+#main #conversationmanager #channel #pages { }
+#main #conversationmanager #channel #pages .page { border: 1px #666 solid; font-weight: bold; padding: 5px;  }
+#main #conversationmanager #channel #pages .currentpage { background: #CCC; }
+
+#main #conversationmanager #searchresults { width: 500px; float: left; }
+#main #conversationmanager #search { background: #FFFF99 repeat-x url(/img/yellowfade.gif); border: 1px #FF9966 solid; padding: 10px; text-align: center; margin-bottom: 20px; }
+
+#main #conversationmanager #searchresults .topic { padding: 10px; border: 1px dashed #333; margin-bottom: 20px; }
+#main #conversationmanager #searchresults .topic .userpic { width: 60px; float: left; }
+#main #conversationmanager #searchresults .topic .content { }
+#main #conversationmanager #searchresults .topic .response { margin-left: 10px; border-left: #CCC 1px solid; padding-left: 10px; } 
+#main #conversationmanager #searchresults .topic .response .highlight { font-weight: bold; color: #F00; }
+
+
+#main #contests {}
+#main #contests #currentphotocontest { background: #F0F0F0; border: 1px solid #CCC; padding: 10px; text-align: center; }
+#main #contests #currentphotocontest img { border: 1px solid #FFF; margin-left; 6px; margin-right: 6px; }
+#main #contests #questions { width: 500px; float: left; }
+#main #contests #questions .question { margin-bottom: 20px; }
+#main #contests #questions .question .meta { margin-top: 5px; background: #F0F0F0; border: 1px solid #E0E0E0; padding: 3px; }
+
+#main #contests #questionlist { width: 500px; border: 1px solid #CCC; padding: 10px; float: left;}
+#main #contests #photolist { width: 500px; border: 1px solid #CCC; padding: 10px; float: left; }
+#main #contests #photolist .contest { margin-bottom: 20px; }
+#main #contests #photolist .contest .even { background: #F0F0F0; }
+#main #contests #photolist .contest .odd { background: #FFF; }
+#main #contests #photolist .contest .winner { float: left; margin-right: 15px; }
+#main #contests #photolist .contest .winner img { border: 1px solid #333; }
+
+#main #contests #myentry { width: 500px; float: left; }
+#main #contests #themeinfo .entry { padding: 10px; float: left;}
+#main #contests #entries { }
+#main #contests #entries .entry { padding:10px; float:left; }
+
+
+#photopicker { }
+#photopicker #uploader { }
+#photopicker #uploader #myphoto { text-align: center; }
+
+
+#main #meetings .meeting { padding: 10px; }
+#main #meetings .meeting img { float:left;height:50px;width:50px; margin-right: 10px; margin-bottom: 10px; }
+#main #meetings .meeting .odd { background: #FFF; }
+#main #meetings .meeting .even { background: #F0F0F0; }
+#main #meetings #editform { width: 700px; }
+#main #meetings #leftform {     width: 330px; font-weight: bold; color: #1E3C5E; float: left; }
+#main #meetings #rightform {     width: 331px; font-weight: bold; color: #1E3C5E; float: right; }
+
+#main #meetings #editform select { margin-right: 10px; }
+#main #meetings #editform  .io_inactive { border: 1px solid #FF9966; background: #F0F0F0; }
+#main #meetings #editform  .io_active { border: 1px solid #FF9966; background: #FFFF99; }
+#main #meetings #editform .io_disabled { border: 1px solid #666; background: #CCCCCC; }
+#main #meetings #editform .formfield { margin-bottom: 10px; }
+
+#main #meetings #meeting { width: 500px; float: left; }
+#main #meetings #meeting #info {         font-size: 18px; padding: 5px; }
+
+#main #meetings #meeting #topicNav { background:  #F0F0F0; border-bottom: 1px solid #CCC; padding: 5px;}
+
+#main #meetings #meeting #topicNavBottom {  background: #F0F0F0 bottom; border-top: 1px solid #CCC; padding: 5px; }
+
+#main #meetings #meeting #topicNav { }
+
+#main #meetings #meeting #topicNav .page,#main #meetings #meeting #topicNavBottom .page { border: 1px #666 solid; font-weight: bold; padding: 5px; width: 25px;         cursor: pointer; float: left; margin-right: 5px;}
+#main #meetings #meeting #topicNav .currentpage,#main #meetings #meeting #topicNavBottom .currentpage { background: #CCC; width: 25px;         cursor: pointer; float: left; margin-right: 5px;}
+
+#main #meetings #meeting #noResponses { padding: 10px; }
+
+#main #meetings #meeting #responsewait { display: none; padding: 10px; text-align: center; }
+#main #meetings #meeting #responsearea { padding: 10px; }
+#main #meetings #meeting #responsearea #topicResponse { width: 100%; height: 100px; }
+#main #meetings #meeting #responsesArea .responseEven {         background: #ECF2FE; padding: 4px; }
+#main #meetings #meeting #responsesArea .responseOdd {     background: #FCFCFC; padding: 4px; }
+
+#main #meetings #extras #details { border: 1px solid #CCC; background: #F0F0F0; padding: 10px; }
+#main #meetings #extras #details td.eventlabel { padding: 5px; font-size: 18px; color: #369; border-bottom: 1px solid #CCC;}
+#main #meetings #extras #details td.info { border-bottom: 1px solid #CCC; }
+#main #meetings #extras #details #editlink {  padding: 5px; background: #FFFF99; text-align: center; } 
+#main #meetings #extras #coming,#main #meetings #extras #notcoming,#main #meetings #extras #watched,#main #meetings #extras #notwatched { margin-bottom: 10px; }
+#main #meetings #attendeeListHolder { padding: 5px;}
+#main #meetings #attendeeListHolder a { float: left; }
+
+
+#main #finder {}
+#main #finder #search { background: #FFFF99 url(/img/yellowfade.gif) repeat-x; border: 1px solid #FF9966; margin-bottom: 20px; }
+#main #finder #tagquery { font-size: 24px; padding: 10px; height: 50px; border: inset 1px #F96; width: 100%; margin-bottom: 10px; }
+#main #finder #recentpublictags {  }
+#main #finder #left { width: 500px; float: left; }
+
+#main #finder    .result {
+        padding: 6px;
+        margin: 0px;
+        float: left;
+        background: #F0F0F0;
+    }
+#main #finder      .resulthot  { background: #ffe6e6; }
+.#main #finder  resultlocal{ background: #e6f5f0; }
+#main #finder  .resultnew  { background: #d6e0eb; }
+
+#main #finder  .big { background: #F0F0F0; }
+#main #finder  .bighot     { background: #FFE6E6; }
+#main #finder  .biglocal   { background: #E6F5F0; }
+#main #finder  .bignew     { background: #D6E0EB; }
+
+
+    #main #finder #bigmatch {
+        float: left;
+        width: 252px;
+        height: 336px;
+    }
+    #main #finder #bigmatchIMG {
+        width: 200px;
+        height: 200px;
+        margin-bottom: 10px;
+        overflow: hidden;
+        border: 3px solid #666;
+    }
+    #main #finder #bigmatch div {
+        text-align: center;
+        line-height: 18px;
+    }
+
+#main #finder #browsecontrol { background: #F0F0F0; border: 1px solid #CCC; }
+#main #finder #tagsbox { }
+#main #finder #tagsbox #availabletags { }
+
+
+   .csmSelect {
+        width: 100px;
+        display: none;
+        border: 1px #666 solid;
+        position: absolute;
+        z-index: 99999;
+    }
+   .csmOption {
+        height: 15px;
+        padding: 5px;
+        background: #FFF;
+        border-bottom: #CCC dashed 1px;
+        font-size: 14px;
+        color: #369;
+        text-align: left;
+        font-weight: bold;}
+
+    .csmOption_hover {
+        height: 15px;
+        padding: 5px;
+        background: #FF9;
+        border-bottom: #CCC dashed 1px;
+        font-size: 14px;
+        color: #369;
+        text-align: left;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .csmCurrent {
+        height: 15px;
+        border: 1px #666 solid;
+        padding: 5px;
+        width: 90px;
+        background: #FF9;
+        font-size: 14px;
+        position: relative;
+        color: #369;
+        text-align: left;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+        .card { border: solid #666 1px; width: 110px; height: 145px; text-align: center; float: left;  font-size: 11px;  margin-right: 20px; margin-bottom: 20px; padding-top: 5px; background: #FFF; -moz-opacity:1;  display: block; z-index: 0;}
+	
+
+#main #errorHolder { display: none; background: #FFFF99; padding: 10px;}
+
+
+
+#main #inbox     #messagecount { float: left; width: 180px; margin-left: 20px;}
+    #main #inbox #messagebox { width: 500px; float: left; padding: 0px; margin: 0px;}
+
+
+
+#main #qow { }
+#main #qow .lastmessage {display: none; background: #FFFF99;  padding: 10px; }
+#main #qow .qow_response { border: 1px solid #CCC; }
+#main #qow .qow_response .qow_profile { float: left; width: 150px; }
+#main #qow .qow_response .qow_responsetext { }
+#main #qow .qow_response .qow_responsetext .qow_answerBar { background: #CCC; }
+
+#main #qow #respondbox { }
+#main #qow #respondheader { }
+#main #qow #respondbox textarea { width: 100%; height: 200px; }
+   #respondbox #text { display: block;}
+    #respondbox #videoPicker { display: none; }
+    #respondbox #photoPicker { display: none;}
+    #respondbox .tabs { text-align: left; }
+    #respondbox .tabs a { background: #336699; padding: 5px; padding-bottom: 2px; color: #FFF; }
+    #respondbox .tabs a.active { background: #666; }
+    #respondbox .tabs a:hover { background: #0A6; }
+

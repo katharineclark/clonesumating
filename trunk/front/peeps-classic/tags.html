@@ -1,0 +1,200 @@
+<style>
+	.zeitgeisteven { font-size: 13px; background: #F0F0F0; padding: 3px;}
+	.zeitgeistodd { font-size: 13px; background: #FFF; padding: 3px;}
+	.tagperson { width: 60px; overflow: hidden; }
+	.tagperson img { border: 1px solid #369; }
+	.tagperson a { color: #FFF; }
+	.taginfo { width: 360px; overflow: hidden; }
+	.taginfo a { color: #FFF; }
+	.tagarrow { font-size: 30px; color: #369; }
+	.publictagrow { margin-bottom: 10px; }
+	.boxheader { background: #369; padding: 10px; text-align: center;}
+
+	.tagssmall { font-size: 9px;}
+	.tagmedium { font-size: 12px; }
+	.tagbig { font-size: 18px;}
+	.taghuge { font-size: 26px;}
+	.taggigantic { font-size: 32px; }
+
+
+	.odd { background: #F0F0F0; }
+	.even { background: #F0F0F0;}
+	.cardmini { background: #FFF; padding: 2px; border: 1px solid #666; width: 50px; height: 60px; float: left; margin-right: 10px;}
+	.update { margin-bottom: 20px; }
+    .timeframe { color: #FFF; }
+    .timeframe_hot { background: #FF9; color: #369; padding: 5px;}
+	.annotate { display: none; margin-top: 10px;}
+	.onlinenowodd { background: #FFF; }
+	.onlinenoweven { background: #ECF2FE; }
+	.bubble { position: absolute; left: 15; bottom: -11; width: 11px; height: 11px; background: url(/img/talkbubble-reverse.gif);}
+
+
+</style>
+
+
+<script src="http://<cms::var type="global" name="imgserver">/js/logic.view.js"></script>
+<script src="http://<cms::var type="global" name="imgserver">/js/csmSelect.js"></script>
+
+
+<script language='javascript'>
+//setTimeout('document.location.href=document.location.href',800);
+
+var mode1 = new Array('<img src="http://<cms::var type="global" name="imgserver">/img/peeps_select_hotlist.gif" height="28" width="150" border="0">','<img src="http://<cms::var type="global" name="imgserver">/img/peeps_select_ups.gif" height="28" width="150" border="0" alt="People I Up\'d">','<img src="http://<cms::var type="global" name="imgserver">/img/peeps_select_tagged.gif" height="28" width="150" border="0">','<img src="http://<cms::var type="global" name="imgserver">/img/peeps_select_everyone.gif" height="28" width="150" border="0">');
+var mode2 = new Array('hotlist','thumbs','tags','everyone');
+<cms::fancylist over="teamlist">
+	mode1.push('<img src="http://<cms::var type="global" name="imgserver">/img/teams/<cms::var type="team" name="id">.jpg" height="25" width="25" border="0"/><cms::var type="team" name="name">');
+	mode2.push('teammates_<cms::var type="team" name="id">');
+</cms::fancylist>
+
+var mode = new csmSelect('mode',mode1,mode2,'<cms::var type="page" name="mode">','document.getElementById("foo").submit();');
+var timeframe = new csmSelect('timeframe',['Today','The Last 24 Hours','The Last 72 Hours','<span class="normal">Since You Last Visited</span>'],['1 DAY','24 HOUR','3 DAY','lastView'],'<cms::var type="page" name="timeframe">','document.getElementById("foo").submit();');
+
+var date = new Date();//2005,11,20,23,23,23,444);
+setCookie('viewedUpdates',(1900+date.getYear())+'-'+(date.getMonth()+1)+'-'+date.getDate()+' '+date.getHours()+':'+date.getMinutes()+':'+date.getSeconds());
+
+var timeframetext = '<cms::var type="page" name="timeframe">';
+
+function tagBack(id,handle,linkhandle) {
+	var c = new Array();
+	c.push('<form id="tagForm" onSubmit="return addTagToProfile();">');
+	c.push('<a name="newtag">&nbsp;</a>New tag: <input autocomplete="off" name="tag" id="tag" class="hundred"> <input type="button" class="gobutton" style="width: 60px;" value="+ Add" onClick="return addTagToUser('+id+',\''+handle+'\',\''+linkhandle+'\');" />');
+	c.push('<div id="tag-popup" class="autocomplete"><span></span></div>');
+	c.push('<script type="text/javascript">');
+	c.push('autocomplete("tag","tag-popup","/api?method=autocomplete.tag&name=tag-popup");');
+	c.push('</sc'+'ript>');
+	c.push(' <br /> </form>');
+	InfoBox.draw(c.join('\n'),'Add a tag to '+handle);
+}
+</script>
+
+<cms::ifnot type="page" name="onlinenow" equals="0">
+	<cms::if type="page" name="onlinenow" nest>
+<h1 align="center"><span class="blue"><cms::var type="page" name="onlinenow"></span> of your peeps <cms::wc type="page" name="onlinenow" s="is" p="are"> online right now!</h1>
+	</cms::if type="page" name="onlinenow">
+</cms::ifnot>
+<cms::if type="page" name="onlinenow" equals="0">
+<h1 id="pagetitle">My Peeps</h1>
+</cms::if>
+<br clear="all" />
+<span class="small">Tag updates&nbsp;|&nbsp;<a href="/updates/?page=main">Main updates</a></span>
+
+<Br clear="all" />
+<div class="corners" style="border:#369 solid 1px; width: 200px; float: left;">
+	<div class="bluebackground" style="margin-bottom: 0px;width:200px;">
+		<div class="pad10" style="width:180; z-index:9999;">
+			<form method="get" action="<cms::var type="global" name="scriptName"><cms::var type="global" name="command">" id="foo">
+			<input name="mode" id="mode" type="hidden">
+			<input name="timeframe" id="timeframe" type="hidden">
+			<script>
+				mode.place();
+			</script>
+
+			<span class="small white"><input class="checkbox" type="checkbox" name="all" <cms::if type="form" name="all">checked</cms::if> value="1" onClick='document.getElementById("foo").submit();'> Show Offline Peeps Too!</span>
+			</form>
+		</div>
+	</div>
+	<cms::fancylist over="hotlist">
+	<div class="<cms::if type="profile" name="onlinenow">onlinenow</cms::if><cms::var type="list" name="evenodd">" style="width:200px;">
+		<table>
+		<TR>
+			<TD>
+				<a href="#<cms::var type="profile" name="strippedlinkhandle">"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="profile" name="userid">/50/<cms::var type="profile" name="photoId">.jpg" width="50" height="50" border="0"></a>
+			</td>
+			<TD valign="center">
+				<span class="normal"><a href="#<cms::var type="profile" name="strippedlinkhandle">"><cms::var type="profile" name="handle"></a></span><cms::ifnot type="profile" name="unread" equals="0"><span class="small">&nbsp;[<blink><a href="/profiles/<cms::var type="profile" name="linkhandle">/messages#recent">Msg</a></blink>]</span></cms::ifnot><br />
+				<span class="small">Online <cms::if type="profile" name="onlinenow"><b>now</b>!</cms::if><cms::ifnot type="profile" name="onlinenow"><cms::var type="profile" name="timesince"> ago.</cms::ifnot></span>
+				<cms::if type="profile" name="lastupdate"><br /><span class="small">Updated <cms::var type="profile" name="lastupdate"> ago.</span></cms::if>
+			</TD>
+		</tr>
+		</table>
+	</div>
+	</cms::fancylist>
+
+	<cms::if type="page" name="peoplecount" equals="0" nest>
+	<div class="pad10">
+		<P class="small"><B>You don't have any peeps yet!</b></p>
+		<p class="small">When you give someone a thumbs up or add them to your hot list, they'll show up right here!</p>
+	</div>
+	</cms::if type="page" name="peoplecount">
+
+	<cms::if type="user" name="id">
+	<div class="bluebackground" style="width:200px;overflow:hidden;">
+		<table>
+			<TR>
+				<TD>
+					<a href="#<cms::var type="user" name="linkhandle">"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="user" name="userid">/50/<cms::var type="user" name="photoId">.jpg" width="50" height="50" border="0"></a>
+				</td>
+				<TD valign="center">
+					<span class="normal"><a href="#<cms::var type="user" name="linkhandle">" class="white">My Updates</a></span><br />
+					<cms::if type="profile" name="lastupdate" nest><br /><span class="small">Updated <cms::var type="profile" name="lastupdate"> ago.</span></cms::if type="profile" name="lastupdate">
+				</TD>
+			</tr>
+		</table>
+	</div>
+	</cms::if>
+
+	<b class="round369 tl"></b>
+	<b class="round369 tr"></b>
+	<b class="round369 bl"></b>
+	<b class="round369 br"></b>
+</div>
+
+
+<div style="width: 480px; float: right;">
+	<div class="pad10" style="padding-top: 0px;">
+		<div class="corners greyborders bluebackground" style="width: 100%;">
+			<div class="pad10" style="text-align: center;">
+				<table cellpadding="0" cellspacing="0" border="0">
+				<Tr>
+				<TD class="white large" valign="middle">
+				Updates from&nbsp;
+				</td>
+				<Td valign="middle">
+				<script>
+					timeframe.place();
+				</script>
+				</td>
+				</tr>
+				</table>
+			</div>
+		<B class="round666 tl"></b>
+		<b class="round666 tr"></b>
+		<b class="round666 bl"></b>
+		<B class="round666 br"></b>
+		</div>
+	</div>
+    <div class="corners" style="border: #369 1px solid; background: #8AB4D1; line-height: 150%; width:480px;">
+        <div class="boxheader"><h2 class="subtitle white">Recent Public Tags</h2>
+        <span class="small white">You are a naughty, naughty voyeur.</span></div>
+        <div class="pad5" style="width:470px;overflow:hidden;">
+            <table border="0">
+                <cms::fancylist over="publictags">
+                    <tr class="publictagrow">
+                        <TD align="center" class="tagperson">
+                            <a href="/profiles/<cms::var type="taggee" name="linkhandle">"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="taggee" name="userid">/50/<cms::var type="taggee" name="photoId">.jpg" border="0"></a>
+                        </TD>
+                        <TD valign="top" align="center" class="taginfo">
+							&#171; <span class="small"><a href="/profiles/<cms::var type="taggee" name="linkhandle">"><cms::var type="taggee" name="handle"></a> was just tagged</span><br />
+                            <a href="/browse/<cms::var type="tag" name="value">" class="medium"><cms::var type="tag" name="short"></a><br />
+							<span class="small">by <a href="/profiles/<cms::var type="tagger" name="linkhandle">"><cms::var type="tagger" name="handle"></a></span> &#187;
+			
+                        </td>
+                        <td align="center" class="tagperson">
+                            <a href="/profiles/<cms::var type="tagger" name="linkhandle">"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="tagger" name="userid">/50/<cms::var type="tagger" name="photoId">.jpg" border="0"></a>
+                        </td>
+                    </tr>
+					<tr>	
+						<td class="small">&nbsp;</td>
+					</tr>
+                </cms::fancylist>
+            </table>
+        </div>
+        <b class="round369 tl"></b>
+        <b class="round369 tr"></b>
+        <b class="round369 bl"></b>
+        <b class="round369 br"></b>
+    </div>
+</div>
+
+
+

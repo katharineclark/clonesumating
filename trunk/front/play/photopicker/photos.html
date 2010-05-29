@@ -1,0 +1,34 @@
+<link rel="Stylesheet" href="http://<cms::var type="global" name="imgserver">/css/styles.css" type="text/css" >
+<body>
+	<div id="photopicker" class="photos">
+		<h2>Choose A Photo</h2>	
+		<div id="uploader">
+			<form method="post" action="/photos.pl/upload" enctype="multipart/form-data" id="uploadForm">
+				<input type="hidden" name="mode" value="minipicker">
+				Upload a new photo: <input type="file" name="photo"> 
+				<br clear="all"/>
+				<input type="submit" value="Upload">
+			</form> 
+		</div>
+
+		<P>...or click a photo to pick it for the contest...</p>
+
+		<cms::fancylist over="photos">
+
+			<a href="/photos.pl/picked?remind=1&mode=photocontest&id=<cms::var type="photo" name="id">"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="photo" name="userId">/50/<cms::var type="photo" name="id">.jpg" width="50" height="50" id="<cms::var type="photo" name="id">" border="0"></a>
+		</cms::fancylist>
+
+		<br clear="all" />
+
+		<cms::if type="page" name="less">
+			<div style="width: 40%; float: left;">
+				<A href="/photos.pl/minipicker?mode=photocontest&show=20&offset=<cms::var type="page" name="less">">&larr; Previous</a>
+			</div>
+		</cms::if>
+		<cms::if type="page" name="more">
+			<div style="Width: 40%; float: right;">
+				<A href="/photos.pl/minipicker?mode=photocontest&show=20&offset=<cms::var type="page" name="more">">More Pics &rarr;</a>
+			</div>
+		</cms::if>
+	</div>
+</body>

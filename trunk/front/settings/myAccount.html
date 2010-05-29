@@ -1,0 +1,27 @@
+<div class="ultrawide">
+<h1>Account Information</h1>
+
+<div style="float: right; padding-left: 20px;">
+<a href="/photos.pl"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="user" name="id">/large/<cms::var type="user" name="primaryPhoto">.jpg" border=0></a></div>
+
+<P>Hello <cms::var type="user" name="firstName"> <cms::var type="user" name="lastName">!</p>
+
+<P><a href="/myAccount.pl/update" class="action"><B>&#187; Your Account Info</b></a><BR>
+Change your password, location, or e-mail address.</p>
+
+<P><a href="/manageProfiles.pl" class="action"><B>&#187; Manage your profile</B></a><BR>
+<a href="/manageProfiles.pl/create">&#187; Create/edit your profile</A><BR />
+<cms::if type="user" name="linkhandle"><A href="/profiles/<cms::var type="user" name="linkhandle">">&#187; View your profile</A></cms::if>
+</p>
+
+<P><a href="/photos.pl" class="action"><B>&#187; Manage your photos</b></a><BR>
+Upload new photos, sort them, or delete them.</p>
+
+<P>You have been a member of this system since <cms::var type="user" name="createDate" date>.
+
+<P>You are more popular than <B><cms::var type="accountInfo" name="lesspopular"> people</b> and less popular than <B><cms::var type="accountInfo" name="morepopular"> people</b>.
+
+<P>You currently have <strong><cms::var type="user" name="points"> points</strong> left to use.</p>
+
+
+</div>

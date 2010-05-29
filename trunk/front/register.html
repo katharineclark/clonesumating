@@ -1,0 +1,202 @@
+<script src="http://<cms::var type="global" name="imgserver">/js/logic.register.js" language="JavaScript"></script>
+<style>
+	.label { text-align: right;  width: 200px; text-transform: none; vertical-align: top; color: #333333;}
+	.input { text-align: left; width: 300px;  vertical-align: top;}
+	.inset { margin-right: 10px; margin-bottom: 10px; }
+</style>
+
+<script>
+
+function locationToggle() {
+
+        var country = document.getElementById('country').options[ document.getElementById('country').selectedIndex].value;
+
+        if (country == "US") {
+                document.getElementById('trcity').style.display = '';
+                document.getElementById('trstate').style.display = '';
+                document.getElementById('trzip').style.display = '';
+                document.getElementById('trforeigncity').style.display = 'none';
+        } else {
+                document.getElementById('trcity').style.display = 'none';                
+			document.getElementById('trstate').style.display = 'none';                
+			document.getElementById('trzip').style.display = 'none';                
+			document.getElementById('trforeigncity').style.display = '';
+        }
+
+}
+
+function updateLookupBox() {
+	$('address').value = $('city').value+'\n';
+	if ($('country').value == 'US') {
+		$('address').value += $('state').value+'\n';
+		$('address').value += $('zipcode').value+'\n';
+	} else {
+		$('address').value = $('foreigncity').value+'\n';
+	}
+	$('address').value += $('country').value;
+
+	lookupAddress();
+}
+
+
+</script>
+
+<cms::if type="item" name="id" nest>
+<div id="item" style="float:right;">
+	<a href="/profiles/<cms::var type="item" name="linkhandle">"><cms::var type="item" name="handle"></a> wants you to have this:
+	<br/>
+	<center>
+	<img id='itemimg<cms::var type="item" name="id">' src="http://<cms::var type="global" name="imgserver">/img/items/<cms::var type="item" name="type">/<cms::if type="item" name="type" equals="system"><cms::var type="item" name="name"></cms::if><cms::if type="item" name="type" equals="user"><cms::var type="item" name="id"></cms::if>.gif"><br/>
+	<span class="small"><cms::var type="item" name="name">
+	<cms::if type="item" name="behavior" nest>
+	<br/>It has a <cms::var type="item" name="behavior"> attached!
+	</cms::if type="item" name="behavior">
+	</span>
+	</center>
+	<br/>
+	Finish your registration and it's all yours!
+</div>
+</cms::if type="item" name="id">
+<br clear="all"/>
+
+<form method="post" id="registerForm" action="/register.pl/create" onSubmit="if (validateForm()) { submitRequest('register.validate','registerForm','');} return false;"   ENCTYPE="multipart/form-data">
+
+<cms::if type="item" name="id">
+<input type="hidden" name="itemId" id="itemId" value="<cms::var type="item" name="id">"/>
+</cms::if>
+
+<font style="color:red;font-weight:bold;" id="errmsg"><cms::var type="global" name="errmsg"></font>
+
+<table cellspacing="5" style="margin-left: 40px;">
+	<tr>
+		<td colspan="2" align="center"><h2 class="subtitle">Let's Do It!  Join Right This Second!<BR />
+<span class="small"><a href="/login.pl">Already a member?  Log in here!</a></span></h2></td>
+	</tr>
+	<tr>
+		<td class="label" id="handleLabel">Nickname:<BR />
+			<span class="small">(This is what we'll call you on the site)</span>
+		</td>
+		<td class="input">
+			<input name="handle" id="handle" onBlur="if (this.value != '') {submitRequest('system.checkHandle','registerForm','');}" value="">
+		</td>
+	</tr>
+	<tr>
+		<td class="label" id="taglineLabel">
+			Witty One-Liner:<BR />
+			<span class="small">First impressions count!</span>
+		</td>
+		<td class="input"><input name="tagline" id="tagline" value="<cms::var type="form" name="tagline">"></td>
+	</tr>
+        <tr>
+                <td class="label">Relationship Status:</span></td>
+                <td class="input">
+                        <select name="relationshipStatus" id="relationshipStatus">
+                                <option value="1" <cms::if type="profile" name="relationshipStatus" equals="1">selected</cms::if>>Single</option>
+                                <option value="2" <cms::if type="profile" name="relationshipStatus" equals="2">selected</cms::if>>Open Relationship</option>
+                                <option value="3" <cms::if type="profile" name="relationshipStatus" equals="3">selected</cms::if>>Taken</option>
+                        </select>
+                </td>
+        </tr>
+	<tr>
+		<td class="label">Your Photo:</td>
+		<td class="input"><input name="photo" id="photo" type="file" class="browse"></td>
+	</tr>
+        <tr>
+                <td class="label">
+                        My Tags:<br />
+                        <span class="small">Tags are short descriptive words that tell the world about who you are and what you like.  Some examples are: <a href="/tags/blonde">blonde</a> <a href="/tags/glasses">glasses</a> <a href="/tags/indie">indie</a> <a href="/tags/zombies">zombies</a> <A href="/tags/books">books</a> <a href="/tags/austin">austin</a> <a href="/tags/california">california</a>.   We use tags to find people who are similar to you!  Get it?<br /><br /><b>Please put a space between each tag!</b>  If you forget something, don't worry!  You can add more tags later on your profile page with the New Tag box.</span></td>
+                <td class="input">
+                        <textarea name="do" wrap="virtual" id="do"></textarea>
+                        <cms::if type="page" name="tags">
+                                <br /><p><cms::var type="profile" name="handle"> has already tagged you <cms::var type="page" name="tags">.</p>
+				<br />
+                        </cms::if>                </td>
+        </tr>
+
+	<tr>
+		<td colspan="2">Don't worry!  We will not share your personal information with anyone.  We use your
+		zipcode to find people near to you, and your name is used only for personalizing the site.  We hate spam and marketing emails
+		just as much as you do.</td>
+	</tr>
+	<TR>
+		<TD class="label" id="firstNameLabel">Your First Name:</TD>
+		<TD class="input"><input id="firstName" name="firstName" value="<cms::var type="form" name="firstName">"></TD>
+	</TR>
+	<tr>
+		<td class="label" id="lastNameLabel">Your Last Name:</tD>
+		<td class="input"><input id="lastName" name="lastName" value="<cms::var type="form" name="lastName">"></td>
+	</tr>
+	<tr>
+		<td class="label">Your Birth Day:</td>
+		<td class="input"><select id="month" name="month"><cms::var type="login" name="monthSelect"></select>
+			<select id="day" name="day"><cms::var type="login" name="daySelect"></select>
+			<select id="year" name="year"><cms::var type="login" name="yearSelect"></select>
+		</td>
+	</tr>
+	<tr>
+		<td class="label" id="sexLabel">Sex:</td>
+		<td class="input"> <select name="sex" id="sex"> <option <cms::if type="form" name="sex" equals="">checked</cms::if> value="">Select One</option>
+			<option <cms::if type="form" name="sex" equals="F">checked</cms::if> value="F">Female</option>
+			<option <cms::if type="form" name="sex" equals="M">checked</cms::if> value="M">Male</option>
+			</select>
+		</td>
+	</tr>
+    <tr>
+                <td class="label">Country:</td>
+                <td class="input"><select name="country" id="country" onChange="locationToggle();updateLookupBox();">
+                        <cms::var type="login" name="countrySelect">
+                        </select>
+                </td>
+        </tr>
+        <tr id="trforeigncity" style="display: none;">
+                <td class="label">City / Province / Whatever:</td>
+                <td class="input"><input id="foreigncity" name="foreigncity" value="<cms::var type="form" name="foreigncity">" onchange="updateLookupBox();"></td>
+        </tr>
+        <tr id="trcity">
+                <td class="label" id="cityLabel">City:</td>
+                <td class="input"><input id="city" name="city" value="<cms::var type="form" name="city">" onchange="updateLookupBox();"></td>
+        </tr>
+        <tr id="trstate">
+                <td class="label" id="stateLabel">State:</td>
+                <td class="input"><input id="state" name="state" value="<cms::var type="form" name="state">" maxlength=2 style="text-transform: uppercase;" onchange="updateLookupBox();"></td>
+        </tr>
+        <tr id="trzip">
+                <td class="label" id="zipcodeLabel">Zipcode:</td>
+                <td class="input"><input id="zipcode" name="zipcode" value="<cms::var type="form" name="zipcode">" maxlength=5 style="text-transform: uppercase;" onchange="updateLookupBox();"></td>
+        </tr>
+	<tr>
+		<td class="label" id="usernameLabel">
+			Your email address:<br />
+			<span class="small">This will be used as your log-in to the site</span>
+		</td>
+		<td class="input">
+			<input id="username" name="username" value="<cms::var type="form" name="username">" onBlur="if (this.value!='') {submitRequest('system.checkEmail','registerForm','');}">
+		</td>
+	</tr>
+	<TR>
+		<td class="label" id="mailLabel">
+			Newsletters:
+		</td>
+		<TD class="input">
+				<input type="checkbox" class="checkbox" name="alerts" value="1" checked> Send me an e-mail whenever a new question or photo contest is posted.</input>
+				<br /><span class="small">(Monday and Friday)</span><Br />
+		</tD>
+	</TR>
+	<tr>
+		<td class="label" id="passwordLabel">Pick a password:</td>
+		<td class="input"><input id="password" name="password" type="password"></td>
+	</tr>
+	<TR>
+		<td class="label" id="tosLabel">I agree to the <A href="/faq.pl?topic=tos">Terms Of Service</a>.</td>
+		<td class="input"><input type="checkbox" id="tos" name="tos" value="1" class="checkbox"></td>
+	</tr>
+</table>
+
+<input type="submit" value="Join!">
+<br clear="all"/>
+
+</form>
+<script>
+load();
+document.body.onunload = function() { GUnload(); };
+</script>

@@ -1,0 +1,20 @@
+Your were just tagged <cms::var type="email" name="tags"> by your friend <cms::var type="user" name="firstName"> on Consumating.com!
+
+Join Consumating and send some tags back to <cms::var type="user" name="firstName">!
+ -> http://www.consumating.com/profiles/<cms::var type="user" name="linkhandle">/invite?v=<cms::var type="email" name="verification"><cms::if type="email" name="tagslink">&tags=<cms::var type="email" name="tagslink"></cms::if>
+
+See <cms::var type="user" name="firstName">'s profile:
+ -> http://www.consumating.com/profiles/<cms::var type="user" name="linkhandle">
+<cms::fancylist over="tags">
+See everyone tagged "<cms::var type="tag" name="value">":
+ -> http://www.consumating.com/tags/<cms::var type="tag" name="value">
+</cms::fancylist>
+On Consumating, people use tags to describe themselves and what they're
+interested in, and to find people who have the same kind of interests.
+
+When you join, you will automatically get a thumbs-up from your friend, 
+and they will be added to your hot list so that you can keep track of 
+what they do on Consumating.
+
+Love,
+Consumating

@@ -1,0 +1,337 @@
+<script language="javascript" src="http://update.videoegg.com/js/Player.js"></script>
+<script language="javascript" src="http://<cms::var type="global" name="imgserver">/js/videoEgg.js"></script>
+
+<script>
+
+
+function showPanel(id) {
+
+	document.getElementById('text').style.display='none';
+    document.getElementById('photoPicker').style.display='none';
+    document.getElementById('videoPicker').style.display='none';
+	document.getElementById(id).style.display='block';
+
+    document.getElementById('text_tab').className='';
+    document.getElementById('photoPicker_tab').className='';
+    document.getElementById('videoPicker_tab').className='';
+	document.getElementById(id + "_tab").className='active';
+
+	return false;
+}
+
+function adjustIFrameSize (iframeWindow) {
+	if (iframeWindow.document.height) {
+		var iframeElement = document.getElementById
+		(iframeWindow.name);
+		iframeElement.style.height = iframeWindow.document.height + 'px';
+		iframeElement.style.width = iframeWindow.document.width + 'px';
+	}
+	else if (document.all) {
+		var iframeElement = document.all[iframeWindow.name];
+		if (iframeWindow.document.compatMode &&
+		iframeWindow.document.compatMode != 'BackCompat') 
+		{
+			iframeElement.style.height = 
+			iframeWindow.document.documentElement.scrollHeight + 5 + 'px';
+			iframeElement.style.width = 
+			iframeWindow.document.documentElement.scrollWidth + 5 + 'px';
+		}
+		else {
+			iframeElement.style.height = 
+			iframeWindow.document.body.scrollHeight + 5 + 'px';
+			iframeElement.style.width = 
+			iframeWindow.document.body.scrollWidth + 5 + 'px';
+		}
+	}
+}
+
+if (document.all) {
+	document.write('<style>.qow_answerBar { width:100% }</style>');
+}
+
+function bling(id,type) {
+
+	url = "/qow.pl/bling?qr=" + id + "&t=" + type;
+	http.open("GET",url,true);
+	http.onreadystatechange= handleBling;
+	http.send(null);
+	bid = id;
+
+	if (type == "U") {
+		obj = document.getElementById('bling'+bid+"-up");
+		obj.src = "http://img.consumating.com/img/up-small-on.gif";
+		obj = document.getElementById('bling'+bid+"-down");
+		obj.src = "http://img.consumating.com/img/down-small.gif";
+	} else {
+		obj = document.getElementById('bling'+bid+"-down");
+		obj.src = "http://img.consumating.com/img/down-small-on.gif";
+		obj = document.getElementById('bling'+bid+"-up");
+		obj.src = "http://img.consumating.com/img/up-small.gif";
+	}
+
+
+	return false;
+
+}
+
+function handleBling() {
+	if (http.readyState == 4) {
+		resultsT = http.responseText;
+		var results = new Array();
+		results = resultsT.split(';');
+
+		if (results[0] == "U") {
+			obj = document.getElementById('bling'+bid+"-up");
+			obj.src = "http://img.consumating.com/img/up-small-on.gif";
+			obj = document.getElementById('bling'+bid+"-down");
+			obj.src = "http://img.consumating.com/img/down-small.gif";
+
+		} else {
+			obj = document.getElementById('bling'+bid+"-down");
+			obj.src = "http://img.consumating.com/img/down-small-on.gif";
+			obj = document.getElementById('bling'+bid+"-up");
+			obj.src = "http://img.consumating.com/img/up-small.gif";
+		}
+		bid ='';
+	}
+}
+
+var questionId = <cms::var type="question" name="id">;
+var newlastmessage = <cms::var type="page" name="lastmessage">;
+
+function setLastMessage(id) {
+	setCookie('lastMessage'+questionId,id);
+
+}
+
+function highlightLastMessage() {
+
+
+	var lastMessageId = getCookie('lastMessage'+questionId);
+	if (lastMessageId != '') {
+	if (newlastmessage==lastMessageId) {  return; }
+	var lastmessagebox = document.getElementById('lastmessage' + lastMessageId);
+	if (lastmessagebox) {	
+		lastmessagebox.innerHTML = "Hi there! The responses below this box<BR />were here the last time you visited.<BR />Just thought you'd like to know.";
+		lastmessagebox.style.display = 'block';
+	}
+
+	}
+
+}
+
+
+function validateAnswer() {
+
+	if (document.getElementById("answer").value == "") {
+		errorBox("Your answer is blank!  You've got to <i>say</i> something before posting.");
+		return false;
+	} else {
+		return true;
+	}
+
+
+}
+function expandPhoto(id,height) {
+	try {
+		var d = document.getElementById('qowPhoto'+id);
+		d.style.height=height+'px';
+	}catch(e){alert(e.message)}
+	return false;
+}
+function hoverlink(ele,on) {
+	if (on) {
+		ele.style.border="2px solid #369";
+	} else {
+		ele.style.border="2px solid #CCC";
+	}
+}
+
+function pickVideo(id,path) {
+	$('videoId').value = id;
+	$('videopublisher').style.display='none';
+	$('videopicked').style.display='inline';
+	$('videoPickedThumb').innerHTML = videoEgg.getThumb(path);
+}
+
+function pickerpage(offset) {
+	apiRequest('user.getVideos','offset='+offset,showPicker);
+}
+
+function showPicker(r) {
+	try {
+		$('pickerlist').innerHTML = r.responseText;
+		r = r.responseXML;
+		if (r.getElementsByTagName('less').length) {
+			var less = r.getElementsByTagName('less')[0].getAttribute('value');
+			$('lesslink').style.display='inline';
+			$('lessclicker').onclick = function(){pickerpage(less);return false;};
+		} else {
+			$('lesslink').style.display='none';
+		}
+		
+		if (r.getElementsByTagName('more').length) {
+			var more = r.getElementsByTagName('more')[0].getAttribute('value');
+			$('morelink').style.display='inline';
+			$('moreclicker').onclick = function(){pickerpage(more);return false;};
+		} else {
+			$('morelink').style.display='none';
+		}
+	} catch(e) { alert('error SPR1: '+e.message) }
+}
+
+</script>
+
+
+<div id="qow">
+
+		<h3>Question of the Week from <cms::var type="question" name="date" date>:</h3>
+	    <h1><cms::var type="question" name="question"></h1>
+		<cms::if type="question" name="suggestedBy">
+				<p class="small">This question was suggested By <a href="/profiles/<cms::var type="question" name="suggestedBylink">"><cms::var type="question" name="suggestedBy"></a>.</p>
+		</cms::if>
+
+<cms::ifloop type="responses">
+<cms::fancylist over="responses">
+
+	<div id="lastmessage<cms::var type="response" name="id">" class="lastmessage"></div>
+
+	<a name="<cms::var type="response" name="id">"></a>
+	<div class="qow_response">
+       		<div class="qow_profile"> 
+		<div class="card" id="<cms::var type="user" name="linkhandle">">
+               		<a href="/profiles/<cms::var type="user" name="linkhandle">"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="user" name="userId">/100/<cms::var type="user" name="photoId">.jpg" border="0" width="100" height="100"></a><BR />
+                	<span class="small"><a href="/profiles/<cms::var type="user" name="linkhandle">"><cms::var type="user" name="handle"></a><BR/>
+        		<cms::if type="user" name="country" equals="US" nest>
+        		<cms::var type="user" name="city">, <cms::var type="user" name="state">
+        		</cms::if type="user" name="country">
+        		<cms::ifnot type="user" name="country" equals="US" nest>
+        		<cms::var type="user" name="city">, <cms::var type="user" name="country">
+        		</cms::ifnot type="user" name="country">
+                	</span>
+        	</div>
+		</div>
+
+		<div class="qow_responsetext">
+				<P><cms::var type="response" name="answer" paragraphs></p>
+				<div class="qow_answerBar">
+				<cms::if type="system" name="authenticated" nest>  
+                                		<table><TR><TD valign="center">
+                                			<span class="blue medium">What do you think?&nbsp;</span>
+                                		</TD><TD valign="center">
+                					<a href="#<cms::var type="response" name="id">" onClick="return bling(<cms::var type="response" name="id">,'U');" title="Thumbs Up!"><img src="img/up-small<cms::if type="response" name="type" equals="U" nest>-on</cms::if type="response" name="type">.gif" border=0 width=25 align="middle" id="bling<cms::var type="response" name="id">-up"></a>&nbsp;<A href="#<cms::var type="response" name="id">" onClick="return bling(<cms::var type="response" name="id">,'D');" title="Thumbs Down!"><img src="http://<cms::var type="global" name="imgserver">/img/down-small<cms::if type="response" name="type" equals="D" nest>-on</cms::if type="response" name="type">.gif" border=0 width=25 align="middle" id="bling<cms::var type="response" name="id">-down"></a>
+						</TD></TR></table>
+                		</cms::if type="system" name="authenticated">
+				</div>
+		</div>
+	<BR clear="All" />
+</div>
+	</cms::fancylist> 
+	
+	<h1><a href="/qow.pl?question=<cms::var type="question" name="id">&offset=<cms::var type="offset" name="next">">&#187; Read More!</a></h1>
+</cms::ifloop>
+
+<cms::ifnotloop type="responses">
+
+<BR />
+<center><h2>OMG! Nobody has responded to this question yet!  You can be the first!</h2></center>
+
+</cms::ifnotloop>
+
+<BR />
+
+<a name="respond"></a>
+
+<div id="respondbox">
+		<div id="respondheader"><h1><cms::var type="question" name="question"></h1></div>
+		<cms::if type="user" name="id" nest>
+			<form id="questionresponse" method="post" action="/qow.pl/save" onSubmit="return validateAnswer();">
+			<input type="hidden" name="questionId" value="<cms::var type="question" name="id">">
+			<input type="hidden" name="responseId" value="<cms::var type="response" name="id">">
+			<input type="hidden" name="photoId" value="<cms::var type="response" name="photoId">" id="photoId">
+			<input type="hidden" name="videoId" value="<cms::var type="response" name="videoId">" id="videoId">
+			<div class="tabs">
+			<a href="#" id="text_tab" onClick="showPanel('text'); return false;" class="active">Write Stuff</a>
+			<a href="#" id="photoPicker_tab" onClick="showPanel('photoPicker'); return false;">Add Picture</a>
+			<a href="#" id="videoPicker_tab" onClick="showPanel('videoPicker'); return false;">Add Video</a>
+			</div>
+			<div id="text">
+            <div class="small" style="background: #666; padding: 10px; color: #FFF; text-align: center; margin-bottom: 10px;">Some HTML is ok: bold, italic and links.  Put a blank line in your response to create a new paragraph.</div>
+			<textarea  name="answer" id="answer"><cms::var type="response" name="answer"></textarea>
+			</div>
+			<div style="padding: 10px;">
+					<cms::if type="response" name="photoId" equals="0" nest>
+						<iframe id="photoPicker" src="/photos.pl/minipicker" style="width: 100%; height: 180px; border: 0px;"></iframe>
+					</cms::if type="response" name="photoId">
+					<cms::ifnot type="response" name="photoId" equals="0" nest>
+						<iframe id="photoPicker" src="/photos.pl/picked?id=<cms::var type="response" name="photoId">" style="width: 100%; height: 180px; border: 0px;"></iframe>
+					</cms::ifnot type="response" name="photoId">
+			
+					<div id="videoPicker">
+						<div id="videopicked" style="display:<cms::if type="response" name="videoId" equals="0" nest>none</cms::if type="response" name="videoId">;">
+							<div style="width: 110px; float: left;" id="videoPickedThumb">
+								<script>
+									if ('<cms::var type="video" name="path">') {videoEgg.drawThumb('<cms::var type="video" name="path">',100);}
+								</script>
+							</div>
+							<div style="width: 400px; float: left; margin-left: 10px; padding-top: 10px;">
+								<span class="medium">You have chosen the video to the left!</span>
+								<p><A href="#" onclick="document.getElementById('videoId').value='0'; $('videopicked').style.display='none';$('videopublisher').style.display='block';return false;">Choose another one?</a></p>
+								<P><a href="#" onClick="document.getElementById('videoId').value='0'; $('videopicked').style.display='none';$('videopublisher').style.display='block';return false;">Remove Video</a></p>
+							</div>
+							<script>
+							// set the main photo id
+								document.getElementById('videoId').value = '<cms::var type="video" name="id">';
+							</script>
+						</div>
+						<div id="videopublisher" style="display:<cms::if type="video" name="id" nest>none</cms::if type="video" name="id">;">
+							<cms::var type="page" name="videoPublisher">
+
+								<span id="lesslink" <cms::ifnot type="page" name="less">style="display:none;"</cms::ifnot>>
+								<A id="lessclicker" href="#" onclick="pickerpage(<cms::var type="page" name="less">);return false;"><img src="http://<cms::var type="global" name="imgserver">/img/picker_newer.gif" width="25" height="100" alt="newer videos" border="0" class="pickerbutton"></a>
+								</span>
+
+							<div class="small">Click a video to pick it for the contest!</div>
+							<span id="pickerlist">
+							<cms::fancylist over="videos">
+
+								<a href="#" onclick="pickVideo(<cms::var type="video" name="id">,'<cms::var type="video" name="path">');return false;">
+								<script language="javascript">
+									videoEgg.drawThumb('<cms::var type="video" name="path">',100);
+								</script>
+								</a>
+
+							</cms::fancylist>
+							</span>
+
+							<cms::if type="page" name="more">
+								<span id="morelink">
+								<A id="moreclicker" href="#" onclick="pickerpage(<cms::var type="page" name="more">);return false;"><img src="http://<cms::var type="global" name="imgserver">/img/picker_older.gif" width="25" height="100" alt="older videos" border="0" class="pickerbutton"></a>
+								</span>
+							</cms::if>
+							<cms::ifnot type="page" name="more">
+							   <img src="http://<cms::var type="global" name="imgserver">/img/blank.gif" width="25" height="100" class="pickerbutton">
+							</cms::ifnot>
+						</div>
+						<br clear="all"/>
+					</div>
+			</div>
+
+			<input type="submit" value="Post your response!">
+		</cms::if type="user" name="id">
+		<cms::ifnot type="user" name="id" nest>
+			<br />
+			<h2>Want to share your answer?  <a href="/register.pl">Sign up</a> for a free account and post your zany take on this topic.</h2>
+			
+		</cms::ifnot type="user" name="id">
+</div>
+
+<script>
+
+	highlightLastMessage();
+	setLastMessage(newlastmessage);
+
+</script>
+
+
+</div>

@@ -1,0 +1,23 @@
+<h1>My Settings</h1>
+
+<div id="settings">
+	<div id="tabs">
+		<a id="tabaccount" href="/settings/myAccount.pl" class="tab">Personal Info</a>
+		<a id="tabprofiles" href="/settings/manageProfiles.pl" class="tab">Profile</a>
+		<a id="tabphotos" href="/photos.pl" class="tab">Photos</a>
+		<a id="tabtags" href="/settings/tagPrefs.pl" class="tab">Tagging</a>
+		<a id="tabpassword" href="/settings/myAccount.pl/password" class="tab">Password</A>
+		<a id="tabblog" href="/settings/myBlog.pl" class="tab">My Blogs</a>
+		<a id="tabalerts" href="/settings/myAccount.pl/alerts" class="tab">Email Alerts</A>
+		<a id="tabblocklist" href="/settings/myAccount.pl/blocklist" class="tab">blocklist</A>
+		<br/>
+	</div>
+<script>
+function setTab(script) {
+	document.getElementById(script).className='activetab';
+}
+</script>
+	
+<cms::var type="settings" name="settingsbody">
+
+</div>

@@ -1,0 +1,375 @@
+<script src="http://<cms::var type="global" name="imgserver">/js/logic.view.js"></script>
+<script src="http://<cms::var type="global" name="imgserver">/js/csmSelect.js"></script>
+<script language='javascript'>
+
+var mode1 = new Array('<img src="http://<cms::var type="global" name="imgserver">/img/peeps_select_hotlist.gif" height="28" width="150" border="0">','<img src="http://<cms::var type="global" name="imgserver">/img/peeps_select_ups.gif" height="28" width="150" border="0" alt="People I Up\'d">','<img src="http://<cms::var type="global" name="imgserver">/img/peeps_select_tagged.gif" height="28" width="150" border="0">','<img src="http://<cms::var type="global" name="imgserver">/img/peeps_select_everyone.gif" height="28" width="150" border="0">');
+var mode2 = new Array('hotlist','thumbs','tags','everyone');
+
+var mode = new csmSelect('mode',mode1,mode2,'<cms::var type="page" name="mode">','document.getElementById("foo").submit();');
+var timeframe = new csmSelect('timeframe',['Today','The Last 24 Hours','The Last 72 Hours','<span class="normal">Since You Last Visited</span>'],['1 DAY','24 HOUR','3 DAY','lastView'],'<cms::var type="page" name="timeframe">','document.getElementById("foo").submit();');
+
+var date = new Date();//2005,11,20,23,23,23,444);
+setCookie('viewedUpdates',(1900+date.getYear())+'-'+(date.getMonth()+1)+'-'+date.getDate()+' '+date.getHours()+':'+date.getMinutes()+':'+date.getSeconds());
+
+var timeframetext = '<cms::var type="page" name="timeframe">';
+
+function tagDeleted(xmlobj) {
+// overwrites default function
+	
+		var tagId = xmlobj.getElementsByTagName('tagId')[0].firstChild.nodeValue;
+		//document.getElementById(tagId).parent.removeChild(document.getElementById(tagId));
+		document.getElementById(tagId).style.display='none';
+}
+
+function toggleHot(id) {
+
+	var img = document.getElementById("hot" + id);
+	//var note = document.getElementById("daysleft" + id);
+	if (img.src.indexOf('hot_on') > 0) {
+		apiRequest('user.removeFromHotList','userId='+id,null);
+		//submitRequest('user.removeFromHotList','','userId=' + id);
+		img.src = 'http://<cms::var type="global" name="imgserver">/img/hot_off.gif';
+		//note.innerHTML = "This person will eventually fade off of your Updates page.";
+	} else {
+		apiRequest('user.addToHotList','userId='+id,null);
+		//submitRequest('user.addToHotList','','userId=' + id);
+		img.src='http://<cms::var type="global" name="imgserver">/img/hot_on.gif';
+		//note.innerHTML = 'On your Updates page forever.';
+	}
+
+	return false;
+
+}
+
+function bling(id,type) {
+
+	url = "/qow.pl/bling?qr=" + id + "&t=" + type;
+	http.open("GET",url,true);
+	http.onreadystatechange= handleBling;
+	http.send(null);
+	bid = id;
+	return false;
+
+}
+
+function handleBling() {
+	if (http.readyState == 4) {
+		resultsT = http.responseText;
+		var results = new Array();
+		results = resultsT.split(';');
+
+		if (results[0] == "U") {
+			obj = document.getElementById('bling'+bid+"-up");
+			obj.src = "http://<cms::var type="global" name="imgserver">/img/up-small-on.gif";
+			obj = document.getElementById('bling'+bid+"-down");
+			obj.src = "http://<cms::var type="global" name="imgserver">/img/down-small.gif";
+
+		} else {
+			obj = document.getElementById('bling'+bid+"-down");
+			obj.src = "http://<cms::var type="global" name="imgserver">/img/down-small-on.gif";
+			obj = document.getElementById('bling'+bid+"-up");
+			obj.src = "http://<cms::var type="global" name="imgserver">/img/up-small.gif";
+
+		}
+
+		bid ='';
+	}
+}
+
+var questionsShown = new Array();
+function showQuestions(uid) {
+	if (questionsShown[uid] == 1) return;
+
+	submitRequest('updates.showQuestions','','userId='+uid);
+	return false;
+}
+function handleShowQuestions(response) {
+	var qs = response.getElementsByTagName('answers');
+	for (var i=0;i<qs.length;i++) {
+	}
+}
+
+var iotags = new Array();
+var tagsShown = new Array();
+function showTags(uid) {
+	if (tagsShown[uid] == 1) return;
+
+	return submitRequest('updates.showTags','','userId='+uid+'&timeframe='+timeframetext);
+}
+function handleShowTags(response) {
+	try {
+		var uid = response.getElementsByTagName('uid')[0].firstChild.nodeValue;
+		var tags = response.getElementsByTagName('tag');
+		var target = document.getElementById('tags'+uid);
+	} catch(e){alert('error HST1: '+e.message);}
+	if (uid && tags && target && tags.length) {
+		target.style.display='block';
+		for (var i=0;i<tags.length;i++) {
+			var tag = tags[i].getAttribute('tagvalue');
+			var dir = tags[i].getAttribute('direction');
+			var extra = tags[i].firstChild.nodeValue;
+			var c = document.createElement('div');
+			c.style.overflow='hidden';
+			c.style.width='410px';
+			if (dir == 'in') {
+				c.innerHTML = '<span style="white-space:nowrap;"><img src="http://<cms::var type="global" name="imgserver">/img/newtag.gif" alt="new tag">&nbsp;<a class="white" href="/tags/'+tag+'">'+tag+'</a></span><span class="small">'+extra+'</span>';
+			} else {
+				c.innerHTML = '<span style="white-space:nowrap;"><img src="http://<cms::var type="global" name="imgserver">/img/addedtag.gif" alt="added a tag">&nbsp;<span class="small">added</span> <a class="white"  href="/tags/'+tag+'">'+tag+'</a></span><span class="small">'+extra+'</span>';
+			}
+			try {
+				target = document.getElementById('tagstarget'+uid);
+				target.appendChild(c);
+			}catch(e){alert('error HST2: '+e.message)}
+		}
+			
+	} else if (uid != 'undefined') {
+		try {
+			document.getElementById('tags'+uid).style.display='block';
+			target = document.getElementById('tagstarget'+uid);
+			target.innerHTML = '<i>No new tags.</i>';
+		} catch(e) { alert('error HST3: '+e.message+ '( '+uid+' )') }
+	}
+	tagsShown[uid]=1;
+	showTags(iotags.pop());
+}
+
+
+if (ie) {
+	document.write('<style>.qow_answerBar { width:100% }</style>');
+}
+
+function addTagToUser(id,handle,linkhandle) {
+	//  do an XML HTTP request to add the new tag to this profile
+	handle = unescape(handle);
+	var tv = document.getElementById('tag').value;
+	var params = 'method=user.addTag&tag='+tv+'&userId='+id;
+	var ma = new Ajax.Request('http://<cms::var type="global" name="wwwserver">/api',{method:'post',parameters:params});
+	//submitRequest("user.addTag","tagForm","userId=" + id);
+	try {
+		var t = document.getElementById('tagstarget'+currentuserid);
+		var c = document.createElement('div');
+		c.innerHTML = '<img src="http://<cms::var type="global" name="imgserver">/img/addedtag.gif" alt="added a tag">&nbsp;<span class="small">added</span><a class="white" href="/tags/'+tv+'">'+tv+'</a><span class="small">to <a href="/profiles/'+linkhandle+'">'+handle+'</a> just now!</span>';
+		t.insertBefore(c,t.childNodes[0]);
+	}catch(e){}
+		
+	InfoBox.clear();
+	return false;
+}
+function tagBack(id,handle,linkhandle) {
+	var c = new Array();
+	var eschandle = escape(handle);
+	c.push('<form id="tagForm" onSubmit="return addTagToProfile();">');
+	c.push('<a name="newtag">&nbsp;</a>New tag: <input autocomplete="off" name="tag" id="tag" class="hundred"> <input type="button" class="gobutton" style="width: 60px;" value="+ Add" onClick="return addTagToUser('+id+',\''+eschandle+'\',\''+linkhandle+'\');" />');
+	c.push('<div id="tag-popup" class="autocomplete"><span></span></div>');
+	c.push('<script type="text/javascript">');
+	c.push('autocomplete("tag","tag-popup","/api?method=autocomplete.tag&name=tag-popup");');
+	c.push('</sc'+'ript>');
+	c.push(' <br /> </form>');
+	InfoBox.draw(c.join('\n'),'Add a tag to '+handle);
+}
+
+function showPeepHistory(uid) {
+	submitRequest('updates.peepHistory','','userId='+uid);
+	return false;
+}
+function handlePeepHistory(response) {
+	var reason = response.getElementsByTagName('reason')[0].firstChild.nodeValue;
+	var txt;
+	if (reason == 'default') {
+		txt = response.getElementsByTagName('body')[0].firstChild.nodeValue;
+	} else { 
+		try {
+			var handle = response.getElementsByTagName('handle')[0].firstChild.nodeValue;
+			var linkhandle = response.getElementsByTagName('linkhandle')[0].firstChild.nodeValue;
+			if (reason == 'question') {
+				var question = response.getElementsByTagName('question')[0].firstChild.nodeValue;
+				var questionId = response.getElementsByTagName('questionId')[0].firstChild.nodeValue;
+				var question = response.getElementsByTagName('question')[0].firstChild.nodeValue;
+				txt = 'You liked <a href="/profiles/'+linkhandle+'">'+handle+'</a>\'s answer to <a href="/qow.pl?question='+questionId+'">'+question+'</a>';
+			} else if (reason == 'tag') {
+				var tag = response.getElementsByTagName('tag')[0].firstChild.nodeValue;
+				txt = 'You tagged <a href="/profiles/'+linkhandle+'">'+handle+'</a>, <a href="/tags/'+tag+'">'+tag+'</a>.';
+			} else if (reason == 'contest') {
+				var contest = response.getElementsByTagName('contest')[0].firstChild.nodeValue;
+				var contestId = response.getElementsByTagName('contestId')[0].firstChild.nodeValue;
+				var photoId = response.getElementsByTagName('photoId')[0].firstChild.nodeValue;
+				txt = 'You thought <a href="/profiles/'+linkhandle+'">'+handle+'</a> had an awesome <a href="/picture.pl?id='+photoId+'">'+contest+'</a>.';
+			}
+		}catch(e){alert('error HPH1: '+e.message)}
+	}
+	InfoBox.draw(txt,'Why are they one of my peeps?');
+}
+
+function expandPhoto(id,height,photoId) {
+	try {
+		var d = document.getElementById('qowPhoto'+id);
+		d.style.height=height+'px';
+		var l = document.getElementById('qowPhotoLink'+id);
+		l.onclick=function(){return true;}
+		l.href='/picture.pl?id='+photoId;	
+	}catch(e){alert('error EPa1: '+e.message)}
+	return false;
+}
+function hoverlink(ele,on) {
+	if (on) {
+		ele.style.border="2px solid #369";
+	} else {
+		ele.style.border="2px solid #CCC";
+	}
+}
+</script>
+
+
+
+<div id="peeps-classic">
+
+	<cms::ifnot type="page" name="onlinenow" equals="0">
+		<cms::if type="page" name="onlinenow" nest>
+			<h1 align="center" style="margin-bottom: 20px;"><span class="blue"><cms::var type="page" name="onlinenow"></span> of your peeps <cms::wc type="page" name="onlinenow" s="is" p="are"> online right now!</h1>
+		</cms::if type="page" name="onlinenow">
+	</cms::ifnot>
+	<cms::if type="page" name="onlinenow" equals="0">
+		<h1 id="pagetitle" style="margin-bottom: 20px;">My Peeps</h1>
+	</cms::if>
+
+	<div id="onlinenow">
+			<form method="get" action="<cms::var type="global" name="scriptName"><cms::var type="global" name="command">" id="foo">
+			<input name="refresh" type="hidden" value="1">
+			<input name="mode" id="mode" type="hidden">
+			<input name="timeframe" id="timeframe" type="hidden">
+			<script>
+				mode.place();
+			</script>
+			<span class="small white"><input class="checkbox" type="checkbox" name="all" <cms::if type="form" name="all">checked</cms::if> value="1" onClick='document.getElementById("foo").submit();'> Show Offline Peeps Too!</span>
+			</form>
+
+			<cms::fancylist over="hotlist">
+				<div class="<cms::if type="profile" name="onlinenow">onlinenow</cms::if><cms::var type="list" name="evenodd">" style="width:200px;">
+				<table>
+					<TR>
+						<TD>
+							<a href="#<cms::var type="profile" name="strippedlinkhandle">"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="profile" name="userid">/50/<cms::var type="profile" name="photoId">.jpg" width="50" height="50" border="0"></a>
+						</td>
+						<TD valign="center">
+							<span class="normal"><a href="#<cms::var type="profile" name="strippedlinkhandle">"><cms::var type="profile" name="handle"></a></span><cms::ifnot type="profile" name="unread" equals="0"><span class="small">&nbsp;[<blink><a href="/profiles/<cms::var type="profile" name="linkhandle">/messages#recent">Msg</a></blink>]</span></cms::ifnot><br />
+							<span class="small">Online <cms::if type="profile" name="onlinenow"><b>now</b>!</cms::if><cms::ifnot type="profile" name="onlinenow"><cms::var type="profile" name="timesince"> ago.</cms::ifnot></span>
+							<cms::if type="profile" name="lastupdate"><br /><span class="small">Updated <cms::var type="profile" name="lastupdate"> ago.</span></cms::if>
+						</TD>
+					</tr>
+				</table>
+				</div>
+			</cms::fancylist>
+
+			<cms::if type="page" name="peoplecount" equals="0" nest>
+				<P class="small"><B>You don't have any peeps yet!</b></p>
+				<p class="small">When you give someone a thumbs up or add them to your hot list, they'll show up right here!</p>
+			</cms::if type="page" name="peoplecount">
+	</div> <!-- online now -->
+
+
+
+
+
+
+
+	<div id="updates">
+		<table cellpadding="0" cellspacing="0" border="0">
+			<Tr>
+				<TD class="white large" valign="middle">
+					Updates from&nbsp;
+				</td>
+				<Td valign="middle">
+					<script>
+						timeframe.place();
+					</script>
+				</td>
+			</tr>
+		</table>
+
+		<cms::if type="page" name="peoplecount" equals="0" nest>
+			<h2>You don't have any peeps</h2>
+
+			<cms::ifnot type="user" name="id" nest>
+				<p class="medium"><b>You must have to be one of us to start collecting peeps.  <A href="/register.pl">Join now!</a>  (Or <a href="/login.pl">log in</a> if you're already Consumating!)</p>
+			</cms::ifnot type="user" name="id">
+		</cms::if type="page" name="peoplecount">
+
+		<cms::fancylist over="updates" nest> 
+		<!-- These are updates for one specific person -->
+
+			<div class="update">
+				<a name="<cms::var type="profile" name="strippedlinkhandle">">&nbsp;</a>
+				<cms::if type="profile" name="topic" nest>
+					<a href="/profiles/<cms::var type="profile" name="linkhandle">/topics"><cms::var type="profile" name="topic"></a>
+					<cms::ifnot type="profile" name="topicCount" equals="0">
+						<span style="color:#999;">&nbsp;&nbsp;<cms::var type="profile" name="topicCount"> <cms::wc type="profile" name="topicCount" s="comment" p="comments"></span>
+					</cms::ifnot>
+				</cms::if type="profile" name="topic">
+
+				<div class="userinfo">
+					<div class="userpic">
+						<a name="<cms::var type="profile" name="userid">" href="/profiles/<cms::var type="profile" name="linkhandle">"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="profile" name="userid">/100/<cms::var type="profile" name="photoId">.jpg" height="100" width="100" border="0"></a>
+					</div>
+					<div class="content">
+							<h2 class="subtitle"><a href="/profiles/<cms::var type="profile" name="linkhandle">"><cms::var type="profile" name="handle"></a> <span class="normal">from <cms::var type="profile" name="city"></span></h2>
+							<h3><cms::var type="profile" name="tagline"></h3>
+							<div style="width: 25px; text-align: center; float: left;"><a href="#" title="Toggle Hot List" onClick="return toggleHot(<cms::var type="profile" name="userid">);"><cms::if type="profile" name="onmyhotlist" equals="1"><img src="http://<cms::var type="global" name="imgserver">/img/hot_on.gif" border="0" align="left" id="hot<cms::var type="profile" name="userid">"></cms::if><cms::ifnot type="profile" name="onmyhotlist" equals="1"><img src="http://<cms::var type="global" name="imgserver">/img/hot_off.gif" border="0" align="left" id="hot<cms::var type="profile" name="userid">"></cms::ifnot></a></div>
+							<span class="small"><a href="/profiles/<cms::var type="profile" name="linkhandle">"><cms::var type="profile" name="handle"></a> is the <cms::var type="profile" name="rank"><cms::var type="profile" name="rankword"> most popular person on Consumating.</span><br />
+							<cms::ifnot type="profile" name="mine" nest><span class="small"><cms::if type="profile" name="sex" equals="M">He</cms::if><cms::if type="profile" name="sex" equals="F">She</cms::if> <cms::if type="profile" name="timesince" equals="0 minutes">is online now!</cms::if><cms::ifnot type="profile" name="timesince" equals="0 minutes">was online <cms::var type="profile" name="timesince"> ago.</cms::ifnot></span><br /></cms::ifnot type="profile" name="mine">
+							<span class="small">
+								<img src="http://<cms::var type="global" name="imgserver">/img/yellow_bullet.gif" alt="*" border="0">&nbsp;<a href="/profiles/<cms::var type="profile" name="linkhandle">/messages#recent"><cms::if type="profile" name="unread" equals="0">Send a Note</cms::if><cms::ifnot type="profile" name="unread" equals="0">Read <blink>New Messages</blink></cms::ifnot></a>
+								<cms::ifnot type="profile" name="mine" nest><br/><img src="http://<cms::var type="global" name="imgserver">/img/yellow_bullet.gif" alt="*" border="0">&nbsp;<a href="#" onclick="return showPeepHistory(<cms::var type="profile" name="userid">);">Why are they one of my peeps?</a></cms::ifnot type="profile" name="mine">
+							</span>
+
+						<cms::if type="profile" name="mine" nest>
+							<h2>Recent Thumbs:</h2>
+							<cms::var type="profile" name="thumbups"> Thumb up<cms::wc type="profile" name="thumbups" s="" p="s">
+							and
+							<cms::var type="profile" name="thumbdns"> Thumb down<cms::wc type="profile" name="thumbdns" s="" p="s">
+						</cms::if type="profile" name="mine">
+					</div> <!-- content -->
+				</div> <!-- user info -->
+
+				<!-- updates data -->
+				<cms::ifloop type="questions">
+					<cms::fancylist over="questions">
+						<div class="post">
+							<P><B><cms::var type="question" name="question"></B></p>
+							<P><cms::var type="question" name="answer" paragraphs></p>
+							<div class="actions">	
+								What do you think?&nbsp;
+								<a href="#<cms::var type="question" name="id">" onClick="return bling(<cms::var type="question" name="id">,'U');" title="Thumbs Up!"><img src="http://<cms::var type="global" name="imgserver">/img/up-small<cms::if type="question" name="bling" equals="U" nest>-on</cms::if type="question" name="bling">.gif" border=0 width=25 align="middle" id="bling<cms::var type="question" name="id">-up"></a>&nbsp;<A href="#<cms::var type="question" name="id">" onClick="return bling(<cms::var type="question" name="id">,'D');" title="Thumbs Down!"><img src="http://<cms::var type="global" name="imgserver">/img/down-small<cms::if type="question" name="bling" equals="D" nest>-on</cms::if type="question" name="bling">.gif" border=0 width=25 align="middle" id="bling<cms::var type="question" name="id">-down"></a>
+							</div>
+							<div class="meta">
+								<A class="small" href="/profiles/<cms::var type="question" name="linkhandle">#<cms::var type="question" name="id">"><img src="http://<cms::var type="global" name="imgserver">/img/yellow_bullet.gif" alt="*" border="0">&nbsp;Link to this!</a><br/>
+								<a class="small" href="/profiles/<cms::var type="question" name="linkhandle">"><img src="http://<cms::var type="global" name="imgserver">/img/yellow_bullet.gif" alt="*" border="0">&nbsp;More <cms::var type="question" name="handle">...</a>
+							</div>
+						</div> <!-- post -->
+					</cms::fancylist>
+				</cms::ifloop>
+
+				<script>
+					iotags.unshift(<cms::var type="profile" name="userid">);
+				</script>
+
+				<br clear="all"/>
+
+				<div id="tags<cms::var type="profile" name="userid">" class="tags">
+						<div id="tagstarget<cms::var type="profile" name="userid">"> </div>
+				</div>	
+
+			</div> <!-- update -->
+
+		</cms::fancylist over="updates">
+	</div> <!-- updates -->
+
+</div> <!-- peeps classic -->
+
+
+
+
+<script language='javascript'>
+if (iotags.length > 0) {
+	showTags(iotags.pop());
+}
+</script>
