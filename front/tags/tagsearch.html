@@ -1,0 +1,82 @@
+<script src="http://<cms::var type="global" name="imgserver">/js/csmSelect.js"></script>
+<script>
+var sex = new csmSelect('sex',['Girls','Boys','Everyone!'],['f','m',''],'<cms::var type="page" name="sex">','document.getElementById("research").submit();');
+
+function tagAdded(response) {
+	document.getElementById('addtagspan').innerHTML = 'Added';
+}
+</script>
+
+
+<div id="finder">
+
+<cms::ifnot type="page" name="resultcount" equals="0" nest>
+
+<!-- for re-searching -->
+<form method="get" action="/tagpages.csm" id="research">
+<input type="hidden" name="tags" value="<cms::fancylist over="tags"><cms::var type="tag" name="value"> </cms::fancylist>">
+<input type="hidden" name="sex" id="sex">
+</form>
+
+	Show Me: <script>sex.place();</script>
+	<h1>There <cms::wc type="page" name="resultcount" s="is" p="are"> <A href="/browse/<cms::fancylist over="tags"><cms::var type="tag" name="value"> </cms::fancylist>"><cms::var type="page" name="resultcount"> <cms::wc type="page" name="resultcount" s="person" p="people"></a> tagged <cms::fancylist over="tags"><cms::ifnot type="list" name="last" nest><cms::ifnot type="list" name="first" nest>, </cms::ifnot type="list" name="first"></cms::ifnot type="list" name="last"><cms::if type="list" name="last"><cms::ifnot type="list" name="first"> and </cms::ifnot></cms::if><a href="/tags/<cms::var type="tag" name="value">"><cms::var type="tag" name="value"></a></cms::fancylist>.<br />
+
+	<cms::ifloop type="meetings">
+	<br/>
+	<cms::fancylist over="meetings">
+		<cms::var type="meeting" name="tag">_rsvp is for the <a href="/meetings?id=<cms::var type="meeting" name="id">"><cms::var type="meeting" name="name"> ConsuMeeting.</a><br/>
+	</cms::fancylist>
+	</cms::ifloop>
+	<br/>
+	<cms::if type="tag" name="addtag">
+		<span id="addtagspan" class="small"><a href="#" onclick="submitRequest('user.addTag','','userId='+currentuserid+'&tag=<cms::fancylist over="addtags"><cms::var type="tag" name="value"><cms::ifnot type="list" name="last" nest>+</cms::ifnot type="list" name="last"></cms::fancylist>'); return false;">Add</a> <cms::ifloop type="tags" index="1">these tags</cms::ifloop><cms::ifnotloop type="tags" index="1">this tag</cms::ifnotloop> to your profile.</span>
+	</cms::if>
+	</h1>
+
+	<cms::ifloop type="people">
+    <div id="bigmatch" class="big<cms::var type="bestmatch" name="type">">
+        <div class="vcard">
+                <div id="bigmatchIMG"><a class="url" href="/profiles/<cms::var type="bestmatch" name="linkhandle">"><img class="photo" src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="bestmatch" name="userid">/large/<cms::var type="bestmatch" name="photoId">.jpg" width="<cms::var type="bmphoto" name="width">" border="0"></a></div>
+
+                <h2 style="margin-bottom: 10px;">Meet <a class="fn nickname" href="/profiles/<cms::var type="bestmatch" name="linkhandle">"><cms::var type="bestmatch" name="handle"></a>!</h2>
+                <span class="normal"><cms::if type="bestmatch" name="sex" equals="F">She</cms::if><cms::if type="bestmatch" name="sex" equals="M">He</cms::if> is tagged <cms::fancylist over="tags"><cms::ifnot type="list" name="last" nest><cms::ifnot type="list" name="first" nest>, </cms::ifnot type="list" name="first"></cms::ifnot type="list" name="last"><cms::if type="list" name="last"><cms::ifnot type="list" name="first"> and </cms::ifnot></cms::if><a rel="tag" class="category" href="/tags/<cms::var type="tag" name="value">"><cms::var type="tag" name="value"></a></cms::fancylist><cms::if type="mattributes" name="isLocal" equals="1" nest>,<cms::ifnot type="mattributes" name="hasCommonTags" equals="1" nest> <i>AND</i></cms::ifnot type="mattributes" name="hasCommonTags"> lives near you</cms::if type="mattributes" name="isLocal"><cms::if type="mattributes" name="hasCommonTags" equals="1" nest> <i>AND</i> <a href="/profiles/<cms::var type="bestmatch" name="linkhandle">/tags/">shares <cms::var type="mattributes" name="tagsInCommon"> of your tags</a></cms::if type="mattributes" name="hasCommonTags">!</span>        
+		</div>
+	</div>
+
+		<cms::fancylist over="people" limit="12" offset="0">
+			<div class="result vcard result<cms::var type="profile" name="type">"><a class="url" href="/profiles/<cms::var type="profile" name="linkhandle">" title="<cms::var type="profile" name="handle">"><img class="logo fn nickname" src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="profile" name="userid">/100/<cms::var type="profile" name="photoId">.jpg" width="100" height="100" border="0" alt="<cms::var type="profile" name="handle">" ></a><cms::if type="profile" name="type"><img src="http://<cms::var type="global" name="imgserver">/img/tags_<cms::var type="profile" name="type">.gif" style="position: relative; top: -80px; left:-110px; z-index: 200;"></cms::if></div>
+		</cms::fancylist>
+	</cms::ifloop>
+
+<br clear="all" />
+
+	<cms::ifloop type="people" index="12">
+	<h2 class="subtitle">More people tagged <cms::fancylist over="tags"><cms::ifnot type="list" name="last" nest><cms::ifnot type="list" name="first" nest>, </cms::ifnot type="list" name="first"></cms::ifnot type="list" name="last"><cms::if type="list" name="last"><cms::ifnot type="list" name="first"> and </cms::ifnot></cms::if><a href="/tags/<cms::var type="tag" name="value">"><cms::var type="tag" name="value"></a></cms::fancylist>:</h2>
+	</cms::ifloop>
+
+<br clear="all" />
+
+	<cms::fancylist over="people" limit="99" offset="12">
+
+	<div class="result vcard result<cms::var type="profile" name="type">" style="margin: 2px;"><a class="url"href="/profiles/<cms::var type="profile" name="linkhandle">" title="<cms::var type="profile" name="handle">"><img class="logo fn nickname" src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="profile" name="userid">/100/<cms::var type="profile" name="photoId">.jpg" width="100" height="100" border="0" alt="<cms::var type="profile" name="handle">"></a><cms::if type="profile" name="type"><img src="http://<cms::var type="global" name="imgserver">/img/tags_<cms::var type="profile" name="type">.gif" style="position: relative; top: -80px; left:-110px; z-index: 200;"></cms::if></div>
+	</cms::fancylist>
+
+<BR clear="all" />
+
+<cms::ifloop type="frequenttags">
+<div id="alsotagged" style="background: #8AB4D1; padding: 10px; text-align: center;">
+<h2>People who are tagged <cms::fancylist over="tags"><cms::ifnot type="list" name="last" nest><cms::ifnot type="list" name="first" nest>, </cms::ifnot type="list" name="first"></cms::ifnot type="list" name="last"><cms::if type="list" name="last"><cms::ifnot type="list" name="first"> and </cms::ifnot></cms::if><a href="/tags/<cms::var type="tag" name="value">"><cms::var type="tag" name="value"></a></cms::fancylist> are also frequently tagged:</h2>
+<cms::fancylist over="frequenttags">
+&nbsp;<a href="/tags/<cms::var type="tag" name="value">"><cms::var type="tag" name="value"></a>&nbsp;
+</cms::fancylist>
+</div>
+</cms::ifloop>
+</cms::ifnot type="page" name="resultcount">
+
+<cms::if type="page" name="resultcount" equals="0" nest>
+<h1>No results</h1>
+
+</cms::if type="page" name="resultcount">
+
+
+</div>

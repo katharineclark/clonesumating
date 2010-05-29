@@ -1,0 +1,48 @@
+
+<h3><cms::var type="search" name="viewing"> |
+<a href="/browse.pl?distance=<cms::var type="form" name="distance">&sex=<cms::var type="form" name="sex">&createDate=<cms::var type="form" name="createDate">&tags=<cms::var type="form" name="tags">&zip=<cms::var type="form" name="zip">&low_age=<cms::var type="form" name="low_age">">Bookmark</a> or <a href="/browse.pl/rss?distance=<cms::var type="form" name="distance">&sex=<cms::var type="form" name="sex">&createDate=<cms::var type="form" name="createDate">&tags=<cms::var type="form" name="tags">&zip=<cms::var type="user" name="zipcode">&low_age=<cms::var type="form" name="low_age">"><img src="http://<cms::var type="global" name="imgserver">/img/rssbutton.gif" width="15" height="15" alt="rss" border=0>&nbsp;Get an RSS Feed</a> of these people.</h3>
+
+<span>
+<cms::if type="search" name="previous">
+<a href="#" onClick="return updateResults(<cms::var type="search" name="previousoffset">);">&#171; Previous Page</a>
+</cms::if>
+<cms::if type="search" name="next">
+<a href="#" onClick="return updateResults(<cms::var type="search" name="offset">);">Next Page &#187;</a> <BR />
+</cms::if>
+</span>
+<br />
+
+
+
+<cms::fancylist over="results">
+
+	<div class="card <cms::var type="list" name="evenodd">" id="<cms::var type="user" name="linkhandle">">
+                <a href="/profiles/<cms::var type="user" name="linkhandle">"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="user" name="id">/100/<cms::var type="user" name="photoId">.jpg" border="0" width="100" height="100" alt="<cms::var type="user" name="handle">"></a><BR />
+<span class="small">
+ <a href="/profiles/<cms::var type="user" name="linkhandle">"><cms::var type="user" name="handle"></a> <BR />
+	<cms::if type="user" name="country" equals="US">
+        <cms::var type="user" name="city">, <cms::var type="user" name="state">
+	</cms::if>
+	<cms::ifnot type="user" name="country" equals="US">
+	<cms::var type="user" name="city">, <cms::var type="user" name="country">
+	</cms::ifnot>
+		</span>
+	</div>
+
+</cms::fancylist>
+
+<BR  clear="all" />
+
+<span>
+<cms::if type="search" name="previous">
+<a href="#" onClick="return updateResults(<cms::var type="search" name="previousoffset">);">&#171; Previous Page</a>
+</cms::if>
+<cms::if type="search" name="next">
+<a href="#" onClick="return updateResults(<cms::var type="search" name="offset">);">Next Page &#187;</a> <BR />
+</cms::if>
+</span>
+<br />
+
+<hr noshade>
+<h3><cms::var type="search" name="resultCount"> people match your specifications.  <cms::var type="search" name="viewing"></h3>
+<p class="desc"><a href="/browse.pl?distance=<cms::var type="form" name="distance">&sex=<cms::var type="form" name="sex">&createDate=<cms::var type="form" name="createDate">&tags=<cms::var type="form" name="tags">&zip=<cms::var type="form" name="zip">&low_age=<cms::var type="form" name="low_age">">Bookmark</a> | <a href="/browse.pl/rss?distance=<cms::var type="form" name="distance">&sex=<cms::var type="form" name="sex">&createDate=<cms::var type="form" name="createDate">&tags=<cms::var type="form" name="tags">&zip=<cms::var type="user" name="zipcode">&low_age=<cms::var type="form" name="low_age">"><img src="http://<cms::var type="global" name="imgserver">/img/rssbutton.gif" alt="Rss" width="15" height="15" border=0 />&nbsp;RSS</a></p>

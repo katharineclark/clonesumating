@@ -1,0 +1,190 @@
+<script>
+
+	var http = getHTTPObject();
+
+	var processing = false;
+	var tags = new Array(<cms::fancylist over="usedtags">"<cms::var type="tag" name="value">",</cms::fancylist>"");
+
+	function addTag(value) {
+		tags.push(value);
+		updateResults();
+		return false;
+	}		
+	
+	function removeTag(value) {
+                for(i=0; i < tags.length; i++) {
+			if (tags[i] == value) {
+				tags[i] = '';
+			}
+                }
+		updateResults();
+		return false;
+	}
+
+
+	function updateResults(offset) {
+		
+		if (!offset) {
+			offset = 0;
+		}
+		if (!processing) {
+			var args = new Array('sex','distance','createDate','low_age','zip');//,'team');
+			var sr = document.getElementById('searchresults');
+
+			var taglist = '';
+			for (i=0; i < tags.length; i++) {
+				if (tags[i].length) {
+					taglist = taglist + " " + tags[i];
+				}
+			}	
+
+			var url = "/browse.pl/view";
+			var ts = new Date();
+			var data = 'tstamp='+ts.getTime()+"&quick=1&tags=" + taglist;
+
+			var opts = new Array();
+			opts.push('offset='+offset);
+			for (var i=0;i<args.length;i++) {
+				try {
+					var ele = document.getElementById(args[i]);
+					if (ele.options) {
+						opts.push(args[i]+'='+ele.options[ele.selectedIndex].value);
+					} else {
+						opts.push(args[i]+'='+ele.value);
+					}
+				}catch(e){}
+			}
+			data = data + '&' + opts.join('&');
+
+			http = getHTTPObject();
+		
+			http.open("POST", url, true);
+			http.onreadystatechange = handleResponse;
+			http.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+			http.send(data);
+		
+			var at = document.getElementById('availabletags');
+
+			sr.innerHTML = '<center><img src="http://<cms::var type="global" name="imgserver">/img/wheel.gif" alt="Updating..."><BR><h1>Updating results... One moment!</h1></center>';
+
+			at.innerHTML = "...";
+			processing = true;
+		} else {
+			errorBox("Be patient! Results are still updating...");
+		}
+	}
+
+
+function handleResponse() {
+	if (http.readyState == 4) {
+		var res = http.responseText;
+		var results = res.split("|||");
+		var sr = document.getElementById('searchresults');
+		var ut = document.getElementById('usedtags');
+		var at = document.getElementById('availabletags');
+		var rc = document.getElementById('resultcount');
+
+
+		sr.innerHTML = results[1];
+		ut.innerHTML = results[2];
+		at.innerHTML = results[3];
+		rc.innerHTML = results[4];
+
+		processing = false;
+		closeError();
+//		assignMouseOver();
+	}
+
+}
+
+function showQuick() {
+
+	document.getElementById('quicksearch').style.display='inline';
+	return false;
+
+}
+
+function showOption(option) {
+
+
+	var tn = option + "Text";
+	var on = option + "Option";
+
+	var t = document.getElementById(tn);
+	var o = document.getElementById(on);
+	
+	t.style.display = 'none';
+	o.style.display = 'inline';
+		
+	return false;
+}
+
+
+</script>
+
+
+<div id="finder">
+
+	<h1>PeopleBrowser</h1>
+
+	<form id="browsecontrol">
+		<h2>There are <span id="resultcount"><cms::var type="search" name="resultCount"></span>
+
+		<select name="sex" onChange='updateResults();' id="sex">
+		<option value="any">people</option>
+		<option value="f" <cms::if type="form" name="sex" equals="f">selected</cms::if>>girls</option>
+		<option value="m" <cms::if type="form" name="sex" equals="m">selected</cms::if>>boys</option>
+		</select>
+
+
+		<select name="low_age" id="low_age" onChange="updateResults();">
+		<option value="any">of any age</option>
+		<option value="10" <cms::if type="form" name="low_age" equals="10">selected</cms::if>>in their teens</options>
+		<option value="20" <cms::if type="form" name="low_age" equals="20">selected</cms::if>>in their 20's</option>
+		<option value="30" <cms::if type="form" name="low_age" equals="30">selected</cms::if>>in their 30's</option>
+		<option value="40" <cms::if type="form" name="low_age" equals="40">selected</cms::if>>in their 40's</option>
+		<option value="50" <cms::if type="form" name="low_age" equals="50">selected</cms::if>>in their 50's</option>
+		</select>
+
+		<span id="usedtags">
+		<cms::var type="search" name="usedtags">
+		</span> 
+
+		<cms::if type="user" name="id" nest>
+		and live&nbsp;<select name="distance" onChange='updateResults();' id="distance">
+		<option value="anywhere" <cms::if type="form" name="distance" equals="anywhere" nest>selected</cms::if type="form" name="distance">>anywhere</option>
+		<option value="5" <cms::if type="form" name="distance" equals="5" nest>selected</cms::if type="form" name="distance">>within 5 miles</option>
+		<option value="10" <cms::if type="form" name="distance" equals="10" nest>selected</cms::if type="form" name="distance">>within 10 miles</option>
+		<option value="25" <cms::if type="form" name="distance" equals="25" nest>selected</cms::if type="form" name="distance">>within 25 miles</option>
+		<option value="50" <cms::if type="form" name="distance" equals="50" nest>selected</cms::if type="form" name="distance">>within 50 miles</option>
+		</select>
+		</cms::if type="user" name="id">
+
+		<input name="zip" id="zip" value="<cms::var type="form" name="zip">" <cms::ifnot type="form" name="zip">type="hidden"</cms::ifnot>>
+		and joined&nbsp;the&nbsp;site&nbsp;<select name="createDate" onChange='updateResults();' id="createDate">
+		<option value="0" <cms::if type="form" name="createDate" equals="">selected</cms::if>>any time</option>
+		<option value="today" <cms::if type="form" name="createDate" equals="today">selected</cms::if>>today</option>
+		<option value="week" <cms::if type="form" name="createDate" equals="week">selected</cms::if>>this week</option>
+		<option value="2weeks" <cms::if type="form" name="createDate" equals="2weeks">selected</cms::if>>within 2 weeks</option>
+		</select>
+		</h2>
+		<span class="small">(Click a tag to remove it from your search. Results will update automagically!)</span>
+	</form>
+
+	<div id="searchresults">
+
+		<cms::var type="search" name="searchresults">
+
+	</div>
+
+	<div id="tagsbox">
+		<div id="availabletags">
+			<cms::var type="search" name="availabletags">
+		</div>
+	</div>
+
+</div>
+
+<script>
+	updateResults(0);
+</script>

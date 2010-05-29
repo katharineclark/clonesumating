@@ -1,0 +1,39 @@
+<style> 
+        .label { text-align: right;  width: 200px; text-transform: none; vertical-align: top; color: #333333;}
+        .input { text-align: left; width: 300px;  vertical-align: top;}
+	.bigredangry { font-size: 24px; color: #F00; }
+</style>
+
+<h1 id="pagetitle">You are almost done!</h1>
+
+<cms::if type="error" name="message">
+	<h2 class="bigredangry"><cms::var type="error" name="message"></h2>
+</cms::if>
+<form method="post" action="/settings/myAccount.pl/verifyEmail">
+
+
+<P>Before you start meeting, greeting, and making out with your new peers, we need to 
+verify that the email address you gave us is real.  We sent an email to <B><cms::var type="user" name="username"></b>
+with a verification code.  Check your email and either click the included link, or cut'n'paste the 
+code below.  If you have a spam whitelist, add welcome@nMYAWESOMESOCIALSITE.com to your list so you can recieve the email.
+<p>Haven't gotten your code?  <a href="/settings/myAccount.pl/reVerify">clicking here</a> will resend it.  If you still do not recieve the email shortly, send a message to <a href="/profiles/Feedback_Zombie/messages">Feedback Zombie</a> and he'll eat whatever brains it takes to get you goin'!
+
+>> <cms::var type="page" name="message"> <<
+<p style="<cms::ifnot type="page" name="message">display:none;</cms::ifnot>color:red;font-weight:bold;" id="sentMsg">Verification email has been sent!</p>
+<br /><br />
+
+<center>
+<table cellspacing="5">
+	<TR>
+		<TD class="label">E-mail Verification Code:</TD>
+		<TD class="input">
+			<input name="authkey" value="" type="authkey">
+		</TD>
+	</TR>
+	<TR>
+		<TD colspan="2" align="right"><input type="submit" value="Verify My Account &#187;" class="gobutton threehundred"></TD>
+	</TR>
+	</table>
+</center>
+</form>
+</cms::ifnot>

@@ -1,0 +1,155 @@
+<h1 class="subtitle">Meetings</h1>
+<script type="text/javascript" src="http://<cms::var type="global" name="imgserver">/js/datetools.js"></script>
+<script>
+function edit(ele) {
+	ele.onclick=null;
+	var dat = ele.innerHTML;
+	if (ele.id.indexOf('city') == 0
+	 || ele.id.indexOf('shortdesc') == 0
+	) {
+		var inp = document.createElement('input');
+		inp.id='edit'+ele.id;
+		inp.value = dat;
+		ele.innerHTML='';
+		ele.appendChild(inp);
+	} else {
+		ele.innerHTML='';
+		dateEntry('edit'+ele.id,ele.id,dat);
+		ele.innerHTML = ele.innerHTML + '<br/>';
+		timeEntry('edittime'+ele.id,ele.id,dat);
+	}
+}
+
+function saveEdit(ele) {
+	var id = ele.id.match(/\d+/);
+	var dat = new Array();
+	dat.push('id='+id);
+	if (document.getElementById('editcity'+id)) {
+		dat.push('city='+document.getElementById('editcity'+id).value);
+		document.getElementById('editcity'+id).parentNode.onclick=function(){edit(document.getElementById('city'+id))};
+		document.getElementById('editcity'+id).parentNode.innerHTML = document.getElementById('editcity'+id).value;
+	}
+	if (document.getElementById('editshortdesc'+id)) {
+		dat.push('shortdesc='+document.getElementById('editshortdesc'+id).value);
+		document.getElementById('editshortdesc'+id).parentNode.onclick=function(){edit(document.getElementById('shortdesc'+id))};
+		document.getElementById('editshortdesc'+id).parentNode.innerHTML = document.getElementById('editshortdesc'+id).value;
+	}
+	if (document.getElementById('editdate'+id+'_year')) {
+		dat.push('date='+getDateEntry('editdate'+id)+' '+getTimeEntry('edittimedate'+id));
+		document.getElementById('editdate'+id+'_year').parentNode.onclick=function(){edit(document.getElementById('date'+id))};
+		document.getElementById('editdate'+id+'_year').parentNode.innerHTML = getDateEntry('editdate'+id)+' '+getTimeEntry('edittimedate'+id);
+	}
+	if (document.getElementById('editenddate'+id+'_year')) {
+		dat.push('date='+getDateEntry('editenddate'+id)+' '+getTimeEntry('edittimeenddate'+id));
+		document.getElementById('editenddate'+id+'_year').parentNode.onclick=function(){edit(document.getElementById('enddate'+id))};
+		document.getElementById('editenddate'+id+'_year').parentNode.innerHTML = getDateEntry('editenddate'+id)+' '+getTimeEntry('editendtimedate'+id);
+	}
+	dat.push('approved='+document.getElementById('approved'+id).options[+document.getElementById('approved'+id).selectedIndex].value);
+
+alert(dat.join('&'));
+	new Ajax.Request('http://<cms::var type="global" name="wwwserver">/api',{
+		method: 'post',
+		parameters:'method=meetings.edit&'+dat.join('&')
+	});
+}
+
+function saveNew() {
+	var dat = new Array();
+	if (document.getElementById('city').value.length == 0) {
+		dat.push('City');
+	}
+	if (document.getElementById('shortdesc').value.length == 0) {
+		dat.push('Description');
+	}
+	if (dat.length) {
+		alert("I think you're forgetting something:\n"+dat.join('\n'));
+		return false;
+	}
+	dat.push('city='+document.getElementById('city').value);
+	dat.push('shortdesc='+document.getElementById('shortdesc').value);
+	dat.push('date='+getDateEntry('date')+' '+getTimeEntry('time'));
+	//dat.push('date='+getDateEntry('enddate')+' '+getTimeEntry('endtime'));
+
+	new Ajax.Request('http://<cms::var type="global" name="wwwserver">/api',{
+		method: 'post',
+		parameters:'method=meetings.add&'+dat.join('&'),
+		onComplete:handleNew
+	});
+}
+function getXMLValues(response,name) {
+	var eles = response.getElementsByTagName(name);
+	return eles[0].firstChild.nodeValue;
+}
+function handleNew(obj) {
+	var resp = obj.responseXML;
+	try {
+	var id = getXMLValues(resp,'id');
+	var html = new Array();
+	var tr = document.createElement('tr');
+	var td = document.createElement('td'); td.onclick=function(){edit(document.getElementById('city'+id))}; td.id='city'+id; td.innerHTML = getXMLValues(resp,'city');
+	tr.appendChild(td);
+	var td = document.createElement('td'); td.onclick=function(){edit(document.getElementById('shortdesc'+id))}; td.id='shortdesc'+id; td.innerHTML = getXMLValues(resp,'shortdesc');
+	tr.appendChild(td);
+	var td = document.createElement('td'); td.onclick=function(){edit(document.getElementById('date'+id))}; td.id='date'+id; td.innerHTML = getXMLValues(resp,'date');
+	tr.appendChild(td);
+	var td = document.createElement('td');
+	var inp = document.createElement('input');
+	inp.style.display='none';
+	inp.type='button';
+	inp.id='button'+id;
+	inp.onclick=function(){saveEdit(document.getElementById('button'+id))};
+	inp.value='Save';
+	td.appendChild(inp);
+	tr.appendChild(td);
+	document.getElementById('listTable').appendChild(tr);
+	}catch(e){alert(e.message)}
+}
+</script>
+<cms::ifloop type="meetings">
+<table id="listTable">
+<tr>
+	<th>city</th>
+	<th>Description</th>
+	<th>Date</th>
+	<th>Approved</th>
+	<!-- <th>End date (optional)</th> -->
+</tr>
+<cms::fancylist over="meetings">
+<tr>
+	<td onclick="edit(this)" id="city<cms::var type="meeting" name="id">"><cms::var type="meeting" name="city"></td>
+	<td onclick="edit(this)" id="shortdesc<cms::var type="meeting" name="id">" width="150"><cms::var type="meeting" name="shortdesc"></td>
+	<td onclick="edit(this)" id="date<cms::var type="meeting" name="id">"><cms::var type="meeting" name="date"></td>
+	<!-- <td onclick="edit(this)" id="enddate<cms::var type="meeting" name="id">"><cms::var type="meeting" name="enddate"></td> -->
+	<td><select id="approved<cms::var type="meeting" name="id">">
+		<option value="-1" <cms::if type="meeting" name="approved" equals="-1">selected</cms::if>>unapproved</option>
+		<option value="0" <cms::if type="meeting" name="approved" equals="0">selected</cms::if>>denied</option>
+		<option value="1" <cms::if type="meeting" name="approved" equals="1">selected</cms::if>>approved</option>
+	<td><input type="button" id="button<cms::var type="meeting" name="id">" onclick="saveEdit(this)" value="Save"></td>
+</tr>
+</cms::fancylist>
+<table>
+<tr>
+	<td colspan="4">
+		<h2 class="subtitle">Create New</h2>
+	</td>
+</tr>
+<tr>
+	<th>city</th>
+	<th>Description</th>
+	<th>Date</th>
+</tr>
+<tr>
+	<td><input type="text" id="city"></td>
+	<td width="150"><input type="text" id="shortdesc"></td>
+	<td>
+		<span id="dateLoc"></span>&nbsp;<span id="timeLoc"></span>
+	</td>
+	<!-- <td> <span id="enddateLoc"></span>&nbsp;<span id="endtimeLoc"></span> </td> -->
+	<td><input type="button" id="button<cms::var type="meeting" name="id">" onclick="saveNew(this)" value="Save"></td>
+</table>
+<script>
+dateEntry('date','dateLoc','<cms::var type="date" name="today">');
+timeEntry('time','timeLoc','12:01');
+//dateEntry('enddate','enddateLoc');
+//timeEntry('endtime','endtimeLoc');
+</script>

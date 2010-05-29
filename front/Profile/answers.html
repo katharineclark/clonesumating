@@ -1,0 +1,126 @@
+<script src="http://<cms::var type="global" name="imgserver">/js/CsmInPlaceEditor.js" type="text/javascript"></script>
+<script src="http://<cms::var type="global" name="imgserver">/js/Profile.js" type="text/javascript"></script>
+<link rel="stylesheet" href="http://<cms::var type="global" name="imgserver">/css/styles.profile.css" type="text/css" >
+<script type="text/javascript">
+var Profile = new Profile(<cms::var type="profile" name="userId">);
+</script>
+<div id="profile">
+    <div id="profileNav">
+        <a href="/profiles/<cms::var type="profile" name="linkhandle">"><cms::var type="profile" name="handle"> &#187;</a>
+        <a href="/profiles/<cms::var type="profile" name="linkhandle">/topics">Conversations</a>
+        <a href="/profiles/<cms::var type="profile" name="linkhandle">/messages">Send Note</a>
+        <A href="/profiles/<cms::var type="profile" name="linkhandle">/answers">Answers</a>
+        <a href="/profiles/<cms::var type="profile" name="linkhandle">/photos">Photos</a>
+        <a href="/profiles/<cms::var type="profile" name="linkhandle">/tags">Tags</a>
+        <a href="/profiles/<cms::var type="profile" name="linkhandle">/inventory">Toy Box<sup style="color: #FFFF99;font-size: 10px;">&nbsp;new</sup></a>
+    </div>
+
+	<div class="left">
+		<h1><cms::var type="profile" name="handle">'s Answers</h1>
+
+			<cms::fancylist over="qows">
+				 <a name="<cms::var type="content" name="id">"></a>
+					<div class="content" id="qow<cms::var type="content" name="id">">
+						<div class="pad5">
+				            <div class="contenttext">                
+								<div class="pad5">
+							<P><B><cms::var type="contest" name="question"></b></p>
+
+							<cms::if type="content" name="videoId" nest>
+								<!-- place custom code for video embed here -->
+								<!-- <script language="javascript">videoEgg.drawMovie('<cms::var type="content" name="videopath">');</script> -->
+							</cms::if type="content" name="videoId">
+
+							<cms::if type="content" name="photoId" nest>
+							<img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="user" name="id">/large/<cms::var type="content" name="photoId">.jpg" style="margin-bottom: 5px;">
+							</cms::if type="content" name="photoId">
+
+							<P id="qowanswer<cms::var type="content" name="id">"><cms::var type="content" name="answer" paragraphs></p>
+
+							<br clear="all" />
+							<div class="postinfo">
+								Posted on <cms::var type="content" name="date" datetime> | <a href="/profiles/<cms::var type="user" name="linkhandle">/answers#<cms::var type="content" name="id">">Permalink</A><br />
+								<a href="/qow.pl?question=<cms::var type="contest" name="id">">View other answers</a> to this question
+							</div>
+						</div>
+					</div>
+			 <cms::if type="page" name="myprofile">
+						<div class="contentstats">
+									 <span id="qowupcount<cms::var type="content" name="id">"><cms::var type="content" name="blingups"></span> <cms::wc type="content" name="blingups" s="up" p="ups"> / <span id="qowdowncount<cms::var type="content" name="id">"><cms::var type="content" name="blingdowns"></span> <cms::wc type="content" name="blingdowns" s="ups" p="downs">
+									&nbsp;|&nbsp;
+									<span class="editControl" id="editControl<cms::var type="content" name="id">">edit text</span>
+									&nbsp;|&nbsp;
+									<a href="/qow.pl/myresponse?question=<cms::var type="content" name="questionId">#actionbox">change photo or video</a>
+									<br />
+									<a href="#" onclick="Profile.pushQowToTop(<cms::var type="content" name="id">);return false;">Move this answer to the top of my profile</a>
+									<script>Profile.editAnswer(<cms::var type="content" name="id">);</script>
+								</div>
+								</cms::if>
+
+
+					<div class="contentthumb">
+						<table cellpadding="0" cellspacing="0" border="0">
+						<TR>
+							<TD valign="middle">
+							<span class="blue medium">Do you like this answer?&nbsp;&nbsp;</span>
+							</td>
+							<td valign="middle">
+							<a href="#" title="I like this! I want to see more from this person." onClick="return Profile.qowbling(<cms::var type="content" name="id">,'U');"><img src="http://<cms::var type="global" name="imgserver">/img/up-small<cms::if type="vote" name="direction" equals="U" nest>-on</cms::if type="vote" name="direction">.gif" border="0" id="qowup<cms::var type="content" name="id">"></a>
+							</td>
+						</tr>
+						</table>
+					</div>
+				
+					</div>
+				</div>
+
+			</cms::fancylist>
+
+	</div>
+
+	<div class="right">
+
+
+    <div class="profilephoto">
+            <div id="thumbs">
+                Do You Like <cms::var type="profile" name="handle">?<Br />
+
+                        <cms::if type="profile" name="status" equals="-1" nest>
+                        It doesn't matter right now, they're in timeout!
+                        </cms::if type="profile" name="status">
+                        <cms::if type="profile" name="status" equals="0" nest>
+                        It doesn't matter right now, they're on vacation!  When they come back, you can vote for them again.
+                        </cms::if type="profile" name="status">
+                        <cms::if type="profile" name="status" equals="1" nest>
+                        <a href="#" title="thumbs up!" onClick="return Profile.thumb('U');"><img src="http://<cms::var type="global" name="imgserver">/img/up<cms::if type="profile" name="thumb" equals="U" nest>-on</cms::if type="profile" name="thumb">.gif" border=0 align="absmiddle" width=50 alt="thumbs up" id="thumbup"></a>&nbsp;<a href="#" title="thumbs down!" onClick="return Profile.thumb('D');"><img src="http://<cms::var type="global" name="imgserver">/img/down<cms::if type="profile" name="thumb" equals="D" nest>-on</cms::if type="profile" name="thumb">.gif" border=0 align="absmiddle" width=50 id="thumbdown"></a>
+                        </cms::if type="profile" name="status">
+            </div>
+                <div id="mediaArea">
+                    <img id="mainphoto" src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="profile" name="userId">/large/<cms::var type="profile" name="photoId">.jpg">
+                 </div>
+        </div>
+        <br />
+        <div id="meta">
+
+                <div id="about"> 
+                <B><cms::var type="profile" name="handle"></b> is a <cms::var type="profile" name="age">-year old <cms::if type="profile" name="sex" equals="M">guy</cms::if><cms::if type="profile" name="sex" equals="F">girl</cms::if> in <cms::var type="profile" name="city"><cms::if type="profile" name="country" equals="US">, <cms::var type="profile" name="state"></cms::if><cms::ifnot type="profile" name="country" equals="US">, <cms::var type="profile" name="country"></cms::ifnot>.                <cms::var type="profile" name="cpronoun"> was last active on <cms::var type="profile" name="lastActive" date>.                <cms::var type="profile" name="cpronoun"> is
+                <cms::if type="profile" name="relationshipStatus" equals="1">single.</cms::if>
+                <cms::if type="profile" name="relationshipStatus" equals="2">in an <i>open</i> relationship.</cms::if>
+                <cms::if type="profile" name="relationshipStatus" equals="3">in a relationship.</cms::if>            
+                 </div>
+
+        </div>
+
+
+
+	</div>
+	<br clear="all" />
+</div>
+
+
+
+<script>
+<cms::fancylist over="itemBehaviors">
+Profile.setBehavior(<cms::var type="item" name="id">,'<cms::var type="item" name="behavior">');
+</cms::fancylist>
+</script>

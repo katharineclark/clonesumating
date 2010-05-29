@@ -1,0 +1,14 @@
+You've received a Consumating Present!
+
+<cms::var type="giver" name="handle"> gave you a <cms::var type="toy" name="name">!
+
+ It's been added to your inventory, so you can display it on your profile or trade it with a friend.
+
+>> View your inventory
+   http://consumating.com/profiles/<cms::var type="user" name="linkhandle">/inventory
+
+>> Create a new toy
+   http://consumating.com/toys/create.csm
+
+>> Snag new toys from the store
+   http://consumating.com/toys/store.csm

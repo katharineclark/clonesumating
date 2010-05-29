@@ -1,0 +1,71 @@
+<script>
+
+
+
+function locationToggle() {
+
+        var country = document.getElementById('country').options[ document.getElementById('country').selectedIndex].value;
+
+        if (country == "US") {
+                document.getElementById('usa_location').style.display = 'block';
+                document.getElementById('foreign_location').style.display = 'none';
+        } else {
+                document.getElementById('usa_location').style.display = 'none';
+                document.getElementById('foreign_location').style.display = 'block';
+        }
+
+}
+
+
+</script>
+
+<cms::if type="form" name="msg">
+<h2 style="color: #F00;"><cms::var type="form" name="msg"></h2>
+</cms::if>
+
+<h2>Block List</h2>
+
+<form method="post" action="<cms::var type="global" name="scriptName">/blocklist">
+<cms::if type="page" name="saved">
+	<h2 class="green">Your account has been updated!</h2>
+</cms::if>
+<cms::if type="error" name="message">
+	<h2 class="red"><cms::var type="error" name="message"></h2>
+</cms::if>
+<cms::ifnotloop type="blocklist">
+You have noone on your blocklist!<br clear="all"/>
+</cms::ifnotloop>
+<table>
+<tr>
+	<th>User</th>
+	<th>Blocks</th>
+</tr>
+<cms::fancylist over="blocklist">
+<tr>
+	<td><a href="/profiles/<cms::var type="profile" name="linkhandle">"><cms::var type="profile" name="handle"></a></td>
+	<td>
+		<input class="checkbox" type="checkbox" <cms::if type="tag" name="value">checked</cms::if> name="blocktag-<cms::var type="profile" name="userId">" value="1">Tags
+		<input class="checkbox" type="checkbox" <cms::if type="conversation" name="value">checked</cms::if> name="blockconversation-<cms::var type="profile" name="userId">" value="1">Conversations
+		<input class="checkbox" type="checkbox" <cms::if type="message" name="value">checked</cms::if> name="blockmessage-<cms::var type="profile" name="userId">" value="1">Messages
+	</td>
+</tr>
+</cms::fancylist>
+<tr>
+	<td>
+		<input autocomplete="off" type="text" id="blockname" name="blockname" value="Add New" onclick="this.value='';" style="width:150px;border:solid 1px #FC9;">
+		<div id="blockname-popup" class="autocomplete"><span></span></div>
+		<script type="text/javascript">
+			autocomplete('blockname','blockname-popup','/api?method=autocomplete.handle&name=blockname-popup','');
+		</script>
+	</td>
+	<td>
+		<input class="checkbox" type="checkbox" name="blocktag-new" value="1">Tags
+		<input class="checkbox" type="checkbox" name="blockconversation-new" value="1">Conversations
+		<input class="checkbox" type="checkbox" name="blockmessage-new" value="1">Messages
+	</td>
+</table>
+
+
+<input type="submit" name="submit" value="Update Account &#187;" class="gobutton threehundred">
+</form>
+</div>

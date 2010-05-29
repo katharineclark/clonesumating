@@ -1,0 +1,12 @@
+<div style="width:500px;">
+<cms::fancylist over="photos">
+<div style="float:left;">
+<a href="http://img.consumating.com/photos/<cms::var type="photo" name="userId">/large/<cms::var type="photo" name="id">.jpg">
+<img width=50 height=50 src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="photo" name="userId">/50/<cms::var type="photo" name="id">.jpg"/>
+</a>
+</div>
+</cms::fancylist>
+</div>
+<a href="/admin/photoBrowser.pl?offset=<cms::var type="page" name="prev">">prev</a>
+&nbsp;|&nbsp;
+<a href="/admin/photoBrowser.pl?offset=<cms::var type="page" name="next">">next</a>

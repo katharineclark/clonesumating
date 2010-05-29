@@ -1,0 +1,1002 @@
+-- MySQL dump 10.9
+--
+-- Host: c13-csm-db1.cnet.com    Database: personals
+-- ------------------------------------------------------
+-- Server version	4.1.10a-pro-gpl-log
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+
+--
+-- Table structure for table `alertSubscriptions`
+--
+
+DROP TABLE IF EXISTS `alertSubscriptions`;
+CREATE TABLE `alertSubscriptions` (
+  `userId` bigint(12) default NULL,
+  `alertId` bigint(12) default NULL,
+  `id` bigint(12) NOT NULL auto_increment,
+  `target` enum('email','cell','both') default NULL,
+  PRIMARY KEY  (`id`),
+  KEY `uidx` (`userId`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `alertTest`
+--
+
+--
+-- Table structure for table `alertTypes`
+--
+
+DROP TABLE IF EXISTS `alertTypes`;
+CREATE TABLE `alertTypes` (
+  `name` varchar(100) default NULL,
+  `description` varchar(255) default NULL,
+  `id` bigint(12) NOT NULL auto_increment,
+  `type` enum('personal','mass') default NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `annotations`
+--
+
+DROP TABLE IF EXISTS `annotations`;
+CREATE TABLE `annotations` (
+  `note` varchar(255) default NULL,
+  `profileId` bigint(12) default NULL,
+  `userId` bigint(12) default NULL,
+  `id` bigint(12) unsigned NOT NULL auto_increment,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `bling`
+--
+
+DROP TABLE IF EXISTS `bling`;
+CREATE TABLE `bling` (
+  `userId` bigint(12) default NULL,
+  `questionresponseId` bigint(12) default NULL,
+  `type` enum('U','D') default NULL,
+  `insertDate` datetime default NULL,
+  KEY `user_idx` (`userId`),
+  KEY `response_idx` (`questionresponseId`),
+  KEY `dateidx` (`insertDate`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `blocklist`
+--
+
+DROP TABLE IF EXISTS `blocklist`;
+CREATE TABLE `blocklist` (
+  `id` int(11) NOT NULL auto_increment,
+  `profileId` int(11) NOT NULL default '0',
+  `userId` int(11) NOT NULL default '0',
+  `type` enum('tag','conversation','message') default NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `blogapi`
+--
+
+DROP TABLE IF EXISTS `blogapi`;
+CREATE TABLE `blogapi` (
+  `userId` bigint(12) default NULL,
+  `username` varchar(50) default NULL,
+  `password` varchar(50) default NULL,
+  `apiurl` varchar(255) default NULL,
+  `blogurl` varchar(255) default NULL,
+  `blogid` varchar(255) default NULL,
+  `blogname` varchar(255) default NULL,
+  `id` bigint(12) NOT NULL auto_increment,
+  `type` enum('blogger','livejournal') default NULL,
+  `postQow` enum('Y','N') default 'Y',
+  `postTopic` enum('Y','N') default 'Y',
+  `postPhoto` enum('Y','N') default 'Y',
+  `engine` varchar(20) default NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+--
+-- Table structure for table `conversationWatch`
+--
+
+DROP TABLE IF EXISTS `conversationWatch`;
+CREATE TABLE `conversationWatch` (
+  `userId` bigint(12) default NULL,
+  `conversationId` bigint(12) default NULL,
+  KEY `uid_idx` (`userId`),
+  KEY `conv_idx` (`userId`,`conversationId`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `country`
+--
+
+DROP TABLE IF EXISTS `country`;
+CREATE TABLE `country` (
+  `iso` char(2) NOT NULL default '',
+  `name` varchar(80) NOT NULL default '',
+  `printable_name` varchar(80) NOT NULL default '',
+  `iso3` char(3) default NULL,
+  `numcode` smallint(6) default NULL,
+  PRIMARY KEY  (`iso`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+--
+-- Table structure for table `events`
+--
+
+DROP TABLE IF EXISTS `events`;
+CREATE TABLE `events` (
+  `id` int(11) NOT NULL auto_increment,
+  `sponsorId` int(11) NOT NULL default '0',
+  `name` varchar(255) NOT NULL default '',
+  `description` text,
+  `date` datetime default NULL,
+  `venue` varchar(100) default NULL,
+  `street` varchar(100) default NULL,
+  `zipcode` varchar(10) default NULL,
+  `city` varchar(50) default NULL,
+  `state` char(2) default NULL,
+  `country` char(2) default NULL,
+  `approved` tinyint(4) default '1',
+  `tag` varchar(50) NOT NULL default '',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `hotlist`
+--
+
+DROP TABLE IF EXISTS `hotlist`;
+CREATE TABLE `hotlist` (
+  `userId` bigint(12) default NULL,
+  `profileId` bigint(12) default NULL,
+  `dateAdded` datetime default NULL,
+  `note` varchar(255) default '',
+  KEY `idx` (`userId`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `item_autosave`
+--
+
+DROP TABLE IF EXISTS `item_autosave`;
+CREATE TABLE `item_autosave` (
+  `id` int(11) NOT NULL auto_increment,
+  `userId` int(11) NOT NULL default '0',
+  `pixels` text,
+  `updated` datetime default NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `item_permissions`
+--
+
+DROP TABLE IF EXISTS `item_permissions`;
+CREATE TABLE `item_permissions` (
+  `id` int(11) NOT NULL auto_increment,
+  `url` text NOT NULL,
+  `itemName` varchar(128) default NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `meetingResponse`
+--
+
+DROP TABLE IF EXISTS `meetingResponse`;
+CREATE TABLE `meetingResponse` (
+  `id` bigint(12) unsigned NOT NULL auto_increment,
+  `userId` bigint(12) unsigned default NULL,
+  `meetingTopicId` bigint(12) unsigned default NULL,
+  `response` text,
+  `date` datetime default NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `meetingTopic`
+--
+
+DROP TABLE IF EXISTS `meetingTopic`;
+CREATE TABLE `meetingTopic` (
+  `id` bigint(12) unsigned NOT NULL auto_increment,
+  `userId` bigint(12) unsigned default NULL,
+  `question` text,
+  `date` datetime default NULL,
+  `enabled` tinyint(1) default '1',
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `meeting_id_uk` (`userId`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `meetings`
+--
+
+DROP TABLE IF EXISTS `meetings`;
+CREATE TABLE `meetings` (
+  `id` int(11) NOT NULL auto_increment,
+  `city` varchar(128) NOT NULL default '',
+  `date` datetime default NULL,
+  `shortdesc` text,
+  `sponsorId` int(11) default NULL,
+  `enddate` datetime default NULL,
+  `approved` tinyint(4) default '-1',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `meetingtopicwatch`
+--
+
+DROP TABLE IF EXISTS `meetingtopicwatch`;
+CREATE TABLE `meetingtopicwatch` (
+  `userId` bigint(12) unsigned default NULL,
+  `topicId` bigint(12) unsigned default NULL,
+  `date` datetime default NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `messages`
+--
+
+DROP TABLE IF EXISTS `messages`;
+CREATE TABLE `messages` (
+  `id` bigint(12) NOT NULL auto_increment,
+  `date` datetime default NULL,
+  `text` blob,
+  `subject` text,
+  `fromId` bigint(12) default NULL,
+  `toId` bigint(12) default NULL,
+  `isread` int(11) default '0',
+  `hide` varchar(60) default NULL,
+  PRIMARY KEY  (`id`),
+  KEY `toidx` (`toId`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+--
+-- Table structure for table `newsletterSubscriptions`
+--
+
+DROP TABLE IF EXISTS `newsletterSubscriptions`;
+CREATE TABLE `newsletterSubscriptions` (
+  `newsletter` enum('consume','qow') default NULL,
+  `userId` bigint(12) default NULL,
+  `email` varchar(200) default NULL,
+  `date` datetime default NULL,
+  `confirmcode` varchar(60) default NULL,
+  `deletecode` varchar(60) default NULL,
+  KEY `uidx` (`userId`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `photo_contest`
+--
+
+DROP TABLE IF EXISTS `photo_contest`;
+CREATE TABLE `photo_contest` (
+  `id` bigint(12) unsigned NOT NULL auto_increment,
+  `name` varchar(255) NOT NULL default '',
+  `description` text NOT NULL,
+  `startDate` datetime NOT NULL default '0000-00-00 00:00:00',
+  `itson` tinyint(1) default '0',
+  `shortname` varchar(64) default NULL,
+  `longname` text,
+  `bensname` text,
+  `othername` text,
+  `tagname` text,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `photo_contest_bling`
+--
+
+DROP TABLE IF EXISTS `photo_contest_bling`;
+CREATE TABLE `photo_contest_bling` (
+  `id` bigint(12) unsigned NOT NULL auto_increment,
+  `contestId` bigint(12) unsigned NOT NULL default '0',
+  `entryId` bigint(12) unsigned NOT NULL default '0',
+  `userId` bigint(12) unsigned NOT NULL default '0',
+  `type` enum('U','D') NOT NULL default 'U',
+  `insertDate` datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (`id`),
+  KEY `uid_idx` (`userId`),
+  KEY `uidx` (`userId`),
+  KEY `entrydx` (`entryId`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `photo_contest_entry`
+--
+
+DROP TABLE IF EXISTS `photo_contest_entry`;
+CREATE TABLE `photo_contest_entry` (
+  `id` bigint(12) unsigned NOT NULL auto_increment,
+  `userId` bigint(12) unsigned NOT NULL default '0',
+  `photoId` bigint(12) unsigned NOT NULL default '0',
+  `insertDate` datetime NOT NULL default '0000-00-00 00:00:00',
+  `contestId` bigint(12) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`id`),
+  KEY `photo_contest_entry_uk` (`userId`,`photoId`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `photos`
+--
+
+DROP TABLE IF EXISTS `photos`;
+CREATE TABLE `photos` (
+  `id` int(11) unsigned NOT NULL auto_increment,
+  `userId` int(11) NOT NULL default '0',
+  `rank` int(11) NOT NULL default '0',
+  `timestamp` datetime default NULL,
+  `height` int(11) default NULL,
+  `width` int(11) default NULL,
+  PRIMARY KEY  (`id`),
+  KEY `userId_index` (`userId`),
+  KEY `rank_idx` (`rank`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1;
+
+--
+-- Table structure for table `point_transaction`
+--
+
+DROP TABLE IF EXISTS `point_transaction`;
+CREATE TABLE `point_transaction` (
+  `id` int(11) NOT NULL auto_increment,
+  `userid` int(11) NOT NULL default '0',
+  `points` int(11) default '0',
+  `type` varchar(16) NOT NULL default '',
+  `description` varchar(255) NOT NULL default '',
+  `date` datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `popularityTrend`
+--
+
+DROP TABLE IF EXISTS `popularityTrend`;
+CREATE TABLE `popularityTrend` (
+  `userId` bigint(12) default NULL,
+  `popularity` int(11) default NULL,
+  `date` datetime default NULL,
+  KEY `useridx` (`userId`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `profileChannels`
+--
+
+DROP TABLE IF EXISTS `profileChannels`;
+CREATE TABLE `profileChannels` (
+  `id` bigint(12) unsigned NOT NULL auto_increment,
+  `name` varchar(100) default NULL,
+  `description` text,
+  `promo` text,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `profileResponse`
+--
+
+DROP TABLE IF EXISTS `profileResponse`;
+CREATE TABLE `profileResponse` (
+  `id` bigint(12) unsigned NOT NULL auto_increment,
+  `userId` bigint(12) default NULL,
+  `profileTopicId` bigint(12) default NULL,
+  `response` text,
+  `date` datetime default NULL,
+  PRIMARY KEY  (`id`),
+  KEY `user_idx` (`userId`),
+  KEY `date_idx` (`date`),
+  KEY `profileTopic_idx` (`profileTopicId`),
+  KEY `topicId_date_idx` (`profileTopicId`,`date`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1;
+
+--
+-- Table structure for table `profileTopic`
+--
+
+DROP TABLE IF EXISTS `profileTopic`;
+CREATE TABLE `profileTopic` (
+  `id` bigint(12) unsigned NOT NULL auto_increment,
+  `userId` bigint(12) default NULL,
+  `question` text,
+  `date` datetime default NULL,
+  `enabled` tinyint(1) default '0',
+  `channelId` bigint(12) default '0',
+  `featured` tinyint(4) default '0',
+  `type` enum('profile','team','meeting') default 'profile',
+  `nsfw` tinyint(1) default '0',
+  PRIMARY KEY  (`id`),
+  KEY `user_idx` (`userId`),
+  KEY `date_idx` (`date`),
+  KEY `channelidx` (`channelId`),
+  KEY `user_date_idx` (`userId`,`date`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1;
+
+--
+-- Table structure for table `profiles`
+--
+
+DROP TABLE IF EXISTS `profiles`;
+CREATE TABLE `profiles` (
+  `id` bigint(12) unsigned NOT NULL auto_increment,
+  `userid` bigint(11) NOT NULL default '0',
+  `handle` varchar(100) NOT NULL default '',
+  `tagline` varchar(255) default NULL,
+  `wantsMen` int(1) default NULL,
+  `wantsWomen` int(1) default NULL,
+  `relationship1` int(1) default NULL,
+  `relationship2` int(1) default NULL,
+  `relationship3` int(1) default NULL,
+  `relationship4` int(1) default NULL,
+  `relationship5` int(1) default NULL,
+  `height` int(1) default NULL,
+  `weight` int(1) default NULL,
+  `subculture` int(1) default NULL,
+  `modifyDate` datetime default NULL,
+  `relationshipStatus` int(1) default NULL,
+  `views` bigint(11) default '0',
+  `tagPublicly` int(1) default '2',
+  `allowAnonymousTags` int(1) default '1',
+  `qowOrder` text,
+  `auto_overheard` int(1) unsigned default '1',
+  `auto_topics` int(1) unsigned default '1',
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `handle_idx` (`handle`),
+  KEY `userId_index` (`userid`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1;
+
+--
+-- Table structure for table `questionoftheweek`
+--
+
+DROP TABLE IF EXISTS `questionoftheweek`;
+CREATE TABLE `questionoftheweek` (
+  `id` bigint(12) NOT NULL auto_increment,
+  `date` datetime default NULL,
+  `question` blob,
+  `boilerplate` enum('Y','N') default 'N',
+  `intro` blob,
+  `suggestedById` bigint(12) unsigned default NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `questionresponse`
+--
+
+DROP TABLE IF EXISTS `questionresponse`;
+CREATE TABLE `questionresponse` (
+  `id` bigint(12) NOT NULL auto_increment,
+  `date` datetime default NULL,
+  `answer` blob,
+  `userId` bigint(12) default NULL,
+  `questionId` bigint(12) default NULL,
+  `mostPopular` enum('Y','N') default NULL,
+  `popularity` bigint(12) default NULL,
+  `photoId` bigint(12) default NULL,
+  `nsfw` tinyint(1) default '0',
+  `videoId` bigint(12) default '0',
+  PRIMARY KEY  (`id`),
+  KEY `user_idx` (`userId`),
+  KEY `question_idx` (`questionId`),
+  KEY `photoidx` (`photoId`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+--
+-- Table structure for table `spamUser`
+--
+
+DROP TABLE IF EXISTS `spamUser`;
+CREATE TABLE `spamUser` (
+  `id` int(11) NOT NULL auto_increment,
+  `userId` int(11) NOT NULL default '0',
+  `insertDate` datetime default NULL,
+  `message` text,
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `spamUser_userId_uk` (`userId`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `spent`
+--
+
+DROP TABLE IF EXISTS `spent`;
+CREATE TABLE `spent` (
+  `id` bigint(12) unsigned NOT NULL auto_increment,
+  `userId` bigint(12) default NULL,
+  `date` datetime default NULL,
+  `partner` varchar(25) default NULL,
+  `type` varchar(20) default NULL,
+  `amount` bigint(12) default '1',
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1;
+
+
+--
+-- Table structure for table `tag`
+--
+
+DROP TABLE IF EXISTS `tag`;
+CREATE TABLE `tag` (
+  `value` varchar(100) default NULL,
+  `id` bigint(12) NOT NULL auto_increment,
+  `parent` bigint(12) default NULL,
+  `facetId` bigint(12) default NULL,
+  `insertDate` datetime default NULL,
+  `addedBy` bigint(12) default NULL,
+  `quirkyness` int(11) default NULL,
+  PRIMARY KEY  (`id`),
+  KEY `tagval` (`value`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `tagRef`
+--
+
+DROP TABLE IF EXISTS `tagRef`;
+CREATE TABLE `tagRef` (
+  `profileId` bigint(12) default NULL,
+  `tagId` bigint(12) default NULL,
+  `source` enum('O','U') default NULL,
+  `addedById` bigint(12) default NULL,
+  `dateAdded` datetime default NULL,
+  `id` bigint(12) NOT NULL auto_increment,
+  `facetId` bigint(12) default NULL,
+  `anonymous` int(1) default '1',
+  UNIQUE KEY `id` (`id`),
+  KEY `profile_idx` (`profileId`),
+  KEY `tag_idx` (`tagId`),
+  KEY `profile_tag_idx` (`profileId`,`tagId`),
+  KEY `addedByIdx` (`addedById`),
+  KEY `dateIdx` (`dateAdded`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `tag_compare`
+--
+
+DROP TABLE IF EXISTS `tag_compare`;
+CREATE TABLE `tag_compare` (
+  `id` int(11) NOT NULL auto_increment,
+  `tags` text,
+  `userId` int(11) default NULL,
+  `date` datetime default NULL,
+  `results` text,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `teamResponse`
+--
+
+DROP TABLE IF EXISTS `teamResponse`;
+CREATE TABLE `teamResponse` (
+  `id` bigint(12) unsigned NOT NULL auto_increment,
+  `teamId` bigint(12) unsigned NOT NULL default '0',
+  `teamTopicId` bigint(12) unsigned NOT NULL default '0',
+  `userId` bigint(12) unsigned NOT NULL default '0',
+  `response` text NOT NULL,
+  `date` datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (`id`),
+  KEY `user_idx` (`userId`),
+  KEY `date_idx` (`date`),
+  KEY `team_idx` (`teamId`,`date`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `teamTopic`
+--
+
+DROP TABLE IF EXISTS `teamTopic`;
+CREATE TABLE `teamTopic` (
+  `id` bigint(12) unsigned NOT NULL auto_increment,
+  `teamId` bigint(12) unsigned NOT NULL default '0',
+  `userId` bigint(12) unsigned NOT NULL default '0',
+  `question` text NOT NULL,
+  `date` datetime NOT NULL default '0000-00-00 00:00:00',
+  `enabled` tinyint(1) NOT NULL default '1',
+  PRIMARY KEY  (`id`),
+  KEY `user_idx` (`userId`),
+  KEY `team_idx` (`teamId`,`date`),
+  KEY `date_idx` (`date`,`teamId`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `team_boot_votes`
+--
+
+DROP TABLE IF EXISTS `team_boot_votes`;
+CREATE TABLE `team_boot_votes` (
+  `id` int(11) NOT NULL auto_increment,
+  `teamId` int(11) NOT NULL default '0',
+  `team_boot_id` int(11) NOT NULL default '0',
+  `userId` int(11) NOT NULL default '0',
+  `type` enum('U','D') NOT NULL default 'U',
+  `date` datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `team_boots`
+--
+
+DROP TABLE IF EXISTS `team_boots`;
+CREATE TABLE `team_boots` (
+  `id` int(11) NOT NULL auto_increment,
+  `teamId` int(11) NOT NULL default '0',
+  `userId` int(11) NOT NULL default '0',
+  `date` datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `team_invite_incentives`
+--
+
+DROP TABLE IF EXISTS `team_invite_incentives`;
+CREATE TABLE `team_invite_incentives` (
+  `id` int(11) NOT NULL auto_increment,
+  `teamId` int(11) NOT NULL default '0',
+  `inviteId` int(11) NOT NULL default '0',
+  `userId` int(11) NOT NULL default '0',
+  `points` int(11) NOT NULL default '0',
+  `date` datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (`id`),
+  KEY `teamId_idx` (`teamId`),
+  KEY `inviteId_idx` (`inviteId`),
+  KEY `userId_idx` (`userId`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `team_invites`
+--
+
+DROP TABLE IF EXISTS `team_invites`;
+CREATE TABLE `team_invites` (
+  `id` int(11) NOT NULL auto_increment,
+  `teamId` int(11) NOT NULL default '0',
+  `inviterId` int(11) NOT NULL default '0',
+  `userId` int(11) NOT NULL default '0',
+  `date` datetime NOT NULL default '0000-00-00 00:00:00',
+  `notes` text,
+  PRIMARY KEY  (`id`),
+  KEY `teamId_idx` (`teamId`),
+  KEY `inviterId_idx` (`inviterId`),
+  KEY `userId_idx` (`userId`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `team_join_votes`
+--
+
+DROP TABLE IF EXISTS `team_join_votes`;
+CREATE TABLE `team_join_votes` (
+  `id` int(11) NOT NULL auto_increment,
+  `teamId` int(11) NOT NULL default '0',
+  `team_join_id` int(11) NOT NULL default '0',
+  `userId` int(11) NOT NULL default '0',
+  `type` enum('U','D') NOT NULL default 'U',
+  `date` datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `team_joins`
+--
+
+DROP TABLE IF EXISTS `team_joins`;
+CREATE TABLE `team_joins` (
+  `id` int(11) NOT NULL auto_increment,
+  `teamId` int(11) NOT NULL default '0',
+  `userId` int(11) NOT NULL default '0',
+  `date` datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `team_members`
+--
+
+DROP TABLE IF EXISTS `team_members`;
+CREATE TABLE `team_members` (
+  `id` int(11) NOT NULL auto_increment,
+  `teamId` int(11) NOT NULL default '0',
+  `userId` int(11) NOT NULL default '0',
+  `pointContribution` int(11) NOT NULL default '0',
+  `joindate` datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `team_user_uk` (`teamId`,`userId`),
+  KEY `team_idx` (`teamId`),
+  KEY `user_idx` (`userId`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `team_reject`
+--
+
+DROP TABLE IF EXISTS `team_reject`;
+CREATE TABLE `team_reject` (
+  `id` int(11) NOT NULL auto_increment,
+  `teamId` int(11) NOT NULL default '0',
+  `userId` int(11) NOT NULL default '0',
+  `date` datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `teams`
+--
+
+DROP TABLE IF EXISTS `teams`;
+CREATE TABLE `teams` (
+  `id` int(11) NOT NULL auto_increment,
+  `name` varchar(32) NOT NULL default '',
+  `tagline` varchar(128) NOT NULL default '',
+  `description` text,
+  `private` tinyint(4) default '0',
+  `points` int(11) NOT NULL default '0',
+  `memberCount` int(11) NOT NULL default '0',
+  `date` datetime NOT NULL default '0000-00-00 00:00:00',
+  `updatedate` datetime NOT NULL default '0000-00-00 00:00:00',
+  `ownerId` int(11) NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+
+--
+-- Table structure for table `thumb`
+--
+
+DROP TABLE IF EXISTS `thumb`;
+CREATE TABLE `thumb` (
+  `id` bigint(12) unsigned NOT NULL auto_increment,
+  `userId` bigint(12) default NULL,
+  `profileId` bigint(12) default NULL,
+  `type` char(1) default NULL,
+  `insertDate` datetime default NULL,
+  PRIMARY KEY  (`id`),
+  KEY `userId_idx` (`userId`),
+  KEY `popular_idx` (`type`,`profileId`),
+  KEY `latest_thumb_idx` (`profileId`,`type`,`insertDate`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1;
+
+--
+-- Table structure for table `topicTagRef`
+--
+
+DROP TABLE IF EXISTS `topicTagRef`;
+CREATE TABLE `topicTagRef` (
+  `topicId` bigint(12) default NULL,
+  `tagId` bigint(12) default NULL,
+  `userId` bigint(12) default NULL,
+  `date` datetime default NULL,
+  KEY `tid` (`topicId`),
+  KEY `topicTagRef_tag_topic_key` (`tagId`,`topicId`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `topicwatch`
+--
+
+DROP TABLE IF EXISTS `topicwatch`;
+CREATE TABLE `topicwatch` (
+  `userId` bigint(12) default NULL,
+  `topicId` bigint(12) default NULL,
+  `date` datetime default NULL,
+  UNIQUE KEY `oneperperson` (`userId`,`topicId`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+
+--
+-- Table structure for table `userSessions`
+--
+
+DROP TABLE IF EXISTS `userSessions`;
+CREATE TABLE `userSessions` (
+  `id` bigint(12) unsigned NOT NULL auto_increment,
+  `userId` bigint(12) default NULL,
+  `startDate` datetime default NULL,
+  `lastAction` datetime default NULL,
+  `firstLoad` varchar(255) default NULL,
+  `pageCount` bigint(12) default '1',
+  `ip_address` varchar(20) default NULL,
+  `user_agent` varchar(100) default NULL,
+  PRIMARY KEY  (`id`),
+  KEY `user_idx` (`userId`),
+  KEY `date_idx` (`startDate`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1;
+
+--
+-- Table structure for table `user_blocked_tags`
+--
+
+DROP TABLE IF EXISTS `user_blocked_tags`;
+CREATE TABLE `user_blocked_tags` (
+  `id` int(11) NOT NULL auto_increment,
+  `type` enum('tag','user') NOT NULL default 'tag',
+  `value` varchar(255) NOT NULL default '',
+  `profileId` int(11) NOT NULL default '0',
+  PRIMARY KEY  (`id`),
+  KEY `profile_index` (`profileId`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `user_dashboard`
+--
+
+DROP TABLE IF EXISTS `user_dashboard`;
+CREATE TABLE `user_dashboard` (
+  `id` int(11) NOT NULL auto_increment,
+  `userId` int(11) NOT NULL default '0',
+  `item1` int(11) default NULL,
+  `item2` int(11) default NULL,
+  `item3` int(11) default NULL,
+  `item4` int(11) default NULL,
+  `item5` int(11) default NULL,
+  `item6` int(11) default NULL,
+  `item7` int(11) default NULL,
+  `itemtheme` int(11) default NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `user_item_info`
+--
+
+DROP TABLE IF EXISTS `user_item_info`;
+CREATE TABLE `user_item_info` (
+  `id` int(11) NOT NULL auto_increment,
+  `itemId` int(11) NOT NULL default '0',
+  `points` int(11) NOT NULL default '0',
+  `behavior` text NOT NULL,
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `user_item_info_itemId_uk` (`itemId`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `user_items`
+--
+
+DROP TABLE IF EXISTS `user_items`;
+CREATE TABLE `user_items` (
+  `id` bigint(12) unsigned NOT NULL auto_increment,
+  `name` varchar(128) NOT NULL default '',
+  `ownerId` bigint(12) unsigned NOT NULL default '0',
+  `creatorId` bigint(12) unsigned NOT NULL default '0',
+  `type` enum('user','system') NOT NULL default 'system',
+  `location` enum('pocket','drawer','gift') default NULL,
+  `createDate` datetime default NULL,
+  `previousOwnerId` bigint(12) unsigned NOT NULL default '0',
+  `lastGiveDate` datetime default NULL,
+  `enabled` tinyint(4) default '1',
+  `description` text,
+  `featured` tinyint(2) default '0',
+  `lastUpdate` datetime default NULL,
+  PRIMARY KEY  (`id`),
+  KEY `ownerId_key` (`ownerId`),
+  KEY `dates_key` (`createDate`,`lastUpdate`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `user_sphere`
+--
+
+DROP TABLE IF EXISTS `user_sphere`;
+CREATE TABLE `user_sphere` (
+  `id` int(11) NOT NULL auto_increment,
+  `userId` int(11) NOT NULL default '0',
+  `sphereId` int(11) NOT NULL default '0',
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `user_sphere_uk` (`userId`,`sphereId`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `users`
+--
+
+DROP TABLE IF EXISTS `users`;
+CREATE TABLE `users` (
+  `id` bigint(12) unsigned NOT NULL auto_increment,
+  `firstName` varchar(100) default NULL,
+  `lastName` varchar(100) default NULL,
+  `zipcode` varchar(10) default NULL,
+  `city` varchar(50) default NULL,
+  `state` char(2) default NULL,
+  `username` varchar(100) NOT NULL default '',
+  `password` varchar(16) default NULL,
+  `createDate` datetime default NULL,
+  `lastLogin` datetime default NULL,
+  `lastActive` datetime default NULL,
+  `points` int(11) default NULL,
+  `sex` char(1) default NULL,
+  `birthDate` date default NULL,
+  `partner` varchar(25) default NULL,
+  `country` varchar(25) default NULL,
+  `firstUpload` char(1) default '0',
+  `popularity` int(11) default '0',
+  `oldPopularity` int(11) default NULL,
+  `todayPopularity` int(11) NOT NULL default '0',
+  `questionPopularity` int(11) default NULL,
+  `optout` char(1) default NULL,
+  `lastChat` datetime default NULL,
+  `localQuery` text,
+  `subLevel` int(11) default '1',
+  `authkey` varchar(60) default NULL,
+  `peoplePref` enum('dates','friends','everyone') default NULL,
+  `peoplePrefQuery` text,
+  `trouble` enum('Y','N') default 'N',
+  `cell` varchar(100) default NULL,
+  `norank` tinyint(4) default '0',
+  `latitude` float default NULL,
+  `longitude` float default NULL,
+  `status` int(2) default '1',
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `usernameidx` (`username`),
+  KEY `todayPopularity_index` (`todayPopularity`),
+  KEY `unamepass` (`username`,`password`),
+  KEY `auth_idx` (`authkey`),
+  KEY `users_lastLogin` (`lastLogin`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1;
+
+
+--
+-- Table structure for table `videos`
+--
+
+DROP TABLE IF EXISTS `videos`;
+CREATE TABLE `videos` (
+  `id` int(11) NOT NULL auto_increment,
+  `userId` bigint(12) default NULL,
+  `name` varchar(255) default NULL,
+  `description` text,
+  `path` varchar(255) default NULL,
+  `duration` varchar(12) default NULL,
+  `source` varchar(12) default NULL,
+  PRIMARY KEY  (`id`),
+  KEY `videos_userid_key` (`userId`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `zips`
+--
+
+DROP TABLE IF EXISTS `zips`;
+CREATE TABLE `zips` (
+  `zip` varchar(5) NOT NULL default '',
+  `five` text,
+  `ten` text,
+  `fifteen` text,
+  `twentyfive` text,
+  `fifty` text,
+  PRIMARY KEY  (`zip`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+

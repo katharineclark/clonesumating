@@ -1,0 +1,350 @@
+#!/usr/bin/perl
+
+use strict;
+ 
+use FCGI;
+use CGI::Fast;
+use List::Util qw(shuffle);
+
+use lib "lib";
+use Profiles;
+use template2;
+use Cache;
+use tagmatch;
+use tags;
+use Users;
+use sphere;
+use teams;
+
+
+my $appcount = 1;
+my $count = 0;
+my ($dbh);
+
+use POSIX qw(SIGTERM SIGINT SIGSEGV);
+POSIX::sigaction(SIGTERM, POSIX::SigAction->new(\&fastQuit)) or die "Error setting SIGTERM handler: $!\n";
+POSIX::sigaction(SIGINT, POSIX::SigAction->new(\&fastQuit)) or die "Error setting SIGINT handler: $!\n";
+POSIX::sigaction(SIGSEGV, POSIX::SigAction->new(\&fastQuit)) or die "Error setting SIGSEGV handler: $!\n";
+
+sub fastQuit {
+    warn "FASTQUIT CALLED FROM tags.csm. SIG@_";
+	exit(0);
+}
+
+
+while (my $cgi = new CGI::Fast) {
+	
+	my $P = Profiles->new(dbh=>$dbh,query=>$cgi);
+
+	if ($P->{command} eq "" || $P->{command} eq "/") {
+# build the homepage
+		buildTagsHomepage($P);
+	} else {
+# build tag specific page
+		buildTagPage($cgi);
+	}
+
+	$cgi = undef;
+
+#	$req->Flush();
+#	$req->Finish();
+
+	if ($appcount > 200) {
+		#exit;
+	}
+}
+
+
+
+sub buildTagsHomepage {
+
+	my ($P) = @_;
+	$P->{user}{system}{tab} = "Tags";
+
+# trendy tags
+# get tags that have seen a lot of activity over the last few days
+
+	$P->{user}{zeitgeist}{content} = &zeitgeist($P);
+
+
+	# get recent public tags
+	{
+		my $sth = $P->{dbh}->prepare("SELECT DISTINCT t.value AS value,r.profileId,r.addedById FROM tag t, tagRef r WHERE r.tagId=t.id AND r.anonymous = -1 ORDER BY dateAdded DESC LIMIT 40");
+		$sth->execute;
+		my $count = 0;
+		while (my $tag = $sth->fetchrow_hashref) {
+			if (length($tag->{value}) > 30) { next; }
+			
+            my $taggee = Users->new(dbh => $P->{dbh}, cache => $P->{cache}, userId => $tag->{profileId}) or next;
+            my $tagger = Users->new(dbh => $P->{dbh}, cache => $P->{cache}, userId => $tag->{addedById}) or next;
+
+			push(@{ $P->{user}{publictags} },{tag => $tag,taggee=>$taggee->profile,tagger=>$tagger->profile});
+			$count++;
+			if ($count > 10) { last; }
+		}
+		$sth->finish;
+	}
+
+# get a count of all the tags
+
+	{ 
+
+		my $sth = $P->{dbh}->prepare("SELECT count(1) FROM tag;");
+		$sth->execute;
+		$P->{user}{page}{tagcount} = $sth->fetchrow;
+		$sth->finish;
+	}
+
+
+
+		# load popular tags
+		if (!($P->{user}{poptags} = $P->{cache}->get('tagsTop10')) ) {
+			my $sql = "SELECT DISTINCT value,COUNT(tagId) as count FROM tagRef,tag WHERE tag.id=tagRef.tagId and source='O' GROUP BY tagId ORDER BY count DESC LIMIT 60";
+			my $sth = $P->{dbh}->prepare($sql);
+			$sth->execute;
+
+			my $count = 0;
+			while (my $tag = $sth->fetchrow_hashref) {
+				push(@{$P->{user}{poptags}},{tag => $tag});
+			}
+
+		
+            $P->{cache}->set('tagsTop10',$P->{user}{poptags},1500);
+		} else {
+
+			$P->{user}{poptags} = $P->{cache}->get("tagsTop10");
+
+		}
+
+
+
+
+		print $P->Header();
+		print processTemplate($P->{user},"tags/index.html");
+
+		#my $body = $P->{user}{system}{body};
+		#storeCache("tags.$P->{user}{system}{authenticated}",\$body);
+
+} 
+
+
+sub buildTagPage {
+	my $cgi = shift;
+
+
+
+
+	my %user = loadUserWithCGI($cgi);
+#	my %user;
+    $user{system}{tab} = "Tags";
+my @p = $cgi->param;
+	my $tag = $cgi->param('searchtag');
+
+	$tag =~ s/^\///gsm;
+	my $qtag = $dbh->quote($tag);
+
+	$user{page}{tag} = $tag;
+
+	if (0) {#$body = checkCache("tags.$tag")) {
+			#$user{cache}{body} = $body;
+			#print processTemplate(\%user,"cache.html");
+
+	} else {
+
+# first, let's see if this tag exists at all, and get the top 5 users 
+
+		my $sql = "SELECT id FROM tag WHERE value=$qtag";
+		my $sth = $dbh->prepare($sql);
+		$sth->execute;
+		if (my $id = $sth->fetchrow) {
+
+			$user{search}{found} = 1;
+			# get top 5 people
+
+			my $sql = "SELECT handle,tagline,city,state,country,users.id as userId,photos.id as photoId FROM (users inner join photos on users.id=photos.userId and photos.rank=1),profiles,tagRef WHERE users.id=profiles.userId and profiles.userId=tagRef.profileId and tagRef.tagId=$id and users.sex='m' ORDER BY popularity DESC limit 4;";
+
+			my $stx = $dbh->prepare($sql);
+			$stx->execute;
+			my $count = 0;
+			while (my $profile = $stx->fetchrow_hashref) {
+				$profile->{linkhandle} = linkify($profile->{handle});
+				%{$user{boys}{$count++}{profile}} = %{$profile};
+			}
+			$stx->finish;
+
+			$sql = "SELECT handle,tagline,city,state,country,users.id as userId,photos.id as photoId FROM (users inner join photos on users.id=photos.userId and photos.rank=1),profiles,tagRef WHERE users.id=profiles.userId and profiles.userId=tagRef.profileId and tagRef.tagId=$id and users.sex='f' ORDER BY popularity DESC limit 4;";
+
+			$stx = $dbh->prepare($sql);
+			$stx->execute;
+			$count = 0;
+			while (my $profile = $stx->fetchrow_hashref) {
+					$profile->{linkhandle} = linkify($profile->{handle});
+					%{$user{girls}{$count++}{profile}} = %{$profile};
+			}
+			$stx->finish;
+
+			$sql = "SELECT count(1) from tagRef,users WHERE tagRef.profileId=users.id and tagId=$id and users.sex='M'";
+			$stx = $dbh->prepare($sql);
+			$stx->execute;
+			$user{search}{boys} = $stx->fetchrow;
+			$stx->finish;
+
+
+			$sql = "SELECT count(1) from tagRef,users WHERE tagRef.profileId=users.id and tagId=$id and users.sex='F'";
+			$stx = $dbh->prepare($sql);
+			$stx->execute;
+			$user{search}{girls} = $stx->fetchrow;
+			$stx->finish;
+
+			$user{search}{count} = $user{search}{boys} + $user{search}{girls};
+
+
+			# does this person use this tag?
+			if ($user{user}{id}) {
+					my $sql = "SELECT id FROM tagRef WHERE tagId=$id AND profileId=$user{user}{id};";
+					my $stx = $dbh->prepare($sql);
+					$stx->execute;
+					if ($stx->fetchrow) {
+						$user{page}{tagged} = 1;
+					}
+					$stx->finish;
+			}
+
+
+
+
+			$user{global}{pagetitle} = "People tagged '$tag' at Consumating";
+
+			$sql = "SELECT id FROM tag WHERE value=$qtag";
+			$sth = $dbh->prepare($sql);
+			$sth->execute;
+			my $tagId = $sth->fetchrow;
+			$sth->finish;
+
+			# get similar tags
+			(my $plaintag = $tag) =~ s/'/\\'/g;
+			$sql = "select value,count(tagRef.profileId) as count from tag inner join tagRef on tag.id=tagRef.tagId where ( (SOUNDEX(value) = SOUNDEX($qtag))  OR (value like '%$tag%') ) and tag.value != $qtag GROUP BY tag.id ORDER BY count desc limit 5;";
+			$sth = $dbh->prepare($sql);
+			$sth->execute;
+			$count = 0;
+			while (my $t = $sth->fetchrow_hashref) {
+				%{$user{tags}{$count++}{tag}} = %{$t};
+				%{$user{newtags}{$count++}{tag}} = %{$t};
+			}
+
+			# get related tags
+			$sql = "SELECT distinct profileId FROM tagRef WHERE tagId=$tagId";
+			$sth = $dbh->prepare($sql);
+			$sth->execute;
+			my @profiles;
+			while (my $pid = $sth->fetchrow) {
+				push(@profiles,$pid);
+			}
+			$sth->finish;
+
+			if (scalar(@profiles)  > 0) {
+				$sql = "select t1.value,count(tr1.profileId) as count FROM tag t1 inner join tagRef tr1 on tr1.tagId=t1.id WHERE t1.id != $tagId and tr1.profileId IN (" . join(",",@profiles) . ") GROUP BY t1.id having count > 5 ORDER BY count DESC limit 5";
+				$sth = $dbh->prepare($sql);
+				$sth->execute;
+				$count = 0;
+				while (my $t = $sth->fetchrow_hashref) {
+					%{$user{related}{$count++}{tag}} = %{$t};
+				}
+			}
+
+
+			if (1==2)  {
+				$sql = "select t1.value,quirkyness FROM tag t1 inner join tagRef tr1 on tr1.tagId=t1.id WHERE tr1.profileId IN (" . join(",",@profiles) . ") where quirkyness > 100 GROUP BY t1.id ORDER BY quirkyness DESC limit 5";
+				$sth = $dbh->prepare($sql);
+				$sth->execute;
+				$count = 0;
+				while (my $t = $sth->fetchrow_hashref) {
+					%{$user{quirky}{$count++}{tag}} = %{$t};
+				}
+			}
+		}
+
+		print $cgi->header();
+		print processTemplate(\%user,"tags/oldtagpage.html");
+
+	}
+		
+
+}
+
+$dbh->disconnect();
+
+
+sub zeitgeist {
+	my ($P) = @_;
+	my @comp = shuffle(
+		['Video Game Platform',qw(snes xbox xbox360 playstation ps2 sega nintendo n64 atari pong)],
+		['Hit or Miss',qw(hit miss horseshoes handgrenades)],
+		['Cats or Dogs',qw(cats dogs)],
+		['Food',qw(carnivore vegetarian vegan)],
+		['Underwear',qw(boxers briefs panties manties)],
+		['Lemon or Lime',qw(lemon lime)],
+		['Adult Swim',qw(moralorel oblongs cowboybeebop fullmetalalchemist familyguy futurama robotchicken boondocks harveybirdman spaceghost aquateenhungerforce)],
+		['Languages',qw(english french japanese chinese korean german spanish tagalog esperanto arabic hindi greek latin hebrew malay afrikaans dutch danish)],
+		['Web Portal',qw(yahoo msn aol google)], 
+		['Age',qw(old young baby grownup adult)],
+		['Marital Status',qw(single married divorced wifeswap)],
+		['Color',qw(red blue green orange purple plaid mauve black grey polkadot)],
+		['Nocturnal',qw(day night)],
+		['Gender',qw(boy girl man woman)],
+		['Sex',qw(straight gay lesbian bi virgin)],
+		['Sports',qw(pingpong airhockey football bowling baseball hockey discgolf pool badminton foosball soccer futbol rugby polo waterpolo billiards darts curling)],
+		['Country',qw(canada usa england iraq spain zimbabwe france germany russia latvia mexico chile argentina brazil peru switzerland netherlands sweden denmark)],
+		['republican or democrat',qw(republican democrat)],
+		['Smoker',qw(smoker nonsmoker pot crack)],
+		['Hair Color', qw(blond brunette redhead)],
+		['T or A',qw(tits ass)],
+		['Drinker',qw(drunk sober alcoholic)],
+		['Music',qw(punk classical classicrock country rap rock metal jazz electronica ska reggae oldies emo indie)],
+		['Three R\'s',qw(reading writing math)],
+		['Compliment',qw(adorable cute sexy hot nice)],
+		['Eyes',qw(blueeyes greeneyes browneyes hazeleyes redeyes)],
+		['Geekdom',qw(computers sex)],
+		['Soft Drink',qw(coke pepsi mountaindew jolt sprite water tea coffee)],
+		['Hard Drink',qw(vodka rum whiskey bourbon gin tequila beer scotch wine brandy sake champagne)],
+		['Computer',qw(mac apple pc dell ibm c64 windows)],
+		['Major City',qw(seattle sanfrancisco newyork austin london toronto vancouver mexicocity singapore tokyo washingtondc funkytown dallas houston boston amsterdam berlin moscow bucharest portland)],
+		['Cool',qw(cool uncool loser winner boring exciting fun)],
+		['Geek or Nerd',qw(geek nerd)],
+		['Religion',qw(christian catholic agnostic atheist pagan hindu jewish buddhist)],
+		['Bar or Pub',qw(bar pub)],
+		['Movie or Film',qw(movies films)],
+		['Weather',qw(rain snow sun clouds)],
+		['Season',qw(winter summer spring autumn)],
+	);
+
+	my $sth = $P->{dbh}->prepare("SELECT COUNT(*) FROM tagRef r, tag t WHERE r.tagId = t.id AND t.value=?");
+	my $count = 0;
+	my $count2 = 0;
+	foreach (sort {scalar @$a <=> scalar @$b || $a->[0] cmp $b->[0]} @comp[0..6]) {
+		my $subcount = 0;
+		my $title = shift @$_;
+		my (%v,$sum);
+		for (@$_) {
+			$sth->execute($_);
+			$v{$_} = $sth->fetchrow;
+			$sum += $v{$_};
+		}
+		my %data;
+		for (sort {$v{$b} <=> $v{$a}} keys %v) {
+			my $tag =  {name => $_, value => $v{$_}, percent => sprintf("%.2f",($v{$_}/$sum)*100) };
+
+			push(@{$data{tags}},{tag => $tag});
+#{$subcount++}{tag} = {name => $_, value => $v{$_}, percent => sprintf("%.2f",($v{$_}/$sum)*100) };
+			
+			# this is for the teacup
+			push(@{$P->{user}{comparetags}},{tag => {value => $_}});
+			#$user{comparetags}{$count2++}{tag} = {value => $_};
+		}
+		
+			push(@{$P->{user}{compare}},{tags => { title => $title, comp => processTemplate(\%data,'tags/zeitgeist.tag.html',1) } });
+		#$user{compare}{$count++}{tags} = { title => $title, comp => processTemplate(\%data,'zeitgeist.tag.html',1) };
+	}
+
+	return processTemplate($P->{user},'tags/zeitgeist.html',1);
+}

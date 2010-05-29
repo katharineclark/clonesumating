@@ -1,0 +1,45 @@
+#!/usr/bin/perl
+
+use strict;
+ 
+use FCGI;
+use CGI::Fast;
+use Image::Magick;
+
+use lib qw(lib ../lib);
+use Profiles;
+use template2;
+use Users;
+use items;
+use CONFIG;
+
+my $useritemdir = "$staticdir/img/items/user";
+
+my $appcount = 1;
+my $dbh;
+while (my $cgi = new CGI::Fast) {
+	my $P = Profiles->new(dbh => $dbh, query => $cgi);
+
+	print $P->Header();
+
+	list($P);
+
+	$appcount++;
+	if ($appcount > 200) {
+		exit;
+	}
+}
+
+sub list {
+	my $P = shift;
+
+	my $I = items->new($P->{cache},$P->{dbh},$P->{user}{user}{id});
+
+	for ($I->pocketItems,$I->drawerItems) {
+		push @{$P->{user}{itemlist}}, {item => $_};
+	}
+
+	print processTemplate($P->{user},"items/list.html");
+
+	return;
+}

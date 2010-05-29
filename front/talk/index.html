@@ -1,0 +1,221 @@
+<script type="text/javascript" language="javascript">
+<!--
+function toggleWatch(id,on) {
+	if (on) {
+		submitRequest('topic.addWatch','','topicId='+id);
+		document.getElementById('watched'+id).style.display='block';
+		document.getElementById('notwatched'+id).style.display='none';
+	} else {
+		submitRequest('topic.removeWatch','','topicId='+id);
+		document.getElementById('watched'+id).style.display='none';
+		document.getElementById('notwatched'+id).style.display='block';
+	}
+	return false;
+}
+function stopWatchingClosed(response) {
+	response = response.responseXML;
+	var ids = response.getElementsByTagName('id');
+	for (var i=0;i<ids.length;i++) {
+		try{
+			var id = ids[i].firstChild.nodeValue;
+			var ele = document.getElementById('topic_'+id);
+			ele.parentNode.removeChild(ele);
+		}catch(e){
+			//alert('error SWC1: '+e.message)
+		}
+	}
+	alert('Conversations cleaned!');
+	return false;
+}
+
+//-->
+</script>
+
+<div id="conversationmanager">
+
+<h1 id="pagetitle">My Conversations&nbsp;&nbsp;<span class="normal"><a href="/talk/all" class="normal">Find More Interesting Conversations!</a></span>
+<br/><span class="small"><a href="/profiles/<cms::var type="user" name="linkhandle">/topics">See your conversation</a></span></h1>
+
+<div id="conversations">
+	<cms::ifloop type="replies">
+	<h2>Recent responses to your posts</h2>
+	<cms::fancylist over="replies" nest>
+    <div id="topic_<cms::var type="topic" name="id">" class="topic">
+		<div class="userpic">
+			<A href="/profiles/<cms::var type="profile" name="linkhandle">" title="visit this profile"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="profile" name="userId">/50/<cms::var type="profile" name="photoId">.jpg" class="pic" border="0" width="50" height="50"></a>
+		</div>
+		<div class="content">
+			<cms::if type="topic" name="type" equals="profile">
+				<a href="/profiles/<cms::var type="profile" name="linkhandle">"><cms::var type="profile" name="handle"></a> said,<br />
+				<A href="/profiles/<cms::var type="profile" name="linkhandle">/topics?id=<cms::var type="topic" name="id">" class="headline" ><cms::var type="topic" name="question"></a>
+			</cms::if>
+			<cms::if type="topic" name="type" equals="meeting">
+                <a href="/profiles/<cms::var type="profile" name="linkhandle">"><cms::var type="profile" name="handle"></a> is hosting a meeting:<br />
+                <A href="/meetings?id=<cms::var type="meeting" name="id">" class="headline" ><cms::var type="meeting" name="name"><cms::ifnot type="meeting" name="date" equals="0000-00-00 00:00:00"> on <cms::var type="meeting" name="date" datetime></cms::ifnot> in <cms::var type="meeting" name="city"></a>
+			</cms::if>
+
+			<div class="meta">
+				<cms::var type="topic" name="totalresponses"> <cms::wc type="topic" name="totalresponses" s="comment" p="comments"><cms::if type="topic" name="responses"><cms::ifnot type="topic" name="watchonly">, <cms::var type="topic" name="responses"> since yours</cms::ifnot>.<Br />
+			 Most recently <cms::var type="topic" name="timesince"> ago</cms::if>.
+			</div>
+			<div class="comments">
+			<cms::fancylist over="comments" nest>
+				<h2 class="headline">
+					<a href="/profiles/<cms::var type="profile" name="linkhandle">"><cms::var type="profile" name="handle"></a> said, <span class="small">(Message from <cms::var type="comment" name="date" date>)</span>
+				</h2>
+				<p><cms::var type="comment" name="response" paragraphs></p>
+				<br />
+			</cms::fancylist over="comments">
+			</div>
+			<div class="actions">
+		    	<cms::if type="topic" name="expired"><b>This conversation is closed.</b><br /></cms::if>
+				<cms::if type="topic" name="type" equals="profile">
+                <A href="/profiles/<cms::var type="profile" name="linkhandle">/topics?id=<cms::var type="topic" name="id">#respond">Respond</a>
+				</cms::if>
+				<cms::if type="topic" name="type" equals="meeting">
+                <A href="/meetings?id=<cms::var type="meeting" name="id">#respond">Respond</a>
+				</cms::if>
+				<a href="#" onClick="return toggleWatch(<cms::var type="topic" name="id">,0);" id="watched<cms::var type="topic" name="id">">Stop Watching</a>
+                <a style="display: none;" href="#" onClick="return toggleWatch(<cms::var type="topic" name="id">,1);" id="notwatched<cms::var type="topic" name="id">">Watch This Topic</a>
+				
+			</div>
+		</div>
+	</cms::fancylist over="replies">
+	</cms::ifloop>
+
+	<h2>Recent posts to conversations you're watching</h2>
+    <cms::fancylist over="mytopics" nest>
+    <div id="topic_<cms::var type="topic" name="id">" class="topic">
+		<div class="userpic">
+			<A href="/profiles/<cms::var type="profile" name="linkhandle">" title="visit this profile"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="profile" name="userId">/50/<cms::var type="profile" name="photoId">.jpg" class="pic" border="0" width="50" height="50"></a>
+		</div>
+		<div class="content">
+			<cms::if type="topic" name="type" equals="profile">
+				<a href="/profiles/<cms::var type="profile" name="linkhandle">"><cms::var type="profile" name="handle"></a> said,<br />
+				<A href="/profiles/<cms::var type="profile" name="linkhandle">/topics?id=<cms::var type="topic" name="id">" class="headline" ><cms::var type="topic" name="question"></a>
+			</cms::if>
+			<cms::if type="topic" name="type" equals="meeting">
+                <a href="/profiles/<cms::var type="profile" name="linkhandle">"><cms::var type="profile" name="handle"></a> is hosting a meeting:<br />
+                <A href="/meetings?id=<cms::var type="meeting" name="id">" class="headline" ><cms::var type="meeting" name="name"><cms::ifnot type="meeting" name="date" equals="0000-00-00 00:00:00"> on <cms::var type="meeting" name="date" datetime></cms::ifnot> in <cms::var type="meeting" name="city"></a>
+			</cms::if>
+			<br clear="all" />
+			<div class="meta">
+				<cms::var type="topic" name="totalresponses"> <cms::wc type="topic" name="totalresponses" s="comment" p="comments"><cms::if type="topic" name="responses"><cms::ifnot type="topic" name="watchonly">, <cms::var type="topic" name="responses"> since yours</cms::ifnot>.<Br />
+				 Most recently <cms::var type="topic" name="timesince"> ago</cms::if>.
+			</div>
+			<div class="comments">
+			<cms::fancylist over="comments" nest>
+				<h2 class="headline">
+					<a href="/profiles/<cms::var type="profile" name="linkhandle">"><cms::var type="profile" name="handle"></a> said, <span class="small">(Message from <cms::var type="comment" name="date" date>)</span>
+				</h2>
+				<p><cms::var type="comment" name="response" paragraphs></p>
+				<br />
+			</cms::fancylist over="comments">
+			</div>
+            <div class="actions">
+                <cms::if type="topic" name="expired"><B>This conversation is closed.</b><Br /></cms::if>
+				<cms::if type="topic" name="type" equals="profile">
+					<A href="/profiles/<cms::var type="profile" name="linkhandle">/topics?id=<cms::var type="topic" name="id">#respond">Respond</a>
+				</cms::if>
+				<cms::if type="topic" name="type" equals="meeting">
+					<A href="/meetings?id=<cms::var type="meeting" name="id">#respond">Respond</a>
+				</cms::if>
+				<a href="#" onClick="return toggleWatch(<cms::var type="topic" name="id">,0);" id="watched<cms::var type="topic" name="id">">Stop Watching</a>
+				<a style="display: none;" href="#" onClick="return toggleWatch(<cms::var type="topic" name="id">,1);" id="notwatched<cms::var type="topic" name="id">">Watch This Topic</a>
+				<br clear="all" />
+			</div>
+			<br clear="all"/>
+			<cms::if type="topic" name="expired">
+				<div class="expired">
+					<a href="/profiles/<cms::var type="profile" name="linkhandle">/topics">See <cms::if type="profile" name="sex" equals="M">his</cms::if><cms::if type="profile" name="sex" equals="F">her</cms::if> new conversation</a>
+				</div>
+			</cms::if>
+		</div> <!-- content -->
+	</div> <!-- topic -->
+    </cms::fancylist over="mytopics">
+
+	<cms::if type="search" name="more">
+		<a href="/talk/search?query=<cms::var type="search" name="query">&offset=<cms::var type="search" name="more">">More</a>
+	</cms::if>
+
+	<cms::ifnotloop type="mytopics">
+
+		<h2>This page tracks activity of the conversations you've participated in.</h2>
+		<p>However, right now, there isn't any activity to show you.  You can <A href="/talk/all">find more conversations</a> to participate in,
+		or you can <B>create your own</b> by visiting your profile.</p>
+	</cms::ifnotloop>
+
+	<cms::ifloop type="peepstopics">
+	<a name="peepstopics"></a>
+	<div style="background: #369; padding: 10px;" class="medium white">
+	New topics from <A href="/updates/">Your Peeps</a>
+	</div>
+
+    <cms::fancylist over="peepstopics">
+    <div id="topic_<cms::var type="topic" name="id">" class="topic">
+		<div class="userpic">
+			<A href="/profiles/<cms::var type="profile" name="linkhandle">" title="visit this profile"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="profile" name="userId">/50/<cms::var type="profile" name="photoId">.jpg" class="pic" border="0"></a>
+		</div>
+        <div class="content">
+            <a href="/profiles/<cms::var type="profile" name="linkhandle">"><cms::var type="profile" name="handle"></a> said,<br />
+            <A href="/profiles/<cms::var type="profile" name="linkhandle">/topics?id=<cms::var type="topic" name="id">" class="headline" ><cms::var type="topic" name="question"></a>
+			<br clear="all" />
+            <div class="meta">
+				<cms::var type="topic" name="responses"> <cms::wc type="topic" name="responses" s="comment" p="comments">.
+            </div>
+  			<div class="actions">
+                <A href="/profiles/<cms::var type="profile" name="linkhandle">/topics?id=<cms::var type="topic" name="id">#respond">Respond</a>
+                <a style="display: none;" href="#" onClick="return toggleWatch(<cms::var type="topic" name="id">,0);" id="watched<cms::var type="topic" name="id">">Stop Watching</a>
+                <a href="#" onClick="return toggleWatch(<cms::var type="topic" name="id">,1);" id="notwatched<cms::var type="topic" name="id">">Watch This Topic</a>
+				<Br clear="all" />
+            </div>
+		</div> <!-- content -->
+    </div> <!-- topic -->
+    </cms::fancylist>
+	</cms::ifloop>
+</div>
+
+<div id="extras">
+
+ <div id="channels" class="pod">
+	<h2>What do you want to talk about?</h2>
+    <cms::fancylist over="profileChannels">
+		<div class="channel">
+			<a href="/talk/channel?id=<cms::var type="channel" name="id">"><cms::var type="channel" name="name"></a>
+		</div>
+    </cms::fancylist>
+    <div id="search">
+		<form action="/talk/search" method="get" id="convSearch">
+			<input type="text" name="query" id="convsearchq" />
+			<input type="submit" value="Search" />
+		</form>   
+    </div>
+</div>       
+
+
+	<div class="pod">
+	<a href="#" onclick="apiRequest('topic.stopWatchingClosed','',stopWatchingClosed);return false;" class="medium">Clean Up My Conversations</a><br />
+	Automatically remove all closed conversations from your conversation manager.
+	</div>
+
+	<div class="pod" id="hottopics">
+		<h2>Hot Topics</h2>
+		<cms::fancylist over="hottopics">
+			<div class="<cms::var type="list" name="evenodd">"><A href="/profiles/<cms::var type="profile" name="linkhandle">/topics?id=<cms::var type="topic" name="id">">
+				<cms::var type="topic" name="question"></a><br /> <cms::var type="topic" name="responses"> <cms::wc type="topic" name="responses" s="comment" p="comments"> so far!
+			</div>
+		</cms::fancylist>
+	</div>
+
+	<div class="pod" id="newtopics">
+		<h2>New Topics</h2>
+		<cms::fancylist over="topics">
+            <div class="<cms::var type="list" name="evenodd">"><A href="/profiles/<cms::var type="profile" name="linkhandle">/topics?id=<cms::var type="topic" name="id">">
+				<cms::var type="topic" name="question"></a><Br /><cms::var type="topic" name="responses"> <cms::wc type="topic" name="responses" s="comment" p="comments"> so far!
+			</div>
+		</cms::fancylist>
+	</div>
+</div> <!-- extras -->
+
+</div> <!-- conversation manager -->
+

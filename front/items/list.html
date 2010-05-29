@@ -1,0 +1,91 @@
+<script language='javascript'>
+function getItemInfo(userId,itemId) {
+	submitRequest('item.getInfo','','userId='+userId+'&itemId='+itemId);
+}
+
+function showItemInfo(response) {
+	var names = new Array();
+	var name;
+	var type;
+	try {
+		if (response.getElementsByTagName('previousOwner')[0].firstChild) {
+			names['previousOwner'] = response.getElementsByTagName('previousOwner')[0].firstChild.nodeValue;
+			names['linkpreviousOwner'] = response.getElementsByTagName('linkpreviousOwner')[0].firstChild.nodeValue;
+		}
+		if (response.getElementsByTagName('owner')[0].firstChild) {
+			names['owner'] = response.getElementsByTagName('owner')[0].firstChild.nodeValue;
+			names['linkowner'] = response.getElementsByTagName('linkowner')[0].firstChild.nodeValue;
+		}
+		names['creator'] = response.getElementsByTagName('creator')[0].firstChild.nodeValue;
+		names['linkcreator'] = response.getElementsByTagName('linkcreator')[0].firstChild.nodeValue;
+		names['id'] = response.getElementsByTagName('id')[0].firstChild.nodeValue;
+
+		name = response.getElementsByTagName('name')[0].firstChild.nodeValue;
+		type = response.getElementsByTagName('type')[0].firstChild.nodeValue;
+		enabled = response.getElementsByTagName('enabled')[0].firstChild.nodeValue;
+	}catch(e){alert(e.message)}
+	var c = new Array();
+	c.push('<center>');
+	c.push('<br />');
+	if (type == 'system') {
+		c.push('<img src="/img/items/system/'+name+'.gif" width="135" height="135"/><br/>');
+	} else if (type == 'user') {
+		c.push('<img src="/img/items/user/'+names['id']+'.gif" width="135" height="135"/><br/>');
+	}
+	c.push('<h2 class="white">This <span class="blue">' + name + '</span>');
+	if (names['creator'] == names['owner']) {
+		c.push(' was made by you!');
+	} else if (names['previousOwner']) {
+		c.push(' was given by <a href="/profiles/'+names['linkpreviousOwner']+'">'+names['previousOwner']+'</a>.');
+	} else {
+		c.push(' was given by <span class="blue">a secret admirer</span>!');
+	};
+	c.push('</h2>');
+	if (names['creator'] != names['owner']) {
+		if (names['creator'] == currentuserhandle) {
+			c.push('It was created by you. <br/>');
+		} else {
+			c.push('It was created by <a href="/profiles/'+names['linkcreator']+'">'+names['creator']+'</a>.<br/>');
+		}
+	}
+
+	if (response.getElementsByTagName('ownerId')[0].firstChild.nodeValue==currentuserid) {
+        c.push('<div style="float: left; margin-top: 40px; width: 175px;">');
+        c.push('<a style="margin-bottom:5px;" href="#" onClick="submitRequest(\'item.take\',\'\',\'itemId='+names['id']+'\');InfoBox.clear();return false;" class="funbutton">Pocket This<b class="round369666 tl"></b><b class="round369666 tr"></b><b class="round369666 bl"></b><b class="round369666 br"></b></a><BR />');
+		var txt = enabled == 1 ? 'Disable' : 'Enable';
+		c.push('<a style="margin-top:5px;" href="#" onclick="submitRequest(\'item.enable\',\'\',\'itemId='+names['id']+'\');InfoBox.clear();return false;" class="funbutton">'+txt+' this item');
+		c.push('<b class="round369666 tl"></b><b class="round369666 tr"></b><b class="round369666 bl"></b><b class="round369666 br"></b></a>');
+		if (names['creator'] == names['owner']) {
+			c.push('<a style="margin-top:5px;" href="/items/create.csm?itemId='+names['id']+'" class="funbutton">Edit this item');
+			c.push('<b class="round369666 tl"></b><b class="round369666 tr"></b><b class="round369666 bl"></b><b class="round369666 br"></b></a>');
+		}
+        c.push('</div>');
+	}
+	c.push('<div style="float: right; margin-top: 40px; width: 175px;">');
+	c.push('<a href="#" onClick="InfoBox.clear(); return false;" class="funbutton">Thanks!<b class="round369666 tl"></b><b class="round369666 tr"></b><b class="round369666 bl"></b><b class="round369666 br"></b></a><br />');
+	c.push('</div>');
+
+	
+	c.push('</center>');
+	InfoBox.draw(c.join(''),'Details');
+}
+</script>
+
+<div style="float:left">
+<h2 class="subtitle">Consumating Created Items</h2>
+<cms::fancylist over="itemlist">
+	<cms::if type="item" name="type" equals="system">
+	<a id='item<cms::var type="item" name="id">' href='#' onclick="getItemInfo(<cms::var type="item" name="ownerId">,<cms::var type="item" name="id">);return false;"><img src="/img/items/system/<cms::var type="item" name="name">.gif"> <b><cms::var type="item" name="name"></a></b><br/>
+	</cms::if>
+</cms::fancylist>
+</div>
+<div style="float:right;">
+<h2 class="subtitle">User Created Items</h2>
+<a class="small" href="/items/create.csm">create new item</a><br/>
+<cms::fancylist over="itemlist">
+	<cms::if type="item" name="type" equals="user">
+	<a id='item<cms::var type="item" name="id">' href='#' onclick="getItemInfo(<cms::var type="item" name="ownerId">,<cms::var type="item" name="id">);return false;"><img src="/img/items/user/<cms::var type="item" name="id">.gif"><b><cms::var type="item" name="name"></a></b><br/>
+	</cms::if>
+</cms::fancylist>
+</div>
+<br clear="all">

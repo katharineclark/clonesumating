@@ -1,0 +1,12 @@
+Bonjour,
+
+Someone just posted a response to your latest conversation
+topic on Consumating.  Check it out!
+
+http://www.consumating.com/profiles/<cms::var type="user" name="linkhandle">/topics
+
+Love,
+Consumating
+
+PS. If you want to change your email alert options, click below.
+ -> http://www.consumating.com/myAccount.pl/alerts

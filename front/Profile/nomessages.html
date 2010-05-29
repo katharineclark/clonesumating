@@ -1,0 +1,29 @@
+<style>
+	#subprofileleft { float: left; width: 530px;}
+	#subprofileright { width: 110px; float: right; text-align: center;}
+</style>
+
+
+<h1 id="pagetitle">Your conversation with <cms::var type="profile" name="handle"></h1>
+
+<div class="card" style="float: left;" id="<cms::var type="profile" name="linkhandle">">
+<a href="/profiles/<cms::var type="profile" name="linkhandle">"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="profile" name="userId">/100/<cms::var type="profile" name="photoId">.jpg" width="100" height="100" border="0"></a><BR />
+     <span class="small"><a href="/profiles/<cms::var type="profile" name="linkhandle">"><cms::var type="profile" name="handle"></a><BR />
+        <cms::if type="profile" name="country" equals="US">
+        <cms::var type="profile" name="city">, <cms::var type="profile" name="state">
+        </cms::if>
+        <cms::ifnot type="profile" name="country" equals="US">
+        <cms::var type="profile" name="city">, <cms::var type="profile" name="country">
+        </cms::ifnot>
+                </span>
+</div>
+
+<cms::ifloop type="random_tags">
+
+<P class="large"><cms::var type="profile" name="handle"> is tagged    
+<cms::fancylist over="random_tags"><cms::ifnot type="list" name="first" nest>, </cms::ifnot type="list" name="first"><cms::if type="list" name="last" nest>and </cms::if type="list" name="last"><a href="/tags/<cms::var type="tag" name="value">"><cms::var type="tag" name="value"></a></cms::fancylist>.  You can send a message if you <A href="/register.pl">join Consumating</a>.  If you've already joined, you need to <a href="/login.pl">log in</a>.</p>
+
+
+</cms::ifloop>
+
+

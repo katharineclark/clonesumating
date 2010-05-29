@@ -1,0 +1,43 @@
+<div id="contests">
+
+	<div id="currentphotocontest">
+		This Week's Photo Contest: <a href="/play/photos/index.pl/current"><B><cms::var type="photocontest" name="description"></b></a><br />
+   		<cms::fancylist over="photocontestentries">
+			<a href="/profiles/<cms::var type="profile" name="linkhandle">"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="profile" name="userid">/100/<cms::var type="profile" name="photoId">.jpg" border="0" width="100" height="100" hspace="0"></a>
+		</cms::fancylist>
+		<br />
+		<a href="/browse/<cms::var type="photocontest" name="tagname">_contest"><B>Check out all the entries in the PeopleBrowser &rarr;</b></a>
+	</div>
+
+
+	<br  clear="all" />
+
+	<div id="questions">
+		<h2>Recent Questions</h2>
+		<cms::fancylist over="questions">
+			<div class="question">
+				<a class="medium" href="/qow.pl?question=<cms::var type="question" name="id">"><cms::var type="question" name="question"></a>
+				<Br />
+				<div class="meta">
+					<b><cms::var type="question" name="responses"></b> <cms::wc type="question" name="responses" s="answer" p="answers"> since <cms::var type="question" name="date" date> | <a href="/qow.pl?question=<cms::var type="question" name="id">#respond">Post Your Answer</a>
+				</div>
+			</div>
+		</cms::fancylist>
+	</div>
+
+	<div id="extras">
+
+		<div class="pod">
+			<ul>
+			<li><A href="/play/questions/index.pl">Browse older questions</a></li>
+			<li><a href="/play/photos/index.pl">Browse older photo contests.</a></li>
+			</ul>
+		</div>
+
+		<div class="pod">
+			<P>There are <a href="/play/questions/"><cms::var type="question" name="count"> other questions</a> to answer and <span class="blue"><cms::var type="page" name="contentcount"> answers</span> to read and review.</p>
+		</div>
+
+	</div>
+	
+</div>

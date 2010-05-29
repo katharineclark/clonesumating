@@ -1,0 +1,27 @@
+<!--
+	HTML 4.01 Strict plus autocomplete
+
+	HTML-style SGML DTD
+	
+	Customization of the W3C's HTML 4.01 Strict DTD for use with the 
+	autocomplete attribute.
+	
+	Example DOCTYPE declaraction:
+	=============================
+
+	<!DOCTYPE HTML SYSTEM 
+	"http://www.benjaminhawkeslewis.com/legacymarkup/dtd/html-4.01-strict-plus-autocomplete.dtd">
+	
+	Changelog:
+	===========
+	
+	8 July 2006    Created.
+	8 August 2006  Changed from copying and pasting Strict into this document to importing it with an ENTITY statement. 
+-->
+
+<!--================ Import HTML 4.01 Strict: ===============================-->
+<!ENTITY % HTML SYSTEM "http://www.w3.org/TR/html4/loose.dtd">
+%HTML;
+
+<!--================ Add the autocomplete attribute: ========================-->
+<!ATTLIST (form|input) autocomplete (on,off) #IMPLIED>

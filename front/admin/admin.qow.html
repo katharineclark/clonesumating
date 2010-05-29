@@ -1,0 +1,14 @@
+<form method='post' action='/admin/qow.pl/save'>
+Date: <input type="text" name="date" value="<cms::var type="form" name="date">"/><br/>
+Question: <input type="text" name="question" value="<cms::var type="form" name="question">"/><br/>
+<input type="submit" name="submit" value="Submit"/>
+</form>
+<table style="border-collapse:collapse;border:1px solid black;">
+<cms::fancylist over="qows">
+<tr style="border:1px solid black;">
+	<td><a href="/qow.pl?id=<cms::var type="question" name="id">"><cms::var type="question" name="id"></a></td>
+	<td><a href="/qow.pl?id=<cms::var type="question" name="id">"><cms::var type="question" name="question"></a></td>
+	<td><a href="/admin/qow.pl/edit?id=<cms::var type="question" name="id">">Edit</a></td>
+</tr>
+</cms::fancylist>
+</table>

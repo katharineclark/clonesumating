@@ -1,0 +1,409 @@
+<style type="text/css">
+
+	<cms::if type="page" name="dashtab" equals="featuredpeople">
+	#mypeeps { display: none; } 
+	#featuredpeople { display: block; }
+	</cms::if>
+    <cms::if type="page" name="dashtab" equals="mypeeps">
+    #mypeeps { display: block; } 
+    #featuredpeople { display: none; } 
+    </cms::if>
+
+</style>
+
+<script language='javascript' type="text/javascript">
+<!--
+
+function toggleWatch(id) {
+
+	<cms::if type="user" name="id">
+    if (test = document.getElementById('watched'+id)) {
+        var on = (document.getElementById('watched'+id).src.indexOf('dashboard-watchbutton-on.gif') == -1);
+    } else if (test = document.getElementById('pwatched'+id)) {
+         var on = (document.getElementById('pwatched'+id).src.indexOf('dashboard-watchbutton-on.gif') == -1);
+    }
+
+if (on) {
+	submitRequest('topic.addWatch','','topicId='+id);
+	if (obj = document.getElementById('watched'+id)) {
+		obj.src='http://<cms::var type="global" name="imgserver">/img/dashboard/dashboard-watchbutton-on.gif';
+	}
+    if (obj = document.getElementById('pwatched'+id)) {
+        obj.src='http://<cms::var type="global" name="imgserver">/img/dashboard/dashboard-watchbutton-on.gif';
+    }
+
+} else {
+	submitRequest('topic.removeWatch','','topicId='+id);
+	if (obj=document.getElementById('watched'+id)) {
+		obj.src='http://<cms::var type="global" name="imgserver">/img/dashboard/dashboard-watchbutton-off.gif';
+	}
+    if (obj=document.getElementById('pwatched'+id)) {
+        obj.src='http://<cms::var type="global" name="imgserver">/img/dashboard/dashboard-watchbutton-off.gif';
+    }
+
+}
+
+    </cms::if>
+    <cms::ifnot type="user" name="id">
+        document.location='/register.pl';
+    </cms::ifnot>
+
+	return false;
+
+}
+
+
+function bling(id,type) {
+
+	<cms::if type="user" name="id">
+
+	url = "/qow.pl/bling?qr=" + id + "&t=" + type;
+	http.open("GET",url,true);
+	http.onreadystatechange= handleBling;
+	http.send(null);
+	bid = id;
+
+	if (type == "U") {
+		if(obj = document.getElementById('bling'+bid+"-up")) {
+		obj.src = "http://<cms::var type="global" name="imgserver">/img/dashboard/up-small-on.gif";
+		obj = document.getElementById('bling'+bid+"-down");
+		obj.src = "http://<cms::var type="global" name="imgserver">/img/dashboard/down-small.gif";
+		}
+
+        if(obj = document.getElementById('pbling'+bid+"-up")) {
+        obj.src = "http://<cms::var type="global" name="imgserver">/img/dashboard/up-small-on.gif";
+        obj = document.getElementById('pbling'+bid+"-down");
+        obj.src = "http://<cms::var type="global" name="imgserver">/img/dashboard/down-small.gif";
+        }
+
+	} else {
+		if (obj = document.getElementById('bling'+bid+"-down")) {
+		obj.src = "http://<cms::var type="global" name="imgserver">/img/dashboard/down-small-on.gif";
+		obj = document.getElementById('bling'+bid+"-up");
+		obj.src = "http://<cms::var type="global" name="imgserver">/img/dashboard/up-small.gif";
+		}
+        if (obj = document.getElementById('pbling'+bid+"-down")) {
+        obj.src = "http://<cms::var type="global" name="imgserver">/img/dashboard/down-small-on.gif";
+        obj = document.getElementById('pbling'+bid+"-up");
+        obj.src = "http://<cms::var type="global" name="imgserver">/img/dashboard/up-small.gif";
+        }
+	}
+
+	</cms::if>
+	<cms::ifnot type="user" name="id">
+		document.location='/register.pl';
+	</cms::ifnot>
+
+	return false;
+
+}
+
+function handleBling() {
+	if (http.readyState == 4) {
+		resultsT = http.responseText;
+		var results = new Array();
+		results = resultsT.split(';');
+
+		if (results[0] == "U") {
+			if (obj = document.getElementById('bling'+bid+"-up")) {
+			obj.src = "http://<cms::var type="global" name="imgserver">/img/dashboard/up-small-on.gif";
+			obj = document.getElementById('bling'+bid+"-down");
+			obj.src = "http://<cms::var type="global" name="imgserver">/img/dashboard/down-small.gif";
+			}
+			
+			if (obj = document.getElementById('pbling'+bid+"-up")) {
+			obj.src = "http://<cms::var type="global" name="imgserver">/img/dashboard/up-small-on.gif";
+			obj = document.getElementById('pbling'+bid+"-down");
+			obj.src = "http://<cms::var type="global" name="imgserver">/img/dashboard/down-small.gif";
+			}
+
+
+		} else {
+			if (obj = document.getElementById('bling'+bid+"-down")) {
+			obj.src = "http://<cms::var type="global" name="imgserver">/img/dashboard/down-small-on.gif";
+			obj = document.getElementById('bling'+bid+"-up");
+			obj.src = "http://<cms::var type="global" name="imgserver">/img/dashboard/up-small.gif";
+			}
+
+			if (obj = document.getElementById('pbling'+bid+"-down")) {
+			obj.src = "http://<cms::var type="global" name="imgserver">/img/dashboard/down-small-on.gif";
+			obj = document.getElementById('pbling'+bid+"-up");
+			obj.src = "http://<cms::var type="global" name="imgserver">/img/dashboard/up-small.gif";
+			}
+
+		}
+		bid ='';
+	}
+}
+
+
+	function switchTabs(tab) {
+
+		try {
+			document.getElementById('mypeeps').style.display='none';
+			document.getElementById('featuredpeople').style.display='none';
+			document.getElementById(tab).style.display='block';
+			setCookie('dashtab',tab);
+			tickleSafari();
+		}catch(e){alert(e.message)}
+		return false;
+	}
+// -->
+</script>
+
+
+
+<div id="dashboard">
+
+
+
+
+  <cms::ifnot type="user" name="id">
+    <div id="welcome">
+		Welcome to the site!  You should log in or join the party!
+    </div>
+    </cms::ifnot>
+
+	<div id="featuredContent">
+
+		<div id="mypeeps">
+		
+			<h2>New Stuff From My Peeps | <a href="#" title="View Today's Featured People" onClick="return switchTabs('featuredpeople');">View Featured People</a></h2>
+
+			<cms::ifnotloop type="peepsquestions">
+				<div class="pad10">
+				<center><h2>You don't have any peeps yet!</h2></center>
+				<br />
+				<P>Add peeps by giving people <B>thumbs up</b> for their <a href="/qow.pl">question answers</a>,
+				<a href="/play/photo/index.pl/current">photo contest entries</a> and profiles.</p>
+
+				<P>You can find people by <a href="/tags/">searching for tags</a>, <a href="/browse/">searching by location and age</a>, or
+					by checking out today's <a href="#" onClick="return switchTabs('featuredpeople');">featured people</a>.</p>
+	
+				<P>More information about your peeps can be found <A href="/peeps/">here</a>.</p>
+			</div>
+			</cms::ifnotloop>
+
+			<cms::ifloop type="peepsquestions">
+   			     <div id="onlinenow"><a href="/peeps/"><cms::var type="page" name="onlinenow"> of your peeps are online right now</a></div>
+			</cms::ifloop>
+
+			<cms::fancylist over="peepsquestions">
+				<div class="post">
+						<div class="userpic">
+							<a href="/profiles/<cms::var type="profile" name="linkhandle">" title="This is <cms::var type="profile" name="handle">"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="profile" name="userId">/50/<cms::var type="profile" name="photoId">.jpg" border="0" height="50" width="50"></a>
+						</div>
+						<div class="content">
+ 								<span class="large"><cms::var type="profile" name="handle"></span> said,<br />
+								<cms::if type="profile" name="type" equals="question" nest>
+									<B><a href="/profiles/<cms::var type="profile" name="linkhandle">#<cms::var type="answer" name="id">"><cms::var type="question" name="question"></a></b><br />
+									<cms::ifnot type="answer" name="photoId" equals="0" nest>
+										<cms::if type="answer" name="photoId" nest>
+											<img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="answer" name="userId">/100/<cms::var type="answer" name="photoId">.jpg" width="100" height="100" align="left" class="illo">
+										</cms::if type="answer" name="photoId">
+									</cms::ifnot type="answer" name="photoId">
+
+									<cms::var type="answer" name="answer">
+
+                                    <br clear="left" />
+
+                                    <div class="meta">
+										More of <A href="/profiles/<cms::var type="profile" name="linkhandle">"><cms::var type="profile" name="handle"></a>'s answers 
+										|
+										<a href="/qow.pl?question=<cms::var type="question" name="id">">More Answers</a> 
+										|
+										<A href="/profiles/<cms::var type="profile" name="linkhandle">#<cms::var type="answer" name="id">">Link This</a>
+									</div>
+								</cms::if type="profile" name="type">
+								<cms::if type="profile" name="type" equals="topic" nest>
+									<a href="/profiles/<cms::var type="profile" name="linkhandle">/topics?id=<cms::var type="topic" name="id">"><cms::var type="topic" name="question"></a>
+								</cms::if type="profile" name="type">
+						<div class="actions">
+							<cms::if type="profile" name="type" equals="question" nest>
+                                    <span class="medium">Want to see more by this person?</span>
+									<a href="#<cms::var type="answer" name="id">" onClick="return bling(<cms::var type="answer" name="id">,'U');" title="Thumbs Up!"><img src="http://<cms::var type="global" name="imgserver">/img/dashboard/up-small<cms::if type="answer" name="bling" equals="U">-on</cms::if>.gif" border=0 width=25 align="middle" id="pbling<cms::var type="answer" name="id">-up"></a>
+									<a href="#<cms::var type="answer" name="id">" onClick="return bling(<cms::var type="answer" name="id">,'D');" title="Thumbs Down!"><img src="http://<cms::var type="global" name="imgserver">/img/dashboard/down-small<cms::if type="answer" name="bling" equals="D">-on</cms::if>.gif" border=0 width=25 align="middle" id="pbling<cms::var type="answer" name="id">-down"></a>
+							</cms::if type="profile" name="type">
+							<cms::if type="profile" name="type" equals="topic" nest>
+								<B><cms::var type="topic" name="responses"></B> <cms::wc type="topic" name="responses" s="response" p="responses">, most recently <cms::var type="topic" name="timesince"> ago<br />                                
+								<cms::if type="topic" name="enabled" equals="0">                                       
+									This conversation ended, but you can still read the transcript.                                
+								</cms::if>
+                                <cms::if type="topic" name="enabled" equals="1">
+										<a href="/profiles/<cms::var type="profile" name="linkhandle">/topics?id=<cms::var type="topic" name="id">" title="What's your take?"><img src="http://<cms::var type="global" name="imgserver">/img/dashboard/dashboard-respondbutton.gif" class="dashbutton" border="0" alt=""></a>
+										<a href="#" onClick="return toggleWatch(<cms::var type="topic" name="id">);"><img src="http://<cms::var type="global" name="imgserver">/img/dashboard/dashboard-watchbutton-<cms::if type="topic" name="watched" equals="0" nest>off</cms::if type="topic" name="watched"><cms::if type="topic" name="watched" equals="1" nest>on</cms::if type="topic" name="watched">.gif" id="pwatched<cms::var type="topic" name="id">" class="dashbutton" border="0" alt=""></a>
+								</cms::if>
+							</cms::if type="profile" name="type">
+						</div>
+					</div> <!-- content -->
+					</div> <!-- POST -->
+		</cms::fancylist>
+
+	</div> <!--  my peeps -->
+
+
+    <div id="featuredpeople">
+            <h2><a href="#" title="View Updates from Your Peeps" onClick="return switchTabs('mypeeps');">New Stuff From My Peeps</a> | View Featured People</h2>
+
+		<cms::fancylist over="hotpeeps">
+              <div class="post">                        <div class="userpic">                            <a href="/profiles/<cms::var type="profile" name="linkhandle">" title="This is <cms::var type="profile" name="handle">"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="profile" name="userId">/50/<cms::var type="profile" name="photoId">.jpg" border="0" height="50" width="50"></a>                        </div>                        <div class="content">                                <span class="large"><cms::var type="profile" name="handle"></span> said,<br />                                <cms::if type="profile" name="type" equals="question" nest>                                    <B><a href="/profiles/<cms::var type="profile" name="linkhandle">#<cms::var type="answer" name="id">"><cms::var type="question" name="question"></a></b><br/>                                    <cms::ifnot type="answer" name="photoId" equals="0" nest>                                        <cms::if type="answer" name="photoId" nest>                                            <img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="answer" name="userId">/100/<cms::var type="answer" name="photoId">.jpg" width="100" height="100" align="left" class="illo">
+                                        </cms::if type="answer" name="photoId">
+                                    </cms::ifnot type="answer" name="photoId">
+
+                                    <cms::var type="answer" name="answer">
+
+                                    <br clear="left" />
+
+                                    <div class="meta">
+                                        More of <A href="/profiles/<cms::var type="profile" name="linkhandle">"><cms::var type="profile" name="handle"></a>'s answers
+                                        |
+                                        <a href="/qow.pl?question=<cms::var type="question" name="id">">More Answers</a>
+                                        |
+                                        <A href="/profiles/<cms::var type="profile" name="linkhandle">#<cms::var type="answer" name="id">">Link This</a>
+                                    </div>
+                                </cms::if type="profile" name="type">
+                                <cms::if type="profile" name="type" equals="topic" nest>
+                                    <a href="/profiles/<cms::var type="profile" name="linkhandle">/topics?id=<cms::var type="topic" name="id">"><cms::var type="topic" name="question"></a>
+                                </cms::if type="profile" name="type">
+                        <div class="actions">
+                            <cms::if type="profile" name="type" equals="question" nest>
+                                    <span class="medium">Want to see more by this person?</span>
+                                    <a href="#<cms::var type="answer" name="id">" onClick="return bling(<cms::var type="answer" name="id">,'U');" title="Thumbs Up!"><img src="http://<cms::var type="global" name="imgserver">/img/dashboard/up-small<cms::if type="answer" name="bling" equals="U">-on</cms::if>.gif" border=0 width=25 align="middle" id="pbling<cms::var type="answer" name="id">-up"></a>
+                                    <a href="#<cms::var type="answer" name="id">" onClick="return bling(<cms::var type="answer" name="id">,'D');" title="Thumbs Down!"><img src="http://<cms::var type="global" name="imgserver">/img/dashboard/down-small<cms::if type="answer" name="bling" equals="D">-on</cms::if>.gif" border=0 width=25 align="middle" id="pbling<cms::var type="answer" name="id">-down"></a>
+                            </cms::if type="profile" name="type">
+                            <cms::if type="profile" name="type" equals="topic" nest>
+                                <B><cms::var type="topic" name="responses"></B> <cms::wc type="topic" name="responses" s="response" p="responses">, most recently <cms::var type="topic" name="timesince"> ago<br />
+                                <cms::if type="topic" name="enabled" equals="0">
+                                    This conversation ended, but you can still read the transcript.
+                                </cms::if>
+                                <cms::if type="topic" name="enabled" equals="1">
+                                        <a href="/profiles/<cms::var type="profile" name="linkhandle">/topics?id=<cms::var type="topic" name="id">" title="What's your take?"><img src="http://<cms::var type="global" name="imgserver">/img/dashboard/dashboard-respondbutton.gif" class="dashbutton" border="0" alt=""></a>
+                                        <a href="#" onClick="return toggleWatch(<cms::var type="topic" name="id">);"><img src="http://<cms::var type="global" name="imgserver">/img/dashboard/dashboard-watchbutton-<cms::if type="topic" name="watched" equals="0" nest>off</cms::if type="topic" name="watched"><cms::if type="topic" name="watched" equals="1" nest>on</cms::if type="topic" name="watched">.gif" id="pwatched<cms::var type="topic" name="id">" class="dashbutton" border="0" alt=""></a>
+                                </cms::if>
+                            </cms::if type="profile" name="type">
+                        </div>
+                    </div> <!-- content -->
+                    </div> <!-- POST -->
+
+		</cms::fancylist>
+	</div> <!-- featured people -->
+
+</div> <!-- featured content -->
+
+<div id="extras">
+
+		<cms::ifnot type="user" name="id" nest>
+			<div class="pod" id="login">
+				<h2>Already one of us?</h2>
+				<form method="post" action="/login.pl/authenticate">
+					<B>My Email:</b><input name="username" style="border: 1px #FF9966 solid; margin-bottom: 5px;"><br />
+					<b>Password:</b><input type="password" name="password" style="border: 1px #FF9966 solid; margin-bottom: 5px;"><br />
+					<input type="submit" value="Log In" style="background: #369; color: #FFF; border: outset 2px; width:240px;">
+				</form>
+			</div>
+		</cms::ifnot type="user" name="id">
+
+		<div class="pod" id="question">
+			<h2>Question of the Week</h2>
+			<a href="/qow.pl" class="medium"><cms::var type="question" name="question"></a>
+			<br />
+			<div id="myanswer">	
+				<cms::if type="answer" name="id">
+					<B>Your Answer</b><br />
+					<img src="http://<cms::var type="global" name="imgserver">/img/up-small.gif" height="25" width="25" alt="Thumbs Up"> <span class="medium blue"><cms::var type="answer" name="ups"></span>
+					&nbsp;&nbsp;&nbsp;
+					<img src="http://<cms::var type="global" name="imgserver">/img/down-small.gif" height="25" width="25" alt="Thumbs Down"> <span class="medium blue"><cms::var type="answer" name="downs"></span>
+				</cms::if>
+				<cms::ifnot type="answer" name="id">            
+					<A href="/qow.pl" class="medium">What's your take?</a>
+				</cms::ifnot>
+			</div>
+		</div>
+
+		<div class="pod" id="photocontest">
+			<h2>Photo Theme</h2>
+			<p class="medium"><A href="/play/photo/index.pl/current"><cms::var type="contest" name="bensname"></a></p>
+
+			<cms::fancylist over="photocontestentries">
+				<a href="/profiles/<cms::var type="profile" name="linkhandle">"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="profile" name="userId">/50/<cms::var type="profile" name="photoId">.jpg" class="peeppic" height="50" width="50" border="0" alt=""></a>
+			</cms::fancylist>
+
+			<br />
+
+			<span class="small">&rarr; See all the <a href="/browse/<cms::var type="contest" name="tagname">_contest"><cms::var type="contest" name="name"></a></span>
+
+			<div id="myphoto">
+				<cms::if type="entry" name="id">
+				<center>
+					<table>
+						<TR>
+							<TD>
+								<a href="/play/photo/index.pl/current" title="Change your entry or quit the contest"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="user" name="id">/100/<cms::var type="entry" name="photoId">.jpg" class="pic" border="0" alt=""></a>
+							</td>
+							<td valign="center">
+								<img src="http://<cms::var type="global" name="imgserver">/img/up-small.gif" height="25" width="25" alt="Thumbs Up" align="left"> <span class="medium blue"><cms::var type="entry" name="ups"></span><br clear="all" /><br />
+								<img src="http://<cms::var type="global" name="imgserver">/img/down-small.gif" height="25" width="25" alt="Thumbs Down" align="left"> <span class="medium blue"><cms::var type="entry" name="downs"></span>
+							</td>
+						</tr>
+					</table>
+				</center>
+				</cms::if>
+				<cms::ifnot type="entry" name="id">
+					<a href="/play/photo/index.pl/current">Upload your entry</a>
+				</cms::ifnot>
+			</div>
+		</div>
+
+
+		<cms::if type="user" name="id" nest>
+
+			<div class="pod" name="conversations">
+				<h2>My Current Conversation</h2>
+					<cms::if type="topic" name="question">
+						<span class="medium"><a href="/profiles/<cms::var type="user" name="linkhandle">/topics"><cms::var type="topic" name="question"></a></span>
+						<cms::var type="topic" name="responses"> responses
+					</cms::if>
+					<cms::ifnot type="topic" name="question">
+						<a href="/profiles/<cms::var type="user" name="linkhandle">/topics" class="medium">Start A Conversation</a>
+					</cms::ifnot>
+			</div>
+
+			<div class="pod" id="mytags">
+				<h2>My Recent Tags</h2>
+				<cms::ifnotloop type="newtags">
+					<div class="small">
+						Your friends can tag you with descriptions, compliments, or short messages.  You can control how you get tagged and by who on your <a href="/tagPrefs.pl">tag settings page</a>.
+					</div>
+				</cms::ifnotloop>
+				<cms::fancylist over="newtags">
+					<div class="tag <cms::var type="list" name="evenodd">">
+						<cms::ifnot type="tag" name="anonymous" equals="1">
+							<a href="/profiles/<cms::var type="profile" name="linkhandle">"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="profile" name="userId">/50/<cms::var type="profile" name="photoId">.jpg" border="0" width="50" height="50" class="pic" align="left" alt=""></a> <a href="/profiles/<cms::var type="profile" name="linkhandle">"><cms::var type="profile" name="handle"></a> tagged you<br /> 
+							<a href="/tags/<cms::var type="tag" name="value">" title="see other people tagged <cms::var type="tag" name="value">"><cms::var type="tag" name="value"></a><br />
+						</cms::ifnot>
+						<cms::if type="tag" name="anonymous" equals="1">
+							<img src="http://<cms::var type="global" name="imgserver">/img/nophoto.jpg" border="0" width="50" height="50" class="pic" align="left" alt=""> 
+							<i>someone</i> tagged you<br /> 
+							<a href="/tags/<cms::var type="tag" name="value">" title="see other people tagged <cms::var type="tag" name="value">"><cms::var type="tag" name="value"></a>
+						</cms::if>
+						<br clear="left"/>
+					</div>
+				</cms::fancylist>
+				<span class="small">&rarr; <a href="/profiles/<cms::var type="user" name="linkhandle">/tags">See all of your tags</a></span>
+			</div>
+
+		</cms::if type="user" name="id">
+
+		<div class="pod" id="meetings">
+		<h2>Meetings</h2>
+			<ul>
+            <cms::fancylist over="meetings">
+                <li class="<cms::var type="list" name="evenodd">"><b><cms::var type="meeting" name="city"></b> - <cms::if type="meeting" name="date"><cms::var type="meeting" name="date" date></cms::if><cms::ifnot type="meeting" name="date">Date TBA</cms::ifnot>.<br />
+                <span class="small"><a href="/meetings?id=<cms::var type="meeting" name="id">"><cms::var type="meeting" name="name"></a>
+                <br/>organizer: <a href="/profiles/<cms::var type="meeting" name="linkhandle">"><cms::var type="meeting" name="handle"></a></span></li>
+            </cms::fancylist>
+			</ul>
+		</div>
+	</div> <!-- Extras -->
+
+</div> <!-- dashboard -->

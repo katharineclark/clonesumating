@@ -1,0 +1,88 @@
+<script src="http://<cms::var type="global" name="imgserver">/js/logic.register.js" language="JavaScript"></script>
+<script>
+setTab('tabprofiles');
+</script>
+
+<form name="profile" action="/settings/manageProfiles.pl/docreate" method="post" onSubmit="return validateForm();" id="registerForm">
+	<cms::if type="page" name="saved">
+		<h2 class="green">Your account has been updated!</h2>
+	</cms::if>
+
+<span class="small">Your profile was created <cms::var type="user" name="createDate" datetime></span>
+<table cellspacing="10">
+	<TR>
+		<TD class="label">Profile Title:</TD>
+		<TD><input type="text" id="handle" name="handle"  onBlur="if (this.value != '') {submitRequest('system.checkHandle','registerForm','');}" value="<cms::var type="form" name="handle">"></TD>
+	</TR>
+	<TR>
+		<TD class="label">Tag Line:</TD>
+		<TD><input type="text" id="tagline" name="tagline" value="<cms::var type="form" name="tagline">"></TD>
+	</TR>
+	<TR>
+		<TD class="label">Relationship Status:</TD>
+<TD><select name="relationshipStatus">
+<option value="1" <cms::if type="form" name="relationshipStatus" equals="1">selected</cms::if>>Single and looking</option>
+<option value="2" <cms::if type="form" name="relationshipStatus" equals="2">selected</cms::if>>Taken and looking</option>
+<option value="3" <cms::if type="form" name="relationshipStatus" equals="3">selected</cms::if>>Taken!</option>
+</select>
+</TD>
+	</TR>
+	<TR>
+		<TD class="label">I am looking for:</TD>
+		<TD valign="top"><input type="checkbox" class="checkbox" name="wantsMen" value="1" <cms::if type="form" name="wantsMen" equals="1">checked</cms::if>> Boys 
+		<input type="checkbox" name="wantsWomen" class="checkbox" value="1" <cms::if type="form" name="wantsWomen" equals="1">checked</cms::if>> Girls
+		</TD>
+	</TR>
+	<tr>
+		<td valign="top" class="label">Scoreboard:</td>
+		<td>
+				<table>
+					<TR>
+						<TD valign="top">
+							<input type="radio" class="checkbox" name="norank" id="norank" value="0" <cms::if type="form" name="norank" equals="0">checked</cms::if>>
+						</TD>
+						<TD valign="top"><B>Rank me against other members.</b>  I want to see how I stack up in the ol' popularity game.</TD>
+					</TR>
+					<TR>
+						<TD valign="top">
+							<input type="radio" class="checkbox" name="norank" id="norank" value="1" <cms::if type="form" name="norank" equals="1">checked</cms::if>>
+						</TD>
+						<TD valign="top">
+							 <B>Do not rank me.</b>  I already have a robust sense of self-worth.
+						</td>
+					</TR>
+					<TR>
+						<TD></td><td class="small"><B>Note:</b> If you choose not to be ranked, you will not appear in the scoreboard pages of the site, 
+						and your point and thumb tallies will not be displayed on your profile.  You will still earn points normally.</TD>
+					</tr>
+				</table>
+		</td>
+	</tr>
+	<tr>
+		<td valign="top" class="label">Site Options:</td>
+		<td>
+			<P>Some of the advanced Web techniques we use on this site can cause older computers or out-of-date browsers to break down and start crying.  You can disable some of the more bandwidth and memory intensive features below.</p>
+			<input type="checkbox" class="checkbox" name="auto_overheard" value="1" <cms::if type="form" name="auto_overheard" equals="1">checked</cms::if>> Auto-update the Just Overheard box<br/>
+			<input type="checkbox" class="checkbox" name="auto_topics" value="1" <cms::if type="form" name="auto_topics" equals="1">checked</cms::if>> Auto-update new conversation posts as they happen
+		</td>
+	</tr>
+	<tr>
+		<TD colspan="2">
+			<input type="submit" value="Save Profile &#187;">
+		</TD>
+	</TR>
+	</table>
+</form>
+
+<cms::if type="user" name="linkhandle">
+<div class="actionbox">
+	<P>The address of your profile is:</p>
+	<div style="float:right;">
+	<script>makeButton('blueonyellow','Delete Your Profile',"/settings/manageProfiles.pl/delete?key=<cms::var type="page" name="deleteKey">",'onclick="return confirm(\'Delete your profile?\');"');</script>
+	</div>
+	<blockquote><a href="http://www.MYAWESOMESOCIALSITE.com/profiles/<cms::var type="user" name="linkhandle">">http://www.MYAWESOMESOCIALSITE.com/profiles/<cms::var type="user" name="linkhandle"></a></blockquote>
+
+	<br clear="all"/>
+
+</div>
+</cms::if>

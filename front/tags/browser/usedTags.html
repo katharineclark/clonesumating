@@ -1,0 +1,10 @@
+who&nbsp;are&nbsp;tagged (&nbsp;
+<cms::ifloop type="usedtags">
+	<cms::fancylist over="usedtags">
+		<a href="#" onClick="return removeTag('<cms::var type="tag" name="value">');"><cms::var type="tag" name="value"></a>
+		<cms::ifnot type="list" name="last"> + </cms::ifnot>
+	</cms::fancylist>
+</cms::ifloop>
+<cms::ifnotloop type="usedtags">anything</cms::ifnotloop>)
+
+

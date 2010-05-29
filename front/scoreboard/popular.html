@@ -1,0 +1,329 @@
+<style>
+	.gainerodd { width: 320px; background: #369; color: #FFF; font-size: 12px; margin:2px;}
+    .gainereven { width: 320px; background: #8AB4D1; color: #FFF; font-size: 12px; margin:2px;}
+    .gainerodd a { color: #FFF; }
+    .gainereven a { color: #FFF; }
+
+    .bling {
+        background: url("/img/blingcount.gif");
+        color: #369;
+        padding: 3px;
+        font-weight: bold;
+        width: 19px;
+        height: 19px;
+        float: right;
+        text-align: center;
+        margin-top:-5px;
+        white-space: nowrap;
+    }
+    .loserodd { width: 320px; background: #fbc3cc; color: #FFF;  font-size: 12px; margin:2px;}
+    .losereven { width: 320px; background: #F00; color: #FFF; font-size: 12px; margin:2px;}
+    .loserodd a { color: #FFF; }
+    .losereven a { color: #FFF; }
+</style>
+
+<script src="http://<cms::var type="global" name="imgserver">/js/autocomplete.view.js" type="text/javascript"></script>
+<script src="http://<cms::var type="global" name="imgserver">/js/infoBox.js" type="text/javascript"></script>
+<script src="http://<cms::var type="global" name="imgserver">/js/corners.js" type="text/javascript"></script>
+<script language='javascript'>
+var popfaq = "<P class='header'>What's Up, Sixth Grade?</p> <P class='small'>Your popularity rank is like a score card for how well<br> you're doing on the site.  You get points when people<br/> thumb-up you, or write a review on your profile, or<br/> thumb-up one of your question responses. It goes<br/> down when people thumb-down you or your question<br/> responses.  The more popular you are, the higher you<br/> will rank on the search engines.   We highlight<br/> the most popular people <a href='/popular/'>here</a>.<br/><a href='#' onclick='InfoBox.clear();dopopfaq(2);return false;'>Read More</a>";
+var popfaq2 = "<P class='header'>What's Up, Sixth Grade?</p><P class='small'>Before you ask: yes, this means<br/> that the more popular you are, the more successful<br/> you will be in getting dates, and the less popular you<br/> are, the less successful you'll be.  That sucks for you.<br/>  We suggest getting a better picture, making your<br/> profile funnier, and kicking someone's ass.<br/><a href='#' onclick='InfoBox.clear();dopopfaq(1);return false;'>Go Back</a>&nbsp;&nbsp;<a href='#' onclick='InfoBox.clear();'>Close FAQ</a></p> ";
+function dopopfaq(part) {
+	if (document.getElementById('infoBox')) {
+		setTimeout('dopopfaq('+part+')',100);
+		return;
+	}
+	if (part == 1) {
+		InfoBox.draw('<div>'+popfaq+'</div>');
+	} else if (part == 2) {
+		InfoBox.draw('<div>'+popfaq2+'</div>');
+	}
+}
+</script>
+<cms::if type="user" name="id" nest>
+<h1 id="pagetitle">Your Popularity <span class="normal"><A href="#leaderboard">See the <i>most</i> popular people</a></span></h1>
+
+<cms::ifnot type="user" name="norank" equals="0" nest>
+
+<P><B>You are currently unranked.</b>  If you'd like to see how you stack up against other Consumaters, <A href="/manageProfiles.pl">change your settings to participate in the scoreboards.</A>  Don't worry, you're still earning points!  So many points!</p>
+
+</cms::ifnot type="user" name="norank">
+<cms::if type="user" name="norank" equals="0" nest>
+<p class="medium"><cms::var type="user" name="firstName">, you have earned <span class="blue"><cms::var type="user" name="popularity"> <cms::wc type="user" name="popularity" s="point" p="points"></span> which makes you the <span class="blue"><cms::var type="user" name="rank"><cms::var type="user" name="rankword"></span> most popular person. <cms::if type="trend" name="type" equals="up" nest>Recently, your popularity has been going <span class="blue">up</span>.  Good job!</cms::if type="trend" name="type"><cms::if type="trend" name="type" equals="down" nest>Recently, your popularity has been going <span class="blue">down</span>.<BR />
+<span class="small">(Want to be more popular?  <A href="/qow.pl">Answer more questions</A> or <a href="/photos.pl">upload a new photo</a>!)</span></cms::if type="trend" name="type"></p>
+<div style="margin-bottom: 20px; margin-top: 20px;">
+	<div style="background: url(http://<cms::var type="global" name="imgserver">/img/morepop-lesspop.gif) no-repeat; width: 698px; height: 73px;">
+		<div style="width: 25px; float: left;">&nbsp;</div>
+		<div style="background: transparent; margin-top: 15px; height: 20px; width: <cms::var type="popularity" name="abovepercent">px; float: left;"> &nbsp; </div>
+		<div style="float: left; margin-left: 5px; margin-right: 5px;"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="user" name="id">/50/<cms::var type="user" name="photoId">.jpg" width="50" height="50"></div>
+		<div style="background: transparent; margin-top: 15px; height: 20px; width: <cms::var type="popularity" name="belowpercent">px; float: left;"> &nbsp; </div>
+		<br clear="all" />
+	</div>
+</div>
+
+<P>There <cms::wc type="popularity" name="same" s="is" p="are"> currently <span class="blue"><cms::var type="popularity" name="same"> <cms::wc type="popularity" name="same" s="person" p="people"></span> tied with you, <span class="blue"><cms::var type="popularity" name="higher"> <cms::wc type="popularity" name="higher" s="person" p="people"></span> more popular than you, and <span class="blue"><cms::var type="popularity" name="lower"> <cms::wc type="popularity" name="lower" s="person" p="people"></span> less popular than you.
+
+<div>
+<center>
+<h2 class="subtitle">Your Point Total Over Time</h2>
+<script type="text/javascript" src="/popular/javascript/JavaScriptFlashGateway.js"></script>
+<script type="text/javascript">
+
+	var lcId = new Date().getTime();
+	var flashProxy = new FlashProxy(lcId, "JavaScriptFlashGateway.swf");
+	/*
+
+	SET THESE VARIABLES TO CUSTOMIZE THE DATE SLIDER
+
+	*/
+	var date_range='today';
+	var line_color = '666666';
+	var box_color = 'CCCCCC';
+	var bar_color = '336699';
+	var slider_variable = 'Points';
+	var file_name = '/popular/pophistory.pl/data?d=<cms::var type="system" name="timestamp">';
+
+
+	var sample = new FlashTag("date_slider_open.swf?date_range="+date_range+"&file_name="+file_name+"&box_color="+box_color+"&bar_color="+bar_color+"&line_color="+line_color+"&slider_variable="+slider_variable, 675, 130);
+	sample.setFlashvars("lcId=" + lcId);
+	sample.setFlashvars("flashSource=http://www.measuremap.com/developer/slider/&contentLicense=http://creativecommons.org/licenses/by/2.0/");
+	sample.write(document);
+
+
+function updatePage(raw_range, clean_range, total_count) {
+	document.getElementById('graphData').innerHTML = "<center><b>Loading...</b><br/><img src='/img/wheel.gif' alt='Loading...'/></center>";
+	url = '/popular/pophistory.pl/query?range='+raw_range;
+	http.open("GET",url,true);
+	http.onreadystatechange=handleUpdatePage;
+	http.send(null);
+}
+function handleUpdatePage() {
+	if (http.readyState == 4) {
+		results = http.responseText;
+		document.getElementById('graphData').innerHTML = results;
+
+		if (document.all) {
+			var ds = document.getElementsByTagName('div');
+			for (var i=0;i<ds.length;i++) {
+				if (ds[i].className.indexOf('bling') > -1) {
+					ds[i].style.width = '25px';
+					ds[i].style.height = '25px';
+				}
+			}
+		}
+	}
+}
+</script>
+</center>
+</div>
+<div id="graphData" style="padding-bottom:10px;width:680px;">
+<!--	<center><b>Loading...</b><br/><img src='/img/wheel.gif' alt='Loading...'/></center> -->
+</div>
+
+<script>
+		updatePage('<cms::var type="today" name="range">');
+</script>
+</cms::if type="user" name="norank">
+<br clear="all"/>
+</cms::if type="user" name="id">
+<cms::ifnot type="user" name="id" nest>
+	<h1 id="pagetitle">Popularity</h1>
+	<P class="medium"><a href="/register.pl">Join</a> or <a href="/login.pl">login</a> to see your personalized popularity forecast!</p>
+</cms::ifnot type="user" name="id">
+
+<a name="leaderboard"></a>
+<style>
+.pad10 .selector_obj,.pad10 .selector_pop,.pad10 .selector_obj_highlight,.pad10 .selector,.pad10 .selector_pop .rbottom_white { width: 80px; }
+</style>
+<div style="background: #369; border: #666 solid 1px; width: 700px; height: 56px;" class="corners">
+	<div class="pad10">
+		<form method="get" id="tagForm" name="tagForm" action="/popular/index.pl/by">
+		<div style="float: left; width: 300px; margin: 0px; display: inline;" class="white large">You Too Can Be Popular!</div>
+
+		<div style="float:right;">
+		<script>makeButton('blueonblue','Go!','onclick="tagForm.submit();return false;"')</script>
+		</div>
+		<div class='selector_container white large' style="float: right; width: 300px; text-align: right;">
+			Pop By Tag: <input autocomplete="off" type="text" name="tag" id="tag" style="width:80px; padding: 0px; margin: 0px;" value="zombies" onkeyup='keypress(this.value,0)' onblur='getfirstmatch(0)'>&nbsp;
+			<div class='selector_pop' id='selector0' style="margin-left:-47px;width:80px;">
+				<span id='innerselector0'></span>
+				<b class='rbottom_white'>
+					<b class='r4'></b> 
+					<b class='r3'></b> 
+					<b class='r2'></b> 
+					<b class='r1'></b>
+				</b>
+			</div>
+		</div>
+		</form>
+		<br clear="all" />
+</div>
+	<B class="round666 tr"></b>
+	<B class="round666 bl"></b>
+</div>
+<!--<div style="border-bottom:1px dashed;">
+
+	<P>Popularity is based on how many thumbs up you get, versus how many thumbs down you get.  Thumbs for your answers to <a href="/qow.pl">the weekly question</a> count just as much as thumbs on your profile, so all you homely nerds can still climb the ranks by showing off the  traits better expressed through text.  Your overall rank can always be seen in the grey bar at the top of the screen.  What's up, sixth grade?</p>
+
+</div>-->
+<br clear="all"/>
+
+<div style="width:700px;overflow:hidden;">
+	<div style="float:left;width:320px;margin-bottom:10px; padding-bottom:10px; text-align:center;">
+		<h2 class="subtitle">Out of the last ten searches, these people are pretty popular!</h2>
+			<div style="float: left; width: 112; margin-bottom: 0px; z-index:0;">
+				<div class="card nopad" id="<cms::var type="itboy" name="linkhandle">">
+				<a href="/profiles/<cms::var type="searchedprofile1" name="linkhandle">" title="<cms::var type="searchedprofile1" name="handle">"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="searchedprofile1" name="userId">/100/<cms::var type="searchedprofile1" name="photoId">.jpg" border="0"></a><BR />
+						<span class="small"><a href="/profiles/<cms::var type="searchedprofile1" name="linkhandle">"><cms::var type="searchedprofile1" name="handle"></a><BR />
+						<cms::if type="searchedprofile1" name="country" equals="US">
+								<cms::var type="searchedprofile1" name="city">, <cms::var type="searchedprofile1" name="state">
+						</cms::if>
+						<cms::ifnot type="searchedprofile1" name="country" equals="US">
+								<cms::var type="searchedprofile1" name="city">, <cms::var type="searchedprofile1" name="country">
+						</cms::ifnot>
+						</span>
+				</div>
+			</div>
+
+			<div style="float: right; width: 112; margin-bottom: 0px; z-index:0;">
+				<div class="card nopad" id="<cms::var type="searchedprofile2" name="linkhandle">">
+					<a href="/profiles/<cms::var type="searchedprofile2" name="linkhandle">" title="<cms::var type="searchedprofile2" name="handle">"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="searchedprofile2" name="userId">/100/<cms::var type="searchedprofile2" name="photoId">.jpg" border="0"></a><BR />
+							<span class="small"><a href="/profiles/<cms::var type="searchedprofile2" name="linkhandle">"><cms::var type="searchedprofile2" name="handle"></a><BR />
+							<cms::if type="searchedprofile2" name="country" equals="US">
+									<cms::var type="searchedprofile2" name="city">, <cms::var type="searchedprofile2" name="state">
+							</cms::if>
+							<cms::ifnot type="searchedprofile2" name="country" equals="US">
+									<cms::var type="searchedprofile2" name="city">, <cms::var type="searchedprofile2" name="country">
+							</cms::ifnot>
+							</span>
+				</div>
+			</div>
+<!--
+		<cms::fancylist over="searched">
+		<a href="/profiles/<cms::var type="profile" name="linkhandle">"><cms::var type="profile" name="handle"></a><br/>
+		</cms::fancylist>
+-->
+<br clear="all"/>
+<span style="position:relative;top:-25px;">
+			<h3>No good? Here's what people were searching for!</h3><cms::var type="searchedtags" name="tags">
+</span>
+	</div>
+
+	<div style="float:right;width:377px; margin-bottom: 10px; padding-bottom: 10px; text-align:center;">
+		<h2 class="subtitle">Mr. and Ms. This Week</h2>
+		<span class="small">New & Hottt!</span><BR />
+		<div style="padding-left: 15px; padding-right: 15px; margin-left: 40px; margin-right: 40px; margin-top: 5px;">
+			<div style="float: left; width: 112; margin-bottom: 20px; z-index:0;">
+				<div class="card nopad" id="<cms::var type="itboy" name="linkhandle">">
+				<a href="/profiles/<cms::var type="itboy" name="linkhandle">" title="<cms::var type="itboy" name="handle">"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="itboy" name="userId">/100/<cms::var type="itboy" name="photoId">.jpg" border="0"></a><BR />
+						<span class="small"><a href="/profiles/<cms::var type="itboy" name="linkhandle">"><cms::var type="itboy" name="handle"></a><BR />
+						<cms::if type="itboy" name="country" equals="US">
+								<cms::var type="itboy" name="city">, <cms::var type="itboy" name="state">
+						</cms::if>
+						<cms::ifnot type="itboy" name="country" equals="US">
+								<cms::var type="itboy" name="city">, <cms::var type="itboy" name="country">
+						</cms::ifnot>
+						</span>
+				</div>
+			</div>
+
+			<div style="float: right; width: 112; margin-bottom: 20px; z-index:0;">
+				<div class="card nopad" id="<cms::var type="itgirl" name="linkhandle">">
+					<div class="altrankburst"><div class="rank">Hot!</div></div>
+					<a href="/profiles/<cms::var type="itgirl" name="linkhandle">" title="<cms::var type="itgirl" name="handle">"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="itgirl" name="userId">/100/<cms::var type="itgirl" name="photoId">.jpg" border="0"></a><BR />
+							<span class="small"><a href="/profiles/<cms::var type="itgirl" name="linkhandle">"><cms::var type="itgirl" name="handle"></a><BR />
+							<cms::if type="itgirl" name="country" equals="US">
+									<cms::var type="itgirl" name="city">, <cms::var type="itgirl" name="state">
+							</cms::if>
+							<cms::ifnot type="itgirl" name="country" equals="US">
+									<cms::var type="itgirl" name="city">, <cms::var type="itgirl" name="country">
+							</cms::ifnot>
+							</span>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<br clear="all"/>
+<!--
+<div style="width: 680px;border-top:1px dashed;">
+<div style="border-bottom: dashed 1px #666; margin-bottom: 10px; padding-bottom: 10px;">
+<h2 class="subtitle" style="text-align: center;">Popular Teams</h2>
+	<cms::fancylist over="teamtypes" nest>
+		<div>
+		<h1><cms::var type="teamtypes" name="sizename"></h1>
+		<cms::fancylist over="teams">
+			<div style="float:left;">
+				<h2><a href="/teams/<cms::var type="team" name="linkname">"><cms::var type="team" name="name"></a> - <span class="small"> <cms::var type="team" name="sizename"></span></h2> - <cms::var type="team" name="tagline"><br/><b>Points: <cms::var type="team" name="points"></b>
+			</div>
+		</cms::fancylist>
+		</div><br clear="all"/>
+	</cms::fancylist over="teamtypes">
+</div>
+</div>
+-->
+
+<div style="border-bottom: dashed 1px #666; margin-bottom: 10px; padding-bottom: 10px;">
+<div style="text-align:center;">
+<h2 class="subtitle">Popular Over the Last 24-Hours</h2>
+<cms::fancylist over="popularnowf"><a href="/profiles/<cms::var type="profile" name="linkhandle">" title="<cms::var type="profile" name="handle">"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="profile" name="userId">/100/<cms::var type="profile" name="photoId">.jpg" width="100" height="100"  hspace="7" border="0" vspace="7" alt="<cms::var type="profile" name="handle">"></a> </cms::fancylist>
+<div style="text-align:right;"><A href="/popular/index.pl/by?field=t&s=f">Zoom Girls!</a></div>
+<cms::fancylist over="popularnowm"><a href="/profiles/<cms::var type="profile" name="linkhandle">" title="<cms::var type="profile" name="handle">"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="profile" name="userId">/100/<cms::var type="profile" name="photoId">.jpg" width="100" height="100"  hspace="7" border="0" vspace="7" alt="<cms::var type="profile" name="handle">"></a> </cms::fancylist>
+</div>
+<div style="text-align:right;"><A href="/popular/index.pl/by?field=t&s=m">Zoom Boys!</a></div>
+</div>
+
+<div style="border-bottom: dashed 1px #666; margin-bottom: 10px; padding-bottom: 10px;">
+<div style="text-align: center;">
+<h2 class="subtitle">Most Popular Question Answerers</h2>
+<span class="small">Smarty Pants</span><Br />
+<cms::fancylist over="popularqf"><a href="/profiles/<cms::var type="profile" name="linkhandle">" title="<cms::var type="profile" name="handle">"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="profile" name="userId">/50/<cms::var type="profile" name="photoId">.jpg" width="50" height="50"  hspace="7" border="0" vspace="7" alt="<cms::var type="profile" name="handle">"></a> </cms::fancylist>
+<div style="text-align:right;"><A href="/popular/index.pl/by?field=q&s=f">Zoom Girls!</a></div>
+<cms::fancylist over="popularqm"><a href="/profiles/<cms::var type="profile" name="linkhandle">" title="<cms::var type="profile" name="handle">"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="profile" name="userId">/50/<cms::var type="profile" name="photoId">.jpg" width="50" height="50"  hspace="7" border="0" vspace="7" alt="<cms::var type="profile" name="handle">"></a> </cms::fancylist>
+</div>
+<div style="text-align:right;"><A href="/popular/index.pl/by?field=q&s=m">Zoom Boys!</a></div>
+</div>
+
+<cms::if type="user" name="id" nest>
+<div style="border-bottom: dashed 1px #666; margin-bottom: 10px; padding-bottom: 10px;">
+<div style="text-align:center;">
+<h2 class="subtitle">Local Hotties</h2>
+<span class="small">People near you!  Hunt them down!</span><BR />
+<cms::fancylist over="popularlocalf"><a href="/profiles/<cms::var type="profile" name="linkhandle">" title="<cms::var type="profile" name="handle">"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="profile" name="userId">/50/<cms::var type="profile" name="photoId">.jpg" width="50" height="50"  hspace="7" border="0" vspace="7" alt="<cms::var type="profile" name="handle">"></a> </cms::fancylist>
+<div style="text-align: right;"><a href="/popular/index.pl/by?zip=<cms::var type="user" name="zipcode">&s=f">Zoom Girls!</a></div>
+<cms::fancylist over="popularlocalm"><a href="/profiles/<cms::var type="profile" name="linkhandle">" title="<cms::var type="profile" name="handle">"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="profile" name="userId">/50/<cms::var type="profile" name="photoId">.jpg" width="50" height="50"  hspace="7" border="0" vspace="7" alt="<cms::var type="profile" name="handle">"></a> </cms::fancylist>
+</div>
+<div style="text-align: right;"><a href="/popular/index.pl/by?zip=<cms::var type="user" name="zipcode">&s=m">Zoom Boys!</a> <br/>
+ <a href="/search.pl?distance=close">See more local folks &#187;</a></div>
+</div>
+</cms::if type="user" name="id">
+
+
+
+<div style="border-bottom: dashed 1px #666; margin-bottom: 10px; padding-bottom: 10px;">
+<div style="text-align:center;">
+<h2 class="subtitle">Overall Top 10</h2>
+<span class="small">The hottest of the hot!</span><BR />
+<cms::fancylist over="popularf"><a href="/profiles/<cms::var type="profile" name="linkhandle">" title="<cms::var type="profile" name="handle">"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="profile" name="userId">/50/<cms::var type="profile" name="photoId">.jpg" width="50" height="50"  hspace="7" border="0" vspace="7" alt="<cms::var type="profile" name="handle">"></a> </cms::fancylist>
+<cms::fancylist over="popularm"><a href="/profiles/<cms::var type="profile" name="linkhandle">" title="<cms::var type="profile" name="handle">"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="profile" name="userId">/50/<cms::var type="profile" name="photoId">.jpg" width="50" height="50"  hspace="7" border="0" vspace="7" alt="<cms::var type="profile" name="handle">"></a> </cms::fancylist>
+</div>
+<div style="text-align: right;">
+<a href="/everywhere/index.pl?sex=boys&ps=everyone&sort=popularity&of=rss"><img src="http://<cms::var type="global" name="imgserver">/img/rssbutton.gif" alt="rss" height="15" width="15" border=0>Boys RSS</a>&nbsp;|&nbsp;<a href="/everywhere/index.pl?sex=girls&ps=everyone&sort=popularity&of=rss"><img src="http://<cms::var type="global" name="imgserver">/img/rssbutton.gif" alt="rss" height="15" width="15" border=0>Girls RSS</a>
+
+
+<BR clear="all" />
+
+</div>
+
+</div>
+</div>
+
+
+
+
+<BR clear="all" />
+
+
+<BR clear="all" />

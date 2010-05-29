@@ -1,0 +1,26 @@
+Howdy!
+
+<cms::var type="sender" name="handle"> left you a note at Consumating!  
+
+To read the note and reply for free, visit your Consumating Inbox:
+
+=> http://www.consumating.com/messages.csm/inbox
+
+View <cms::var type="sender" name="handle">'s profile:
+
+=> http://www.consumating.com/profiles/<cms::var type="sender" name="linkhandle">
+
+View your entire conversation:
+
+=> http://www.consumating.com/profiles/<cms::var type="sender" name="linkhandle">/messages
+
+Are you subscribed to CONSUME, Consumating's daily newsletter?  
+If not, you're missing out!  Subscribe at the link below.
+
+=> http://www.consumating.com/newsletters.pl
+
+Love,
+Consumating.com
+
+PS. If you want to change your email alert options, click below.
+ -> http://www.consumating.com/myAccount.pl/alerts

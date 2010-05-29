@@ -1,0 +1,32 @@
+<div id="contests">
+
+	<div id="currentphotocontest">
+		This Week:</span> <a href="/play/photos/index.pl/current"><cms::var type="contest" name="description"></a><br />
+		<A href="/browse/<cms::var type="contest" name="tagname">"><cms::var type="contest" name="responses"> <cms::wc type="contest" name="responses" s="person" p="people"></a> <cms::wc type="contest" name="responses" s="is" p="are"> already competing! <A href="/play/photos/index.pl/current">Join the party!</a><br /><Br />
+	   <cms::fancylist over="photocontestentries">
+			<a href="/profiles/<cms::var type="profile" name="linkhandle">"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="profile" name="userid">/100/<cms::var type="profile" name="photoId">.jpg" border="0" width="100" height="100"></a>
+	   </cms::fancylist>
+	</div>
+
+	<div id="photolist">
+		<h2>Previous Contests</h2>
+		<cms::ifnotloop type="contests">
+			There are no contests yet!
+		</cms::ifnotloop>
+		<cms::fancylist over="contests">
+			<div class="contest <cms::var type="list" name="evenodd">">
+				<cms::var type="contest" name="leaderboard">
+				<P><a href="/play/photos/index.pl/winners?id=<cms::var type="contest" name="id">"><cms::var type="contest" name="name"><BR>
+				<cms::var type="contest" name="description"><br />
+				From: <cms::var type="contest" name="startDate" date></a></p>
+
+				<P>There were <cms::var type="contest" name="totalvotes"> votes for <cms::var type="contest" name="totalentries"> entries.  
+					<cms::if type="contest" name="myvotes">
+						Your entry got <cms::var type="contest" name="myvotes"> vote<cms::wc type="contest" name="myvotes" s="" p="s">!
+					</cms::if>
+				</p>
+			</div>
+		</cms::fancylist>
+	</div>
+
+</div>

@@ -1,0 +1,42 @@
+                <div class="card" id="<cms::var type="profile" name="linkhandle">">
+                        <a href="/profiles/<cms::var type="profile" name="linkhandle">"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="profile" name="userId">/100/<cms::var type="profile" name="photoId">.jpg" border="0" width="100" height="100"></a><BR />
+                        <span class="small"><a href="/profiles/<cms::var type="profile" name="linkhandle">"><cms::var type="profile" name="handle"></a><BR/>
+                        <cms::if type="profile" name="country" equals="US" nest>
+                        <cms::var type="profile" name="city">, <cms::var type="profile" name="state">
+                        </cms::if type="profile" name="country">
+                        <cms::ifnot type="profile" name="country" equals="US" nest>
+                        <cms::var type="profile" name="city">, <cms::var type="profile" name="country">
+                        </cms::ifnot type="profile" name="country">
+                        </span>
+                </div>
+
+<h1 class="pagetitle">Your note has been sent to <a href="/profiles/<cms::var type="profile" name="linkhandle">"><cms::var type="profile" name="handle"></a>!</h1>
+<P>
+
+<P><A href="/profiles/<cms::var type="profile" name="linkhandle">/messages#recent">&rarr; View your entire conversation with <cms::var type="profile" name="handle">.</a></p>
+
+<p><a href="/profiles/<cms::var type="profile" name="linkhandle">">&rarr; View <cms::var type="profile" name="handle">'s profile.</a></p>
+
+<P><A href="/browse/">&rarr; Use the People Browser to find new people.</a></p>
+
+<BR clear="all" />
+
+<h2 class="subtitle">Maybe you want to send a note to one of these people?  Nudge nudge, wink wink.</h2>
+<br clear="all"/>
+
+<cms::fancylist over="superResults" limit="5" offset="0">
+
+
+                <div class="card" id="<cms::var type="user" name="linkhandle">">
+                        <a href="/profiles/<cms::var type="user" name="linkhandle">"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="user" name="userId">/100/<cms::var type="user" name="photoId">.jpg" border="0" width="100" height="100"></a><BR />
+                        <span class="small"><a href="/profiles/<cms::var type="user" name="linkhandle">"><cms::var type="user" name="handle"></a><BR/>
+                        <cms::if type="user" name="country" equals="US" nest>
+                        <cms::var type="user" name="city">, <cms::var type="user" name="state">
+                        </cms::if type="user" name="country">
+                        <cms::ifnot type="user" name="country" equals="US" nest>
+                        <cms::var type="user" name="city">, <cms::var type="user" name="country">
+                        </cms::ifnot type="user" name="country">
+                        </span>
+                </div>
+
+</cms::fancylist>

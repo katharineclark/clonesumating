@@ -1,0 +1,971 @@
+<cms::if type="warning" name="message">
+	<cms::var type="warning" name="message">
+</cms::if>
+<cms::ifnot type="warning" name="message" nest>
+<script language="javascript" src="http://<cms::var type="global" name="imgserver">/js/logic.view.js"></script>
+<!-- flooble Color Picker header start --> 
+<script language="Javascript">
+var bhColor = '';
+// Color Picker Script from Flooble.com
+// For more information, visit 
+//	http://www.flooble.com/scripts/colorpicker.php
+// Copyright 2003 Animus Pactum Consulting inc.
+// You may use and distribute this code freely, as long as
+// you keep this copyright notice and the link to flooble.com
+// if you chose to remove them, you must link to the page
+// listed above from every web page where you use the color
+// picker code.
+//---------------------------------------------------------
+     var perline = 9;
+     var divSet = false;
+     var curId;
+     var colorLevels = Array('0', '3', '6', '9', 'C', 'F');
+     var colorArray = Array();
+     var ie = false;
+     var nocolor = '';
+	 if (document.all) { ie = true; nocolor = ''; }
+	 function getObj(id) {
+		if (ie) { return document.all[id]; } 
+		else {	return document.getElementById(id);	}
+	 }
+
+     function addColor(r, g, b) {
+     	var red = colorLevels[r];
+     	var green = colorLevels[g];
+     	var blue = colorLevels[b];
+     	addColorValue(red, green, blue);
+     }
+
+     function addColorValue(r, g, b) {
+     	colorArray[colorArray.length] = '#' + r + r + g + g + b + b;
+     }
+     
+     function setColor(color) {
+     	var link = getObj(curId);
+     	var field = getObj(curId + 'field');
+     	var picker = getObj('colorpicker');
+     	field.value = color;
+     	if (color == '') {
+	     	link.style.background = nocolor;
+	     	link.style.color = nocolor;
+	     	color = nocolor;
+     	} else {
+	     	link.style.background = color;
+	     	link.style.color = color;
+	    }
+     	picker.style.display = 'none';
+	    eval(getObj(curId + 'field').title);
+     }
+        
+     function setDiv() {     
+     	if (!document.createElement) { return; }
+        var elemDiv = document.createElement('div');
+        if (typeof(elemDiv.innerHTML) != 'string') { return; }
+        genColors();
+        elemDiv.id = 'colorpicker';
+	    elemDiv.style.position = 'absolute';
+        elemDiv.style.display = 'none';
+        elemDiv.style.border = '#000000 1px solid';
+        elemDiv.style.background = '#FFFFFF';
+        elemDiv.innerHTML = '<span style="font-family:Verdana; font-size:11px;">Pick a color: ' 
+          	+ '(<a href="javascript:setColor(\'\');">No color</a>)<br>' 
+        	+ getColorTable() 
+        	+ '</span>';
+
+        document.body.appendChild(elemDiv);
+        divSet = true;
+     }
+     
+     function pickColor(id) {
+     	if (!divSet) { setDiv(); }
+     	var picker = getObj('colorpicker');     	
+		if (id == curId && picker.style.display == 'block') {
+			picker.style.display = 'none';
+			return;
+		}
+     	curId = id;
+     	var thelink = getObj(id);
+     	picker.style.top = getAbsoluteOffsetTop(thelink) + 20;
+     	picker.style.left = getAbsoluteOffsetLeft(thelink);     
+	picker.style.display = 'block';
+     }
+     
+     function genColors() {
+        addColorValue('0','0','0');
+        addColorValue('3','3','3');
+        addColorValue('6','6','6');
+        addColorValue('8','8','8');
+        addColorValue('9','9','9');                
+        addColorValue('A','A','A');
+        addColorValue('C','C','C');
+        addColorValue('E','E','E');
+        addColorValue('F','F','F');                                
+			
+        for (a = 1; a < colorLevels.length; a++)
+			addColor(0,0,a);
+        for (a = 1; a < colorLevels.length - 1; a++)
+			addColor(a,a,5);
+
+        for (a = 1; a < colorLevels.length; a++)
+			addColor(0,a,0);
+        for (a = 1; a < colorLevels.length - 1; a++)
+			addColor(a,5,a);
+			
+        for (a = 1; a < colorLevels.length; a++)
+			addColor(a,0,0);
+        for (a = 1; a < colorLevels.length - 1; a++)
+			addColor(5,a,a);
+			
+			
+        for (a = 1; a < colorLevels.length; a++)
+			addColor(a,a,0);
+        for (a = 1; a < colorLevels.length - 1; a++)
+			addColor(5,5,a);
+			
+        for (a = 1; a < colorLevels.length; a++)
+			addColor(0,a,a);
+        for (a = 1; a < colorLevels.length - 1; a++)
+			addColor(a,5,5);
+
+        for (a = 1; a < colorLevels.length; a++)
+			addColor(a,0,a);			
+        for (a = 1; a < colorLevels.length - 1; a++)
+			addColor(5,a,5);
+			
+       	return colorArray;
+     }
+     function getColorTable() {
+         var colors = colorArray;
+      	 var tableCode = '';
+         tableCode += '<table border="0" cellspacing="1" cellpadding="1">';
+         for (i = 0; i < colors.length; i++) {
+              if (i % perline == 0) { tableCode += '<tr>'; }
+              tableCode += '<td bgcolor="#000000"><a style="outline: 1px solid #000000; color: ' 
+              	  + colors[i] + '; background: ' + colors[i] + ';font-size: 10px;" title="' 
+              	  + colors[i] + '" href="javascript:setColor(\'' + colors[i] + '\');">foo</a></td>';
+              if (i % perline == perline - 1) { tableCode += '</tr>'; }
+         }
+         if (i % perline != 0) { tableCode += '</tr>'; }
+         tableCode += '</table>';
+      	 return tableCode;
+     }
+     function relateColor(id, color) {
+     	var link = getObj(id);
+     	if (color == '') {
+	     	link.style.background = nocolor;
+	     	link.style.color = nocolor;
+	     	color = nocolor;
+     	} else {
+	     	link.style.background = color;
+	     	link.style.color = color;
+	    }
+	    eval(getObj(id + 'field').title);
+     }
+     function getAbsoluteOffsetTop(obj) {
+     	var top = obj.offsetTop;
+     	var parent = obj.offsetParent;
+     	while (parent != document.body) {
+     		top += parent.offsetTop;
+     		parent = parent.offsetParent;
+     	}
+     	return top;
+     }
+     
+     function getAbsoluteOffsetLeft(obj) {
+     	var left = obj.offsetLeft;
+     	var parent = obj.offsetParent;
+     	while (parent != document.body) {
+     		left += parent.offsetLeft;
+     		parent = parent.offsetParent;
+     	}
+     	return left;
+     }
+
+
+</script>
+<!-- flooble Color Picker header end -->      
+
+
+<script language='javascript'>
+var toff = 100;
+var loff = 300;
+var dim = 25;
+var size = 10;
+
+var color = '#000';
+var backcolor='#FFF';
+
+var History = new Array();
+var dragh = new Array();
+var fillh = new Array();
+
+var dragging = 0;
+var filltool = 0;
+
+function changeFill(on) {
+	if (on) {
+		document.getElementById('pencil').style.border='2px outset #CFA';
+		document.getElementById('bucket').style.border='2px inset #CFA';
+		filltool=1;
+	} else {
+		document.getElementById('pencil').style.border='2px inset #CFA';
+		document.getElementById('bucket').style.border='2px outset #CFA';
+		filltool=0;
+	}
+}
+
+function checkfill(e) {
+	if (!e) var e = window.event;
+	if (!e) { 
+		alert("You don't support events!");
+		return false;
+	}
+	if (dragging) {
+	}
+}
+
+function loadGrid() {
+	var a = document.getElementById('editorLeft');
+	a.style.width='10px';
+	a.style.height=((dim*size)+22)+'px';
+	a.onmouseover=checkdragh;
+	var a = document.getElementById('editorTop');
+	a.style.height='10px';
+	a.style.width=((dim*size)+22)+'px';
+	a.onmouseover=checkdragh;
+	var a = document.getElementById('editorRight');
+	a.style.width='10px';
+	a.style.height=((dim*size)+22)+'px';
+	a.onmouseover=checkdragh;
+	var a = document.getElementById('editorBottom');
+	a.style.height='10px';
+	a.style.width=((dim*size)+22)+'px';
+	a.onmouseover=checkdragh;
+
+
+	var e = document.getElementById('editor');
+	e.style.height = (size * dim)+'px';
+	e.style.width  = (size * dim)+'px';
+	e.style.lineHeight='10px';
+
+	for (var i=0;i<dim;i++) {
+		for (var j=0;j<dim;j++) {
+			var d = document.createElement('div');
+			d.id = i+'-'+j;
+			d.style.position='absolute';
+			d.style.top=( i * size) + 'px';
+			d.style.left=( j * size) + 'px';
+			d.style.border='1px solid #AAA';
+			d.style.width=size+'px';
+			d.style.height=size+'px';
+			d.style.backgroundColor='#FFFFFF';
+			d.onmousedown=colorme;
+			d.onmouseup = function() { dragging = 0; }
+			d.onmouseover=dragcolor;
+			e.appendChild(d);
+		}
+	}
+
+	if (dim % 2 == 0) {
+		for (var i=0;i<dim;i++) {
+			document.getElementById(i+'-'+(dim/2)).style.borderLeft='1px solid #666';
+		}
+		for (var i=0;i<dim;i++) {
+			document.getElementById((dim/2)+'-'+i).style.borderTop='1px solid #666';
+		}
+	} else {
+		var mid = parseInt(dim/2);
+		for (var i=0;i<dim;i++) {
+			document.getElementById(i+'-'+mid).style.borderLeft='1px solid #000';
+			document.getElementById(i+'-'+mid).style.borderRight='1px solid #000';
+		}
+		for (var i=0;i<dim;i++) {
+			document.getElementById(mid+'-'+i).style.borderTop='1px solid #000';
+			document.getElementById(mid+'-'+i).style.borderBottom='1px solid #000';
+		}
+	}
+	if (dim % 4 == 0) {
+		for (var i=0;i<dim;i++) {
+			document.getElementById(i+'-'+(dim/4)).style.borderLeft='1px solid #666';
+			document.getElementById(i+'-'+(3*dim/4)).style.borderLeft='1px solid #666';
+		}
+		for (var i=0;i<dim;i++) {
+			document.getElementById((dim/4)+'-'+i).style.borderTop='1px solid #666';
+			document.getElementById((3*dim/4)+'-'+i).style.borderTop='1px solid #666';
+		}
+	} else {
+		var mid = parseInt(dim/4);
+		for (var i=0;i<dim;i++) {
+			document.getElementById(i+'-'+mid).style.borderLeft='1px solid #444';
+			document.getElementById(i+'-'+(3*mid + 1)).style.borderLeft='1px solid #444';
+		}
+		for (var i=0;i<dim;i++) {
+			document.getElementById(mid+'-'+i).style.borderTop='1px solid #444';
+			document.getElementById((3*mid+1)+'-'+i).style.borderTop='1px solid #444';
+		}
+	}
+			
+
+
+	var right = loff + (dim * size) + 20;
+	var p = document.getElementById('preview');
+	p.style.position='relative';
+	p.style.height = (2*dim) +'px';
+	p.style.width = (2*dim) +'px';
+	p.style.lineHeight='2px';
+
+	var t = document.getElementById('templates');
+
+
+	var h = new Array();
+	for (var i=0;i<dim;i++) {
+		for (var j=0;j<dim;j++) {
+			var d = document.createElement('div');
+			d.id = 'preview'+i+'-'+j;
+			d.style.position='absolute';
+			d.style.top=(2*i) + 'px';
+			d.style.left=(2*j) + 'px';
+			d.style.width='2px';
+			d.style.height='2px';
+			d.style.padding='0px';
+			d.style.margin='0px';
+			if (i == 0) {
+				d.style.borderTop='1px solid #aaa';
+			}
+			if (i == dim-1) {
+				d.style.borderBottom='1px solid #aaa';
+			}
+			if (j == 0) {
+				d.style.borderLeft='1px solid #aaa';
+			}
+			if (j == dim-1) {
+				d.style.borderRight='1px solid #aaa';
+			}
+			p.appendChild(d);
+			h.push(new Array(d.id,'#000'));
+		}
+	}
+	History[0] = h;
+	document.getElementById('brushcolor').style.backgroundColor = '#000';
+	document.getElementById('backcolor').style.backgroundColor = '#FFF';
+}
+
+function swapColors(e) {
+	color = document.getElementById('backcolor').style.backgroundColor;
+	backcolor = document.getElementById('brushcolor').style.backgroundColor;
+
+	document.getElementById('backcolor').style.backgroundColor = backcolor;
+	document.getElementById('brushcolor').style.backgroundColor = color;
+}
+
+function resetColors() {
+	document.getElementById('backcolor').style.backgroundColor = '#FFF';
+	document.getElementById('brushcolor').style.backgroundColor = '#000';
+}
+	
+
+function changeColor(e) {
+	if (!e) { e = window.event; }
+	var newcolor;
+	if (e.target) {
+		newcolor = '#'+e.target.id;
+	} else {
+		newcolor = '#'+e.srcElement.id;
+	}
+
+	if (newcolor == '#transparentSelector') {
+		newcolor = '#'+$('transparency').value;
+	}
+
+	if (e.altKey) {
+		document.getElementById('backcolor').style.backgroundColor=newcolor;
+		backcolor = newcolor;
+	} else {
+		document.getElementById('brushcolor').style.backgroundColor=newcolor;
+		color = newcolor;
+	}
+	if (dragh.length) {
+		addHistory(dragh);
+		dragh = new Array();
+	}
+
+	$('colorcode').innerHTML = color;
+
+	return false;
+}
+
+function addHistory(h) {
+	History.push(h);
+}
+
+function checkdragh() {
+	if (dragh.length) {
+		addHistory(dragh);
+		dragh = new Array();
+	}
+}
+function undo() {
+
+	checkdragh();
+
+	if (History.length == 1) return;
+	var h = History.pop(h);
+	if (!h || (h && (h.length < 1))) return;
+	for (var i=0;i<h.length;i++) {
+		var a = h[i];
+		if (a.length == 0) return;
+		document.getElementById(a[0]).style.backgroundColor=a[1];
+		document.getElementById('preview'+a[0]).style.backgroundColor=a[1];
+	}
+}
+		
+function colorme(e) {
+	dragging = 1;
+	if (!e) { e = window.event; }
+	var target = e.target || e.srcElement;
+	var target2 = document.getElementById('preview'+target.id);
+	var thiscolor;
+	if (e.altKey) {
+		thiscolor = backcolor;
+	} else {
+		thiscolor = document.getElementById('brushcolor').style.backgroundColor;
+	}
+	if (filltool) {
+		fillh = new Array();
+		fill(target,thiscolor,target.style.backgroundColor);
+		addHistory(fillh);
+		return;
+	}
+	addHistory(new Array(new Array(target.id,target.style.backgroundColor)));
+	target.style.backgroundColor = thiscolor;
+	target2.style.backgroundColor = thiscolor;
+}
+function dragcolor(e) {
+	if (dragging == 0) { return false; }
+	if (!e) { e = window.event; }
+	var target = e.target || e.srcElement;
+	var target2 = document.getElementById('preview'+target.id);
+	if (e.altKey) {
+		dragh.push(new Array(target.id,target.style.backgroundColor));
+		target.style.backgroundColor = backcolor;
+		target2.style.backgroundColor = backcolor;
+	} else if (dragging == 1) {
+		dragh.push(new Array(target.id,target.style.backgroundColor));
+		target.style.backgroundColor = color;
+		target2.style.backgroundColor = color;
+	} else if (dragh && dragh.length) {
+		// record history and reset array
+		addHistory(dragh);
+		dragh = new Array();
+	}
+}
+function fill(target,thiscolor,lastcolor) {
+	if (document.getElementById(target.id)) {
+		var pos = target.id.split('-');
+		var target2 = document.getElementById('preview'+target.id);
+		fillh.push(new Array(target.id,lastcolor));
+		target.style.backgroundColor = thiscolor;
+		target2.style.backgroundColor = thiscolor;
+		var next = getSurroundingBlocks(pos);
+		if (next['up'] && next['up'].style.backgroundColor == lastcolor) {
+			fill(next['up'],thiscolor,lastcolor);
+		}
+		if (next['down'] && next['down'].style.backgroundColor == lastcolor) {
+			fill(next['down'],thiscolor,lastcolor);
+		}
+		if (next['left'] && next['left'].style.backgroundColor == lastcolor) {
+			fill(next['left'],thiscolor,lastcolor);
+		}
+		if (next['right'] && next['right'].style.backgroundColor == lastcolor) {
+			fill(next['right'],thiscolor,lastcolor);
+		}
+	}
+}
+function getSurroundingBlocks(pos) {
+	var next = new Array();
+	var up = (pos[0]-1)+'-'+pos[1];
+	var dn = (parseInt(pos[0])+1)+'-'+pos[1];
+	var lf = pos[0]+'-'+(pos[1]-1);
+	var rt = pos[0]+'-'+(parseInt(pos[1])+1);
+	next['up'] = document.getElementById(up);
+	next['down'] = document.getElementById(dn);
+	next['left'] = document.getElementById(lf);
+	next['right'] = document.getElementById(rt);
+
+	return next;
+}
+function checkItemCreatorForm() {
+	var n = document.getElementById('itemname').value;
+	if (!n.length) {
+		alert('You must name your item!');
+		return false;
+	}
+
+	document.getElementById('pixels').value = getPixels();
+	return true;
+}
+function getPixels() {
+	var pixels = new Array();
+	for (var i=0;i<dim;i++) {
+		for (var j=0;j<dim;j++) {
+			var px = document.getElementById(i+'-'+j);
+			var bg = px.style.backgroundColor || 'rgb(255, 255, 255)';
+			pixels.push('['+j+','+i+']-'+bg);
+		}
+	}
+	return pixels.join(';');
+}
+function setPixel(j,i,color) {
+	document.getElementById(i+'-'+j).style.backgroundColor = color;
+	document.getElementById('preview'+i+'-'+j).style.backgroundColor = color;
+}
+
+function autoRestore(str) {
+	try {
+		var pixels = str.split(';');
+		for (var i=0;i<pixels.length;i++) {
+			var dat = pixels[i].split('-');
+			var ij = dat[0].split(',');
+			document.getElementById(ij[1]+'-'+ij[0]).style.backgroundColor=dat[1];
+			document.getElementById('preview'+ij[1]+'-'+ij[0]).style.backgroundColor=dat[1];
+		}
+	}catch(e){alert(e.message)}
+}
+
+function autosaveItem() {
+	document.getElementById('autosaveNotice').innerHTML = 'saving...';
+	document.getElementById('autosaveNotice').style.display='inline';
+	var ds = new Date();
+	return submitRequest('item.autosave','','1=1&ts='+ds.getTime()+'&autosaveId='+document.getElementById('autosaveId').value+'&pixels='+getPixels());
+}
+function handleAutosave(response) {
+	try {
+		document.getElementById('autosaveId').value = response.getElementsByTagName('autosaveId')[0].firstChild.nodeValue;
+alert('asId '+response.getElementsByTagName('autosaveId')[0].firstChild.nodeValue);
+		document.getElementById('autosaveNotice').innerHTML = 'saved.';
+		setTimeout("document.getElementById('autosaveNotice').style.display='none';",800);
+	}catch(e){alert(e.message)}
+}
+
+function shiftDrawing(dir) {
+        var len = 1;
+
+        var h = new Array();
+
+        if (dir == 'left') {
+                for (var j=len;j<dim;j++) {
+                        for (var i=0;i<dim;i++) {
+                                var target = i+'-'+(j-len);
+                                h.push(new Array(target,document.getElementById(target).style.backgroundColor||'#FFF'));
+                                document.getElementById(target).style.backgroundColor = document.getElementById(i+'-'+j).style.backgroundColor || '#FFF';
+                                document.getElementById('preview'+target).style.backgroundColor = document.getElementById(i+'-'+j).style.backgroundColor || '#FFF';
+                        }
+                }
+                for (var i=0;i<dim;i++) {
+					for (var j=dim-1;j>dim-len-1;j--) {
+						h.push(new Array(target,document.getElementById(i+'-'+j).style.backgroundColor||'#FFF'));
+                        document.getElementById(i+'-'+j).style.backgroundColor = '#FFF';
+                        document.getElementById('preview'+i+'-'+j).style.backgroundColor = '#FFF';
+					}
+                }
+        } else if (dir == 'right') {
+                for (var j=dim-1-len;j>=0;j--) {
+                        var nj = parseInt(j) + parseInt(len);
+                        for (var i=0;i<dim;i++) {
+                                var target = i+'-'+nj;
+                                h.push(new Array(target,document.getElementById(target).style.backgroundColor||'#FFF'));
+                                document.getElementById(target).style.backgroundColor = document.getElementById(i+'-'+j).style.backgroundColor || '#FFF';
+                                document.getElementById('preview'+target).style.backgroundColor = document.getElementById(i+'-'+j).style.backgroundColor || '#FFF';
+                        }
+                }
+                for (var i=0;i<dim;i++) {
+					for (var j=0;j<len;j++) {
+						h.push(new Array(target,document.getElementById(i+'-'+j).style.backgroundColor||'#FFF'));
+                        document.getElementById(i+'-'+j).style.backgroundColor = '#FFF';
+                        document.getElementById('preview'+i+'-'+j).style.backgroundColor = '#FFF';
+					}
+                }
+        } else if (dir == 'up') {
+                for (var i=len;i<dim;i++) {
+                        for (var j=0;j<dim;j++) {
+                                var target = (i-len)+'-'+j;
+                                h.push(new Array(target,document.getElementById(target).style.backgroundColor||'#FFF'));
+                                document.getElementById(target).style.backgroundColor = document.getElementById(i+'-'+j).style.backgroundColor || '#FFF';
+                                document.getElementById('preview'+target).style.backgroundColor = document.getElementById(i+'-'+j).style.backgroundColor || '#FFF';
+                        }
+                }
+                for (var j=0;j<dim;j++) {
+					for (var i=dim-1;i>dim-len-1;i--) {
+						h.push(new Array(target,document.getElementById(i+'-'+j).style.backgroundColor||'#FFF'));
+                        document.getElementById(i+'-'+j).style.backgroundColor = '#FFF';
+                        document.getElementById('preview'+i+'-'+j).style.backgroundColor = '#FFF';
+					}
+                }
+        } else if (dir == 'down') {
+                for (var i=dim-1-len;i>=0;i--) {
+                        var ni = parseInt(i) + parseInt(len);
+                        for (var j=0;j<dim;j++) {
+                                var target = ni+'-'+j;
+                                h.push(new Array(target,document.getElementById(target).style.backgroundColor||'#FFF'));
+                                document.getElementById(target).style.backgroundColor = document.getElementById(i+'-'+j).style.backgroundColor || '#FFF';
+                                document.getElementById('preview'+target).style.backgroundColor = document.getElementById(i+'-'+j).style.backgroundColor || '#FFF';
+                        }
+                }
+                for (var j=0;j<dim;j++) {
+					for (var i=0;i<len;i++) {
+						h.push(new Array(target,document.getElementById(i+'-'+j).style.backgroundColor||'#FFF'));
+                        document.getElementById(i+'-'+j).style.backgroundColor = '#FFF';
+                        document.getElementById('preview'+i+'-'+j).style.backgroundColor = '#FFF';
+					}
+                }
+        }
+        addHistory(h);
+}
+
+function loadTemplate(name) {
+	if (document.getElementById('loadingDiv')) {
+		document.getElementById('loadingDiv').style.display = 'block';
+	} else {
+		var d = document.createElement('div');
+		d.id='loadingDiv';
+		var s = document.createElement('span');
+		s.style.backgroundColor='#F93';
+		s.style.padding='5px';
+		s.innerHTML = 'Loading...';
+		d.appendChild(s);
+		document.getElementById('editor').appendChild(d);
+	}
+
+	return submitRequest('item.loadTemplate','','name='+name);
+}
+function handleLoadTemplate(response) {
+	var pixels = response.getElementsByTagName('pixel');
+	for (var k=0;k<pixels.length;k++) {
+		var pixel = pixels[k];
+		var i = pixel.getAttribute('i');
+		var j = pixel.getAttribute('j');
+		var c = pixel.firstChild.nodeValue;
+
+		document.getElementById(i+'-'+j).style.backgroundColor=c;
+		document.getElementById('preview'+i+'-'+j).style.backgroundColor=c;
+	}
+
+	document.getElementById('loadingDiv').style.display = 'none';
+}
+var autosaveInterval;
+function showDesignTab(type) {
+
+	if (type == 'drawingTab') {
+		$('drawingTab').style.display='block';
+		<cms::if type="autosave" name="pixels">
+		if (confirm('You have some unsaved changes!  Would you like to restore them?  If you say no, they will be overwritten.')) {
+			autoRestore('<cms::var type="autosave" name="pixels">');
+		}
+		document.getElementById('autosaveId').value = <cms::var type="autosave" name="id">;
+		</cms::if>
+		<cms::ifloop type="pixels">
+		<cms::fancylist over="pixels">
+			setPixel(<cms::var type="pixel" name="i">,<cms::var type="pixel" name="j">,'<cms::var type="pixel" name="color">');
+		</cms::fancylist>
+			document.getElementById('itemId').value = <cms::var type="item" name="id">;
+		</cms::ifloop>
+		autosaveInterval = setInterval('autosaveItem()',300000000);
+	} else {
+		$('drawingTab').style.display='none';
+		clearInterval(autosaveInterval);
+	}
+
+	return false;
+}
+
+function IChooseYou(ele) {
+	getItemInfo(currentuserid,ele.id.substring(4));
+}
+function showItemInfo(response) {
+	var names = new Array();
+	var name;
+	var type;
+	try {
+		if (response.getElementsByTagName('previousOwner')[0].firstChild) {
+			names['previousOwner'] = response.getElementsByTagName('previousOwner')[0].firstChild.nodeValue;
+			names['linkpreviousOwner'] = response.getElementsByTagName('linkpreviousOwner')[0].firstChild.nodeValue;
+		}
+		names['creator'] = response.getElementsByTagName('creator')[0].firstChild.nodeValue;
+		names['linkcreator'] = response.getElementsByTagName('linkcreator')[0].firstChild.nodeValue;
+		names['id'] = response.getElementsByTagName('id')[0].firstChild.nodeValue;
+
+		name = response.getElementsByTagName('name')[0].firstChild.nodeValue;
+		type = response.getElementsByTagName('type')[0].firstChild.nodeValue;
+	}catch(e){}
+
+	$('infoAreaImg').innerHTML = '';
+	var img = document.createElement('img');
+	img.style.height='90px';
+	img.style.width='90px';
+	img.src='http://<cms::var type="global" name="imgserver">/img/items/'+type+'/'+(type == 'user' ? names['id'] : name)+'.gif';
+	$('infoAreaImg').appendChild(img);
+
+	$('infoAreaText').innerHTML = '<h2>'+name+'</h2><br/><a href="#" onclick="finalAnswer();return false;" class="funbutton">Choose This</a>';
+}
+
+function bgover(ele) {
+	ele.style.backgroundImage='url("http://<cms::var type="global" name="imgserver">/img/toys/inventory_tile_hover.gif")';
+}
+function bgout(ele) {
+	ele.style.backgroundImage='url("http://<cms::var type="global" name="imgserver">/img/toys/inventory_tile.gif")';
+}
+function saveTransparent(color) {
+	document.getElementById('transparency').value = color;
+}
+
+</script>
+<style>
+
+	#inventory { line-height: 1px; width: 360px; }
+	.tile { width: 60px; height: 60px; background: url(http://<cms::var type="global" name="imgserver">/img/toys/inventory_tile.gif); float: left; }
+	.tile img { margin: 5px; border: none; width: 50px; height: 50px; }
+
+#brushcolor {
+	width: 30px;
+	height: 30px;
+	border: 1px outset #AAA;
+	z-index:500;
+}
+#backcolor {
+	width: 30px;
+	height: 30px;
+	border: 1px outset #AAA;
+	position: relative;
+	top: -15px;
+	left: 15px;
+	z-index:499;
+}
+#colorswap {
+	position: relative;
+	top: -64px;
+	left: 32px;
+}
+#colorreset {
+	position: relative;
+	top: -48px;
+	left: 0px;
+}
+#brushColors {
+	line-height: 10px;
+	border-collapse: collapse;
+	margin-top: -42px;
+}
+#brushColors tr td {
+	border: 2px groove #CCC;
+	height: 10px;
+	width: 10px;
+}
+#colorinfo {
+	float:left;
+	position:relative;
+	top: 0px;
+	width: 220px;
+}
+
+#templates {
+	margin-top: 30px;
+}
+#editorArea {
+	position: absolute;
+	top: 0px;
+	left: 270px;
+	height: 350px;
+	width: 400px;
+}
+</style>
+<!--[if IE]>
+<style>
+#editorArea {
+	left:50px;
+}
+</style>
+<!--[endif] -->
+
+<h1>Create A New Toy</h1>
+<h2>1. Design it!</h2>
+<div id="drawingTab" style="display:block;">
+<div id="palette">
+<div id="colorinfo">
+	<div id="brushcolor"></div>
+	<div id="backcolor"></div>
+	<div id="colorswap" onclick="swapColors();"><img src="http://<cms::var type="global" name="imgserver">/img/paintarrows.gif"/></div>
+	<div id="colorreset" onclick="resetColors();"><img src="http://<cms::var type="global" name="imgserver">/img/paintcolorreset.gif"/></div>
+	<div class="small" style="position:relative;top:-95px;left:60px;">Click below to change your brush color.<br/>
+	alt-click below to change your background color.</div>
+</div>
+<br clear="left"/>
+<TABLE id="brushColors" border=1>
+<TR>
+	<TD  BGCOLOR="#000000"><div onmousedown="return changeColor(event);" id="000000">&nbsp;</div></TD> <TD  BGCOLOR="#000033"><div onmousedown="return changeColor(event);" id="000033">&nbsp;</div></TD> <TD  BGCOLOR="#000066"><div onmousedown="return changeColor(event);" id="000066">&nbsp;</div></TD> <TD  BGCOLOR="#000099"><div onmousedown="return changeColor(event);" id="000099">&nbsp;</div></TD> <TD  BGCOLOR="#0000cc"><div onmousedown="return changeColor(event);" id="0000cc">&nbsp;</div></TD> <TD  BGCOLOR="#0000ff"><div onmousedown="return changeColor(event);" id="0000ff">&nbsp;</div></TD> <TD  BGCOLOR="#006600"><div onmousedown="return changeColor(event);" id="006600">&nbsp;</div></TD> <TD  BGCOLOR="#006633"><div onmousedown="return changeColor(event);" id="006633">&nbsp;</div></TD> <TD  BGCOLOR="#006666"><div onmousedown="return changeColor(event);" id="006666">&nbsp;</div></TD> <TD  BGCOLOR="#006699"><div onmousedown="return changeColor(event);" id="006699">&nbsp;</div></TD> <TD  BGCOLOR="#0066cc"><div onmousedown="return changeColor(event);" id="0066cc">&nbsp;</div></TD> <TD  BGCOLOR="#0066ff"><div onmousedown="return changeColor(event);" id="0066ff">&nbsp;</div></TD> <TD  BGCOLOR="#00cc00"><div onmousedown="return changeColor(event);" id="00cc00">&nbsp;</div></TD> <TD  BGCOLOR="#00cc33"><div onmousedown="return changeColor(event);" id="00cc33">&nbsp;</div></TD> <TD  BGCOLOR="#00cc66"><div onmousedown="return changeColor(event);" id="00cc66">&nbsp;</div></TD> <TD  BGCOLOR="#00cc99"><div onmousedown="return changeColor(event);" id="00cc99">&nbsp;</div></TD> <TD  BGCOLOR="#00cccc"><div onmousedown="return changeColor(event);" id="00cccc">&nbsp;</div></TD> <TD  BGCOLOR="#00ccff"><div onmousedown="return changeColor(event);" id="00ccff">&nbsp;</div></TD>
+</TR>
+<TR>
+	<TD  BGCOLOR="#003300"><div onmousedown="return changeColor(event);" id="003300">&nbsp;</div></TD> <TD  BGCOLOR="#003333"><div onmousedown="return changeColor(event);" id="003333">&nbsp;</div></TD> <TD  BGCOLOR="#003366"><div onmousedown="return changeColor(event);" id="003366">&nbsp;</div></TD> <TD  BGCOLOR="#003399"><div onmousedown="return changeColor(event);" id="003399">&nbsp;</div></TD> <TD  BGCOLOR="#0033cc"><div onmousedown="return changeColor(event);" id="0033cc">&nbsp;</div></TD> <TD  BGCOLOR="#0033ff"><div onmousedown="return changeColor(event);" id="0033ff">&nbsp;</div></TD> <TD  BGCOLOR="#009900"><div onmousedown="return changeColor(event);" id="009900">&nbsp;</div></TD> <TD  BGCOLOR="#009933"><div onmousedown="return changeColor(event);" id="009933">&nbsp;</div></TD> <TD  BGCOLOR="#009966"><div onmousedown="return changeColor(event);" id="009966">&nbsp;</div></TD> <TD  BGCOLOR="#009999"><div onmousedown="return changeColor(event);" id="009999">&nbsp;</div></TD> <TD  BGCOLOR="#0099cc"><div onmousedown="return changeColor(event);" id="0099cc">&nbsp;</div></TD> <TD  BGCOLOR="#0099ff"><div onmousedown="return changeColor(event);" id="0099ff">&nbsp;</div></TD> <TD  BGCOLOR="#00ff00"><div onmousedown="return changeColor(event);" id="00ff00">&nbsp;</div></TD> <TD  BGCOLOR="#00ff33"><div onmousedown="return changeColor(event);" id="00ff33">&nbsp;</div></TD> <TD  BGCOLOR="#00ff66"><div onmousedown="return changeColor(event);" id="00ff66">&nbsp;</div></TD> <TD  BGCOLOR="#00ff99"><div onmousedown="return changeColor(event);" id="00ff99">&nbsp;</div></TD> <TD  BGCOLOR="#00ffcc"><div onmousedown="return changeColor(event);" id="00ffcc">&nbsp;</div></TD> <TD  BGCOLOR="#00ffff"><div onmousedown="return changeColor(event);" id="00ffff">&nbsp;</div></TD>
+</TR>
+<TR>
+	<TD  BGCOLOR="#330000"><div onmousedown="return changeColor(event);" id="330000">&nbsp;</div></TD> <TD  BGCOLOR="#330033"><div onmousedown="return changeColor(event);" id="330033">&nbsp;</div></TD> <TD  BGCOLOR="#330066"><div onmousedown="return changeColor(event);" id="330066">&nbsp;</div></TD> <TD  BGCOLOR="#330099"><div onmousedown="return changeColor(event);" id="330099">&nbsp;</div></TD> <TD  BGCOLOR="#3300cc"><div onmousedown="return changeColor(event);" id="3300cc">&nbsp;</div></TD> <TD  BGCOLOR="#3300ff"><div onmousedown="return changeColor(event);" id="3300ff">&nbsp;</div></TD> <TD  BGCOLOR="#336600"><div onmousedown="return changeColor(event);" id="336600">&nbsp;</div></TD> <TD  BGCOLOR="#336633"><div onmousedown="return changeColor(event);" id="336633">&nbsp;</div></TD> <TD  BGCOLOR="#336666"><div onmousedown="return changeColor(event);" id="336666">&nbsp;</div></TD> <TD  BGCOLOR="#336699"><div onmousedown="return changeColor(event);" id="336699">&nbsp;</div></TD> <TD  BGCOLOR="#3366cc"><div onmousedown="return changeColor(event);" id="3366cc">&nbsp;</div></TD> <TD  BGCOLOR="#3366ff"><div onmousedown="return changeColor(event);" id="3366ff">&nbsp;</div></TD> <TD  BGCOLOR="#33cc00"><div onmousedown="return changeColor(event);" id="33cc00">&nbsp;</div></TD> <TD  BGCOLOR="#33cc33"><div onmousedown="return changeColor(event);" id="33cc33">&nbsp;</div></TD> <TD  BGCOLOR="#33cc66"><div onmousedown="return changeColor(event);" id="33cc66">&nbsp;</div></TD> <TD  BGCOLOR="#33cc99"><div onmousedown="return changeColor(event);" id="33cc99">&nbsp;</div></TD> <TD  BGCOLOR="#33cccc"><div onmousedown="return changeColor(event);" id="33cccc">&nbsp;</div></TD> <TD  BGCOLOR="#33ccff"><div onmousedown="return changeColor(event);" id="33ccff">&nbsp;</div></TD>
+</TR>
+<TR>
+	<TD  BGCOLOR="#333300"><div onmousedown="return changeColor(event);" id="333300">&nbsp;</div></TD> <TD  BGCOLOR="#333333"><div onmousedown="return changeColor(event);" id="333333">&nbsp;</div></TD> <TD  BGCOLOR="#333366"><div onmousedown="return changeColor(event);" id="333366">&nbsp;</div></TD> <TD  BGCOLOR="#333399"><div onmousedown="return changeColor(event);" id="333399">&nbsp;</div></TD> <TD  BGCOLOR="#3333cc"><div onmousedown="return changeColor(event);" id="3333cc">&nbsp;</div></TD> <TD  BGCOLOR="#3333ff"><div onmousedown="return changeColor(event);" id="3333ff">&nbsp;</div></TD> <TD  BGCOLOR="#339900"><div onmousedown="return changeColor(event);" id="339900">&nbsp;</div></TD> <TD  BGCOLOR="#339933"><div onmousedown="return changeColor(event);" id="339933">&nbsp;</div></TD> <TD  BGCOLOR="#339966"><div onmousedown="return changeColor(event);" id="339966">&nbsp;</div></TD> <TD  BGCOLOR="#339999"><div onmousedown="return changeColor(event);" id="339999">&nbsp;</div></TD> <TD  BGCOLOR="#3399cc"><div onmousedown="return changeColor(event);" id="3399cc">&nbsp;</div></TD> <TD  BGCOLOR="#3399ff"><div onmousedown="return changeColor(event);" id="3399ff">&nbsp;</div></TD> <TD  BGCOLOR="#33ff00"><div onmousedown="return changeColor(event);" id="33ff00">&nbsp;</div></TD> <TD  BGCOLOR="#33ff33"><div onmousedown="return changeColor(event);" id="33ff33">&nbsp;</div></TD> <TD  BGCOLOR="#33ff66"><div onmousedown="return changeColor(event);" id="33ff66">&nbsp;</div></TD> <TD  BGCOLOR="#33ff99"><div onmousedown="return changeColor(event);" id="33ff99">&nbsp;</div></TD> <TD  BGCOLOR="#33ffcc"><div onmousedown="return changeColor(event);" id="33ffcc">&nbsp;</div></TD> <TD  BGCOLOR="#33ffff"><div onmousedown="return changeColor(event);" id="33ffff">&nbsp;</div></TD>
+</TR>
+<TR>
+	<TD  BGCOLOR="#660000"><div onmousedown="return changeColor(event);" id="660000">&nbsp;</div></TD> <TD  BGCOLOR="#660033"><div onmousedown="return changeColor(event);" id="660033">&nbsp;</div></TD> <TD  BGCOLOR="#660066"><div onmousedown="return changeColor(event);" id="660066">&nbsp;</div></TD> <TD  BGCOLOR="#660099"><div onmousedown="return changeColor(event);" id="660099">&nbsp;</div></TD> <TD  BGCOLOR="#6600cc"><div onmousedown="return changeColor(event);" id="6600cc">&nbsp;</div></TD> <TD  BGCOLOR="#6600ff"><div onmousedown="return changeColor(event);" id="6600ff">&nbsp;</div></TD> <TD  BGCOLOR="#666600"><div onmousedown="return changeColor(event);" id="666600">&nbsp;</div></TD> <TD  BGCOLOR="#666633"><div onmousedown="return changeColor(event);" id="666633">&nbsp;</div></TD> <TD  BGCOLOR="#666666"><div onmousedown="return changeColor(event);" id="666666">&nbsp;</div></TD> <TD  BGCOLOR="#666699"><div onmousedown="return changeColor(event);" id="666699">&nbsp;</div></TD> <TD  BGCOLOR="#6666cc"><div onmousedown="return changeColor(event);" id="6666cc">&nbsp;</div></TD> <TD  BGCOLOR="#6666ff"><div onmousedown="return changeColor(event);" id="6666ff">&nbsp;</div></TD> <TD  BGCOLOR="#66cc00"><div onmousedown="return changeColor(event);" id="66cc00">&nbsp;</div></TD> <TD  BGCOLOR="#66cc33"><div onmousedown="return changeColor(event);" id="66cc33">&nbsp;</div></TD> <TD  BGCOLOR="#66cc66"><div onmousedown="return changeColor(event);" id="66cc66">&nbsp;</div></TD> <TD  BGCOLOR="#66cc99"><div onmousedown="return changeColor(event);" id="66cc99">&nbsp;</div></TD> <TD  BGCOLOR="#66cccc"><div onmousedown="return changeColor(event);" id="66cccc">&nbsp;</div></TD> <TD  BGCOLOR="#66ccff"><div onmousedown="return changeColor(event);" id="66ccff">&nbsp;</div></TD>
+</TR>
+<TR>
+	<TD  BGCOLOR="#663300"><div onmousedown="return changeColor(event);" id="663300">&nbsp;</div></TD> <TD  BGCOLOR="#663333"><div onmousedown="return changeColor(event);" id="663333">&nbsp;</div></TD> <TD  BGCOLOR="#663366"><div onmousedown="return changeColor(event);" id="663366">&nbsp;</div></TD> <TD  BGCOLOR="#663399"><div onmousedown="return changeColor(event);" id="663399">&nbsp;</div></TD> <TD  BGCOLOR="#6633cc"><div onmousedown="return changeColor(event);" id="6633cc">&nbsp;</div></TD> <TD  BGCOLOR="#6633ff"><div onmousedown="return changeColor(event);" id="6633ff">&nbsp;</div></TD> <TD  BGCOLOR="#669900"><div onmousedown="return changeColor(event);" id="669900">&nbsp;</div></TD> <TD  BGCOLOR="#669933"><div onmousedown="return changeColor(event);" id="669933">&nbsp;</div></TD> <TD  BGCOLOR="#669966"><div onmousedown="return changeColor(event);" id="669966">&nbsp;</div></TD> <TD  BGCOLOR="#669999"><div onmousedown="return changeColor(event);" id="669999">&nbsp;</div></TD> <TD  BGCOLOR="#6699cc"><div onmousedown="return changeColor(event);" id="6699cc">&nbsp;</div></TD> <TD  BGCOLOR="#6699ff"><div onmousedown="return changeColor(event);" id="6699ff">&nbsp;</div></TD> <TD  BGCOLOR="#66ff00"><div onmousedown="return changeColor(event);" id="66ff00">&nbsp;</div></TD> <TD  BGCOLOR="#66ff33"><div onmousedown="return changeColor(event);" id="66ff33">&nbsp;</div></TD> <TD  BGCOLOR="#66ff66"><div onmousedown="return changeColor(event);" id="66ff66">&nbsp;</div></TD> <TD  BGCOLOR="#66ff99"><div onmousedown="return changeColor(event);" id="66ff99">&nbsp;</div></TD> <TD  BGCOLOR="#66ffcc"><div onmousedown="return changeColor(event);" id="66ffcc">&nbsp;</div></TD> <TD  BGCOLOR="#66ffff"><div onmousedown="return changeColor(event);" id="66ffff">&nbsp;</div></TD>
+</TR>
+<TR>
+	<TD  BGCOLOR="#990000"><div onmousedown="return changeColor(event);" id="990000">&nbsp;</div></TD> <TD  BGCOLOR="#990033"><div onmousedown="return changeColor(event);" id="990033">&nbsp;</div></TD> <TD  BGCOLOR="#990066"><div onmousedown="return changeColor(event);" id="990066">&nbsp;</div></TD> <TD  BGCOLOR="#990099"><div onmousedown="return changeColor(event);" id="990099">&nbsp;</div></TD> <TD  BGCOLOR="#9900cc"><div onmousedown="return changeColor(event);" id="9900cc">&nbsp;</div></TD> <TD  BGCOLOR="#9900ff"><div onmousedown="return changeColor(event);" id="9900ff">&nbsp;</div></TD> <TD  BGCOLOR="#996600"><div onmousedown="return changeColor(event);" id="996600">&nbsp;</div></TD> <TD  BGCOLOR="#996633"><div onmousedown="return changeColor(event);" id="996633">&nbsp;</div></TD> <TD  BGCOLOR="#996666"><div onmousedown="return changeColor(event);" id="996666">&nbsp;</div></TD> <TD  BGCOLOR="#996699"><div onmousedown="return changeColor(event);" id="996699">&nbsp;</div></TD> <TD  BGCOLOR="#9966cc"><div onmousedown="return changeColor(event);" id="9966cc">&nbsp;</div></TD> <TD  BGCOLOR="#9966ff"><div onmousedown="return changeColor(event);" id="9966ff">&nbsp;</div></TD> <TD  BGCOLOR="#99cc00"><div onmousedown="return changeColor(event);" id="99cc00">&nbsp;</div></TD> <TD  BGCOLOR="#99cc33"><div onmousedown="return changeColor(event);" id="99cc33">&nbsp;</div></TD> <TD  BGCOLOR="#99cc66"><div onmousedown="return changeColor(event);" id="99cc66">&nbsp;</div></TD> <TD  BGCOLOR="#99cc99"><div onmousedown="return changeColor(event);" id="99cc99">&nbsp;</div></TD> <TD  BGCOLOR="#99cccc"><div onmousedown="return changeColor(event);" id="99cccc">&nbsp;</div></TD> <TD  BGCOLOR="#99ccff"><div onmousedown="return changeColor(event);" id="99ccff">&nbsp;</div></TD>
+</TR>
+<TR>
+	<TD  BGCOLOR="#993300"><div onmousedown="return changeColor(event);" id="993300">&nbsp;</div></TD> <TD  BGCOLOR="#993333"><div onmousedown="return changeColor(event);" id="993333">&nbsp;</div></TD> <TD  BGCOLOR="#993366"><div onmousedown="return changeColor(event);" id="993366">&nbsp;</div></TD> <TD  BGCOLOR="#993399"><div onmousedown="return changeColor(event);" id="993399">&nbsp;</div></TD> <TD  BGCOLOR="#9933cc"><div onmousedown="return changeColor(event);" id="9933cc">&nbsp;</div></TD> <TD  BGCOLOR="#9933ff"><div onmousedown="return changeColor(event);" id="9933ff">&nbsp;</div></TD> <TD  BGCOLOR="#999900"><div onmousedown="return changeColor(event);" id="999900">&nbsp;</div></TD> <TD  BGCOLOR="#999933"><div onmousedown="return changeColor(event);" id="999933">&nbsp;</div></TD> <TD  BGCOLOR="#999966"><div onmousedown="return changeColor(event);" id="999966">&nbsp;</div></TD> <TD  BGCOLOR="#999999"><div onmousedown="return changeColor(event);" id="999999">&nbsp;</div></TD> <TD  BGCOLOR="#9999cc"><div onmousedown="return changeColor(event);" id="9999cc">&nbsp;</div></TD> <TD  BGCOLOR="#9999ff"><div onmousedown="return changeColor(event);" id="9999ff">&nbsp;</div></TD> <TD  BGCOLOR="#99ff00"><div onmousedown="return changeColor(event);" id="99ff00">&nbsp;</div></TD> <TD  BGCOLOR="#99ff33"><div onmousedown="return changeColor(event);" id="99ff33">&nbsp;</div></TD> <TD  BGCOLOR="#99ff66"><div onmousedown="return changeColor(event);" id="99ff66">&nbsp;</div></TD> <TD  BGCOLOR="#99ff99"><div onmousedown="return changeColor(event);" id="99ff99">&nbsp;</div></TD> <TD  BGCOLOR="#99ffcc"><div onmousedown="return changeColor(event);" id="99ffcc">&nbsp;</div></TD> <TD  BGCOLOR="#99ffff"><div onmousedown="return changeColor(event);" id="99ffff">&nbsp;</div></TD>
+</TR>
+<TR>
+	<TD  BGCOLOR="#cc0000"><div onmousedown="return changeColor(event);" id="cc0000">&nbsp;</div></TD> <TD  BGCOLOR="#cc0033"><div onmousedown="return changeColor(event);" id="cc0033">&nbsp;</div></TD> <TD  BGCOLOR="#cc0066"><div onmousedown="return changeColor(event);" id="cc0066">&nbsp;</div></TD> <TD  BGCOLOR="#cc0099"><div onmousedown="return changeColor(event);" id="cc0099">&nbsp;</div></TD> <TD  BGCOLOR="#cc00cc"><div onmousedown="return changeColor(event);" id="cc00cc">&nbsp;</div></TD> <TD  BGCOLOR="#cc00ff"><div onmousedown="return changeColor(event);" id="cc00ff">&nbsp;</div></TD> <TD  BGCOLOR="#cc6600"><div onmousedown="return changeColor(event);" id="cc6600">&nbsp;</div></TD> <TD  BGCOLOR="#cc6633"><div onmousedown="return changeColor(event);" id="cc6633">&nbsp;</div></TD> <TD  BGCOLOR="#cc6666"><div onmousedown="return changeColor(event);" id="cc6666">&nbsp;</div></TD> <TD  BGCOLOR="#cc6699"><div onmousedown="return changeColor(event);" id="cc6699">&nbsp;</div></TD> <TD  BGCOLOR="#cc66cc"><div onmousedown="return changeColor(event);" id="cc66cc">&nbsp;</div></TD> <TD  BGCOLOR="#cc66ff"><div onmousedown="return changeColor(event);" id="cc66ff">&nbsp;</div></TD> <TD  BGCOLOR="#cccc00"><div onmousedown="return changeColor(event);" id="cccc00">&nbsp;</div></TD> <TD  BGCOLOR="#cccc33"><div onmousedown="return changeColor(event);" id="cccc33">&nbsp;</div></TD> <TD  BGCOLOR="#cccc66"><div onmousedown="return changeColor(event);" id="cccc66">&nbsp;</div></TD> <TD  BGCOLOR="#cccc99"><div onmousedown="return changeColor(event);" id="cccc99">&nbsp;</div></TD> <TD  BGCOLOR="#cccccc"><div onmousedown="return changeColor(event);" id="cccccc">&nbsp;</div></TD> <TD  BGCOLOR="#ccccff"><div onmousedown="return changeColor(event);" id="ccccff">&nbsp;</div></TD>
+</TR>
+<TR>
+	<TD  BGCOLOR="#cc3300"><div onmousedown="return changeColor(event);" id="cc3300">&nbsp;</div></TD> <TD  BGCOLOR="#cc3333"><div onmousedown="return changeColor(event);" id="cc3333">&nbsp;</div></TD> <TD  BGCOLOR="#cc3366"><div onmousedown="return changeColor(event);" id="cc3366">&nbsp;</div></TD> <TD  BGCOLOR="#cc3399"><div onmousedown="return changeColor(event);" id="cc3399">&nbsp;</div></TD> <TD  BGCOLOR="#cc33cc"><div onmousedown="return changeColor(event);" id="cc33cc">&nbsp;</div></TD> <TD  BGCOLOR="#cc33ff"><div onmousedown="return changeColor(event);" id="cc33ff">&nbsp;</div></TD> <TD  BGCOLOR="#cc9900"><div onmousedown="return changeColor(event);" id="cc9900">&nbsp;</div></TD> <TD  BGCOLOR="#cc9933"><div onmousedown="return changeColor(event);" id="cc9933">&nbsp;</div></TD> <TD  BGCOLOR="#cc9966"><div onmousedown="return changeColor(event);" id="cc9966">&nbsp;</div></TD> <TD  BGCOLOR="#cc9999"><div onmousedown="return changeColor(event);" id="cc9999">&nbsp;</div></TD> <TD  BGCOLOR="#cc99cc"><div onmousedown="return changeColor(event);" id="cc99cc">&nbsp;</div></TD> <TD  BGCOLOR="#cc99ff"><div onmousedown="return changeColor(event);" id="cc99ff">&nbsp;</div></TD> <TD  BGCOLOR="#ccff00"><div onmousedown="return changeColor(event);" id="ccff00">&nbsp;</div></TD> <TD  BGCOLOR="#ccff33"><div onmousedown="return changeColor(event);" id="ccff33">&nbsp;</div></TD> <TD  BGCOLOR="#ccff66"><div onmousedown="return changeColor(event);" id="ccff66">&nbsp;</div></TD> <TD  BGCOLOR="#ccff99"><div onmousedown="return changeColor(event);" id="ccff99">&nbsp;</div></TD> <TD  BGCOLOR="#ccffcc"><div onmousedown="return changeColor(event);" id="ccffcc">&nbsp;</div></TD> <TD  BGCOLOR="#ccffff"><div onmousedown="return changeColor(event);" id="ccffff">&nbsp;</div></TD>
+</TR>
+<TR>
+	<TD  BGCOLOR="#ff0000"><div onmousedown="return changeColor(event);" id="ff0000">&nbsp;</div></TD> <TD  BGCOLOR="#ff0033"><div onmousedown="return changeColor(event);" id="ff0033">&nbsp;</div></TD> <TD  BGCOLOR="#ff0066"><div onmousedown="return changeColor(event);" id="ff0066">&nbsp;</div></TD> <TD  BGCOLOR="#ff0099"><div onmousedown="return changeColor(event);" id="ff0099">&nbsp;</div></TD> <TD  BGCOLOR="#ff00cc"><div onmousedown="return changeColor(event);" id="ff00cc">&nbsp;</div></TD> <TD  BGCOLOR="#ff00ff"><div onmousedown="return changeColor(event);" id="ff00ff">&nbsp;</div></TD> <TD  BGCOLOR="#ff6600"><div onmousedown="return changeColor(event);" id="ff6600">&nbsp;</div></TD> <TD  BGCOLOR="#ff6633"><div onmousedown="return changeColor(event);" id="ff6633">&nbsp;</div></TD> <TD  BGCOLOR="#ff6666"><div onmousedown="return changeColor(event);" id="ff6666">&nbsp;</div></TD> <TD  BGCOLOR="#ff6699"><div onmousedown="return changeColor(event);" id="ff6699">&nbsp;</div></TD> <TD  BGCOLOR="#ff66cc"><div onmousedown="return changeColor(event);" id="ff66cc">&nbsp;</div></TD> <TD  BGCOLOR="#ff66ff"><div onmousedown="return changeColor(event);" id="ff66ff">&nbsp;</div></TD> <TD  BGCOLOR="#ffcc00"><div onmousedown="return changeColor(event);" id="ffcc00">&nbsp;</div></TD> <TD  BGCOLOR="#ffcc33"><div onmousedown="return changeColor(event);" id="ffcc33">&nbsp;</div></TD> <TD  BGCOLOR="#ffcc66"><div onmousedown="return changeColor(event);" id="ffcc66">&nbsp;</div></TD> <TD  BGCOLOR="#ffcc99"><div onmousedown="return changeColor(event);" id="ffcc99">&nbsp;</div></TD> <TD  BGCOLOR="#ffcccc"><div onmousedown="return changeColor(event);" id="ffcccc">&nbsp;</div></TD> <TD  BGCOLOR="#ffccff"><div onmousedown="return changeColor(event);" id="ffccff">&nbsp;</div></TD>
+</TR>
+<TR>
+	<TD  BGCOLOR="#ff3300"><div onmousedown="return changeColor(event);" id="ff3300">&nbsp;</div></TD> <TD  BGCOLOR="#ff3333"><div onmousedown="return changeColor(event);" id="ff3333">&nbsp;</div></TD> <TD  BGCOLOR="#ff3366"><div onmousedown="return changeColor(event);" id="ff3366">&nbsp;</div></TD> <TD  BGCOLOR="#ff3399"><div onmousedown="return changeColor(event);" id="ff3399">&nbsp;</div></TD> <TD  BGCOLOR="#ff33cc"><div onmousedown="return changeColor(event);" id="ff33cc">&nbsp;</div></TD> <TD  BGCOLOR="#ff33ff"><div onmousedown="return changeColor(event);" id="ff33ff">&nbsp;</div></TD> <TD  BGCOLOR="#ff9900"><div onmousedown="return changeColor(event);" id="ff9900">&nbsp;</div></TD> <TD  BGCOLOR="#ff9933"><div onmousedown="return changeColor(event);" id="ff9933">&nbsp;</div></TD> <TD  BGCOLOR="#ff9966"><div onmousedown="return changeColor(event);" id="ff9966">&nbsp;</div></TD> <TD  BGCOLOR="#ff9999"><div onmousedown="return changeColor(event);" id="ff9999">&nbsp;</div></TD> <TD  BGCOLOR="#ff99cc"><div onmousedown="return changeColor(event);" id="ff99cc">&nbsp;</div></TD> <TD  BGCOLOR="#ff99ff"><div onmousedown="return changeColor(event);" id="ff99ff">&nbsp;</div></TD> <TD  BGCOLOR="#ffff00"><div onmousedown="return changeColor(event);" id="ffff00">&nbsp;</div></TD> <TD  BGCOLOR="#ffff33"><div onmousedown="return changeColor(event);" id="ffff33">&nbsp;</div></TD> <TD  BGCOLOR="#ffff66"><div onmousedown="return changeColor(event);" id="ffff66">&nbsp;</div></TD> <TD  BGCOLOR="#ffff99"><div onmousedown="return changeColor(event);" id="ffff99">&nbsp;</div></TD> <TD  BGCOLOR="#ffffcc"><div onmousedown="return changeColor(event);" id="ffffcc">&nbsp;</div></TD> <TD  BGCOLOR="#ffffff"><div onmousedown="return changeColor(event);" id="ffffff">&nbsp;</div></TD>
+</TR>
+<TR>
+	<TD  BGCOLOR="#000000"><div onmousedown="return changeColor(event);" id="000000">&nbsp;</div></TD> <TD  BGCOLOR="#1c1c1c"><div onmousedown="return changeColor(event);" id="1c1c1c">&nbsp;</div></TD> <TD  BGCOLOR="#2a2a2a"><div onmousedown="return changeColor(event);" id="2a2a2a">&nbsp;</div></TD> <TD  BGCOLOR="#383838"><div onmousedown="return changeColor(event);" id="383838">&nbsp;</div></TD> <TD  BGCOLOR="#464646"><div onmousedown="return changeColor(event);" id="464646">&nbsp;</div></TD> <TD  BGCOLOR="#545454"><div onmousedown="return changeColor(event);" id="545454">&nbsp;</div></TD> <TD  BGCOLOR="#626262"><div onmousedown="return changeColor(event);" id="626262">&nbsp;</div></TD> <TD  BGCOLOR="#707070"><div onmousedown="return changeColor(event);" id="707070">&nbsp;</div></TD> <TD  BGCOLOR="#7e7e7e"><div onmousedown="return changeColor(event);" id="7e7e7e">&nbsp;</div></TD> <TD  BGCOLOR="#8c8c8c"><div onmousedown="return changeColor(event);" id="8c8c8c">&nbsp;</div></TD> <TD  BGCOLOR="#9a9a9a"><div onmousedown="return changeColor(event);" id="9a9a9a">&nbsp;</div></TD> <TD  BGCOLOR="#a8a8a8"><div onmousedown="return changeColor(event);" id="a8a8a8">&nbsp;</div></TD> <TD  BGCOLOR="#b6b6b6"><div onmousedown="return changeColor(event);" id="b6b6b6">&nbsp;</div></TD> <TD  BGCOLOR="#c4c4c4"><div onmousedown="return changeColor(event);" id="c4c4c4">&nbsp;</div></TD> <TD  BGCOLOR="#d2d2d2"><div onmousedown="return changeColor(event);" id="d2d2d2">&nbsp;</div></TD> <TD  BGCOLOR="#e0e0e0"><div onmousedown="return changeColor(event);" id="e0e0e0">&nbsp;</div></TD> <TD  BGCOLOR="#eeeeee"><div onmousedown="return changeColor(event);" id="eeeeee">&nbsp;</div></TD> <TD  BGCOLOR="#ffffff"><div onmousedown="return changeColor(event);" id="ffffff">&nbsp;</div></TD>
+</TR>
+<tr>
+	<td colspan="18">
+		<br clear="all"/>
+		Transparent color: <select name='transparencySelect' onchange='saveTransparent(this.options[this.selectedIndex].value)'>
+		<option value=''>none</option>
+		<option value='000000'>black</option>
+		<option value='FFFFFF'>white</option>
+		<option value='4169E1'>blue</option>
+		<option value='EEE685'>off-yellow</option>
+		<option value='E9967A'>reddish</option>
+		</select>
+		<a id="transparentSelector" href='#' onclick='return changeColor(event);'>Use transparent color</a>
+	</td>
+</tr>
+</TABLE>
+<span id="colorcode" class="small">#000000</span>
+</div>
+
+	<div id="templates">
+		Templates: (click to load)
+		<cms::fancylist over="templates">
+		<a href="#" onclick="return loadTemplate('<cms::var type="template" name="name">')"><img src="/img/items/system/<cms::var type="template" name="name">.gif"/></a>
+		</cms::fancylist>
+	</div>
+
+
+<div id="editorArea">
+	<div id="instructions" style="border:1px solid #aaa;">
+		<span id="autosaveNotice" style="float:right;background: #FC6;width:100px;display:none;"></span>
+		<div id="pencil" style="margin:3px;float:left;border:2px inset #CFA;" onclick="changeFill(0);"><img src="http://<cms::var type="global" name="imgserver">/img/paintpencil.gif" alt="draw tool" width="25" height="25"/></div>
+		<div id="bucket" style="margin:3px;float:left;border:2px outset #CFA;" onclick="changeFill(1);"><img src="http://<cms::var type="global" name="imgserver">/img/paintbucket.gif" alt="fill tool" width="25" height="25"/></div>
+		<br clear="all"/>
+		<span class="small">
+		Use the pencil to draw dots and lines (drag to make a line).  Use the bucket to fill areas.<br/>
+		Use the alt key to use your background color.<br/>
+		</span>
+	</div>
+	<br clear="all"/>
+	<div style="float:right;width:90px;margin-right:20px;">
+		<div style="text-align:center;" class="greyborders">
+			<center>
+			<div id="previewtext">Preview:</div>
+			<div id="preview"> </div>
+			</center>
+			<div style="border-bottom:1px solid #000;">&nbsp; </div>
+
+			<div style="border-bottom:1px solid #000;">
+				<a href="#" onclick="undo();return false;">undo</a>
+			</div>
+			<table align="center">
+			<tr>
+				<td>&nbsp;</td>
+				<td style="text-align:center;" ><a href="javascript:shiftDrawing('up')"><img src="/img/arrow_up.gif" title="up" border="0"/></a></td>
+				<td>&nbsp;</td>
+			</tr>
+			<tr>
+				<td style="text-align:center;" ><a href="javascript:shiftDrawing('left')"><img src="/img/arrow_left.gif" title="left" border="0"/></a></td>
+				<td style="text-align:center;" class="small">shift<br>drawing</td>
+				<td style="text-align:center;" ><a href="javascript:shiftDrawing('right')"><img src="/img/arrow.gif" title="right" border="0"/></a></td>
+			</tr>
+			<tr>
+				<td>&nbsp;</td>
+				<td style="text-align:center;" ><a href="javascript:shiftDrawing('down')"><img src="/img/arrow_down.gif" title="down" border="0"/></a></td>
+				<td>&nbsp;</td>
+			</tr>
+			</table>
+		</div>
+	</div>
+
+	<div id="editor"> </div>
+	<div id="editorLeft"> </div>
+	<div id="editorTop"> </div>
+	<div id="editorRight"> </div>
+	<div id="editorBottom"> </div>
+
+</div>
+
+</div> <!-- end drawingTab -->
+
+<br clear="all"/>
+<script language='javascript'>
+function checkBehavior() {
+	var b = document.getElementById('behavior');
+	if (b.options[b.selectedIndex].value == 'border') {
+		document.getElementById('pickerarea').style.display='inline';
+	} else if (b.options[b.selectedIndex].value == 'rockyou' || b.options[b.selectedIndex].value == 'youtube') {
+		$('bhCode').style.display='inline';
+	} else {
+		document.getElementById('pickerarea').style.display='none';
+	}
+}
+function submitCreateForm() {
+	if (checkItemCreatorForm()) {
+		$('itemCreateForm').submit();
+	} else {
+		alert('Check failed!');
+	}
+	return false;
+}
+</script>
+
+
+
+<h2>2. Name it!</h2>
+<form name='itemCreateForm' id='itemCreateForm' method='post' >
+<input type="hidden" name="submitted" value="1"/>
+<input type="hidden" name="transparency" id="transparency" value=""/>
+<input type="hidden" name="itemId" id="itemId" value=""/>
+<input type="hidden" name="autosaveId" id="autosaveId" value="0"/>
+<input type="hidden" name="pixels" id="pixels"/>
+Name: <input type="text" class="input" id="itemname" name="itemname" value="<cms::var type="item" name="name">"/><br/>
+Description: <input type="text" class="input" id="itemdescription" name="itemdescription" value="<cms::var type="item" name="description">"/><br/>
+<script>
+makeButton('blue','Save','#','onclick="submitCreateForm();return false;"');
+</script>
+</form>
+<br clear="all"/>
+<script language="javascript">
+loadGrid();
+
+//$('drawingTab').style.display='none';
+</script>
+</cms::ifnot type="warning" name="message">
+
+<cms::if type="page" name="edit" equals="1">
+<script>
+showDesignTab('drawingTab');
+</script>
+</cms::if>
+

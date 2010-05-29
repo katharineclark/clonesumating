@@ -1,0 +1,11 @@
+<cms::if type="page" name="error">
+<font color="red"><b>No results found</b></font>
+</cms::if>
+<form method="post">
+Query: <input type="text" name="query" value="<cms::var type="form" name="query">"/><br/>
+<input type="submit" name="submit" value="Submit"/>
+</form>
+<hr>
+<cms::fancylist over="results">
+<a href="/profiles/<cms::var type="result" name="linkhandle">/topics?id=<cms::var type="result" name="topicId">"><cms::var type="result" name="handle"></a> (<cms::var type="result" name="percent">)<br/>
+</cms::fancylist>

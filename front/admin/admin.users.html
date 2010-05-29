@@ -1,0 +1,27 @@
+<cms::if type="page" name="error">
+<font color="red"><b>User not found</b></font>
+</cms::if>
+<form method="post">
+Handle: <input type="text" name="handle" value="<cms::var type="profile" name="handle">"/><br/>
+<input type="submit" name="submit" value="Submit"/>
+</form>
+
+<h2 class="subtitle">Primary data</h2>
+<table style="width: 600px;border-collapse:collapse; border:medium outset blue;">
+<cms::fancylist over="primaryprofiledata">
+<tr>
+	<td style="width: 150px; border:medium inset #CCC;"><cms::var type="data" name="field"></td>
+	<td style="width: 450px; border:medium inset #CCC;"><cms::var type="data" name="value"></td>
+</tr>
+</cms::fancylist>
+</table>
+<br/>
+<h2 class="subtitle">Other data</h2>
+<table style="width: 600px;border-collapse:collapse; border:medium outset blue;">
+<cms::fancylist over="profiledata">
+<tr>
+	<td style="width: 150px; border:medium inset #CCC;"><cms::var type="data" name="field"></td>
+	<td style="width: 450px; border:medium inset #CCC;"><cms::var type="data" name="value"></td>
+</tr>
+</cms::fancylist>
+</table>

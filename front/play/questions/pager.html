@@ -1,0 +1,14 @@
+<questions>
+	<cms::fancylist over="questions">
+		<question>
+			<![CDATA[
+			<div class="question <cms::var type="list" name="evenodd">">
+				<span class="medium"><a href="/qow.pl?question=<cms::var type="question" name="id">"><cms::var type="question" name="question"></a></span><br />
+				<span class="small"><cms::var type="question" name="responses"> responses so far<cms::ifnot type="question" name="answered" equals="0">, including yours!</cms::ifnot><cms::if type="question" name="answered" equals="0">.  Add yours now!</cms::if></span>
+			</div>
+		]]>
+		</question>
+	</cms::fancylist>
+</questions>
+<prev><cms::var type="pager" name="prev"></prev>
+<next><cms::var type="pager" name="next"></next>

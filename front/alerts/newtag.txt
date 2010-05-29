@@ -1,0 +1,13 @@
+You were just tagged "<cms::var type="tag" name="value">"<cms::if type="tagger" name="handle"> by <cms::var type="tagger" name="handle">!</cms::if><cms::ifnot type="tagger" name="handle"> anonymously</cms::ifnot>
+
+<cms::if type="tagger" name="handle">See <cms::var type="tagger" name="handle">:
+ -> http://www.consumating.com/profiles/<cms::var type="tagger" name="linkhandle">
+
+</cms::if>See everyone tagged "<cms::var type="tag" name="value">"
+ -> http://www.consumating.com/tags/<cms::var type="tag" name="value">
+
+Love,
+Consumating
+
+PS. If you want to change your email alert options, click below.
+ -> http://www.consumating.com/myAccount.pl/alerts

@@ -1,0 +1,191 @@
+<link rel="stylesheet" href="http://<cms::var type="global" name="imgserver">/css/styles.profile.css" type="text/css" >
+<script src="http://<cms::var type="global" name="imgserver">/js/logic.view.js"></script>
+<script src="http://<cms::var type="global" name="imgserver">/js/Pager.js" type="text/javascript"></script>
+<script>
+
+	function addTagToProfile() {
+    var tag = document.getElementById('tag').value;
+    if (tag != '') {
+        submitRequest('user.addTag','tagForm','userId='+<cms::var type="profile" name="userId">);
+        var tags = document.getElementById('topicTags');
+        document.getElementById('tag').value='';
+        tags.innerHTML =  tags.innerHTML + '<div class="topictag"><b><a href="/tags/' + tag + '">'+tag+'</a><br /><span class="small">&rarr; added by you!</span></b></div>';
+        if (document.getElementById('notags')) {
+            document.getElementById('notags').style.display='none';
+        }
+    } 
+    return false;
+	}
+
+</script>
+
+
+<div id="profile">
+    <div id="profileNav">
+        <a href="/profiles/<cms::var type="profile" name="linkhandle">"><cms::var type="profile" name="handle"> &#187;</a>
+        <a href="/profiles/<cms::var type="profile" name="linkhandle">/topics">Conversations</a>
+        <a href="/profiles/<cms::var type="profile" name="linkhandle">/messages">Send Note</a>
+        <A href="/profiles/<cms::var type="profile" name="linkhandle">/answers">Answers</a>
+        <a href="/profiles/<cms::var type="profile" name="linkhandle">/photos">Photos</a>
+        <a href="/profiles/<cms::var type="profile" name="linkhandle">/tags">Tags</a>
+        <a href="/profiles/<cms::var type="profile" name="linkhandle">/inventory">Toy Box<sup style="color: #FFFF99;font-size: 10px;">&nbsp;new</sup></a>
+    </div>
+
+ <h1><a href="/profiles/<cms::var type="profile" name="linkhandle">"><cms::var type="profile" name="handle">'s</a> Tags</h1>
+
+ <cms::if type="page" name="shared" nest>
+    <h2>You have <cms::var type="page" name="shared"> <cms::wc type="page" name="shared" s="tag" p="tags"> in common:
+    <cms::fancylist over="sharedtags">
+        <cms::if type="list" name="last">
+            <cms::ifnot type="list" name="first">
+                and 
+            </cms::ifnot>
+        </cms::if>
+        <a href="/tags/<cms::var type="tag" name="value">"><cms::var type="tag" name="value"></a><cms::ifnot type="list" name="last">, </cms::ifnot></cms::fancylist>.
+    </h2>
+    </cms::if type="page" name="shared">
+
+	<a name="tags"></a>
+	<div id="mytags">
+		<h2><cms::if type="profile" name="sex" equals="F">She</cms::if><cms::if type="profile" name="sex" equals="M">He</cms::if> tagged <cms::if type="profile" name="sex" equals="F">herself</cms::if><cms::if type="profile" name="sex" equals="M">himself</cms::if>: <span class="small">the bigger the tag, the more people who use it...</span></h2>
+
+		<cms::fancylist over="selftags">
+			<a href="/tags/<cms::var type="tag" name="value">" title="There are <cms::var type="tag" name="size"> people with this tag" style="font-size: <cms::var type="tag" name="fontsize">px;">&nbsp;<cms::var type="tag" name="value">&nbsp;</a>
+		</cms::fancylist>
+	</div>
+
+
+	<div class="centerstage" id="addedtags">
+	<a name="addedtags"></a>
+	<h2>Other people tagged <cms::var type="profile" name="handle">:</h2>
+	<div id="othertags">
+	<cms::fancylist over="othertags">
+	<div class="peeptag">
+		<cms::if type="page" name="myprofile" nest>
+			<cms::ifnot type="tag" name="anonymous" equals="1" nest>
+			<A href="/profiles/<cms::var type="user" name="linkhandle">"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="user" name="userId">/50/<cms::var type="user" name="photoId">.jpg" class="pic" border="0" height="50" width="50"></a> 
+			</cms::ifnot type="tag" name="anonymous">
+			<cms::if type="tag" name="anonymous" equals="1" nest>
+			<img src="http://<cms::var type="global" name="imgserver">/img/nophoto.jpg" class="pic">
+			</cms::if type="tag" name="anonymous">
+		</cms::if type="page" name="myprofile">
+
+		<cms::ifnot type="page" name="myprofile" nest>
+			<cms::if type="tag" name="anonymous" equals="-1" nest>
+			<A href="/profiles/<cms::var type="user" name="linkhandle">"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="user" name="userId">/50/<cms::var type="user" name="photoId">.jpg" class="pic" border="0" height="50" width="50"></a> 
+			</cms::if type="tag" name="anonymous">
+			<cms::ifnot type="tag" name="anonymous" equals="-1" nest>
+			<img src="http://<cms::var type="global" name="imgserver">/img/nophoto.jpg" class="pic">
+			</cms::ifnot type="tag" name="anonymous">
+		</cms::ifnot type="page" name="myprofile">
+
+
+		<span class="medium"><a href="/tags/<cms::var type="tag" name="value">"><cms::var type="tag" name="value"></a></span><br />
+                          <cms::if type="page" name="myprofile" nest>
+                                <cms::if type="tag" name="anonymous" equals="0" nest>
+                                    <span class="small indent">&uarr;added by <a href="/profiles/<cms::var type="user" name="linkhandle">"><cms::var type="user" name="handle"></a> <cms::var type="tag" name="timesince"> ago</span>
+                                </cms::if type="tag" name="anonymous">
+                            <cms::if type="tag" name="anonymous" equals="-1" nest>
+                                    <span class="small indent">&uarr;added by <a href="/profiles/<cms::var type="user" name="linkhandle">"><cms::var type="user" name="handle"></a> <cms::var type="tag" name="timesince"> ago</span>
+							 </cms::if type="tag" name="anonymous">
+			 <cms::if type="tag" name="anonymous" equals="1" nest>
+									<span class="small indent">&uarr; added <cms::var type="tag" name="timesince"> ago</span>
+							</cms::if type="tag" name="anonymous">
+							
+
+                            </cms::if type="page" name="myprofile">
+                            <cms::ifnot type="page" name="myprofile" nest>
+                                <span class="small indent">&uarr;added
+                                <cms::if type="tag" name="anonymous" equals="-1" nest>
+                                    by <a href="/profiles/<cms::var type="user" name="linkhandle">"><cms::var type="user" name="handle"></a>
+                                </cms::if type="tag" name="anonymous">
+                                 <cms::var type="tag" name="timesince"> ago</span>
+                            </cms::ifnot type="page" name="myprofile">
+			<br clear="all" />
+	</div>
+	</cms::fancylist>
+	<br/>
+	</div>
+
+</div>
+
+<div id="extras">
+
+        <div id="smallabout" class="small">
+            <img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="profile" name="userId">/50/<cms::var type="profile" name="photoId">.jpg" width="50" height="50" border="1" align="left" hspace="5"><cms::var type="profile" name="handle"> is a <cms::var type="profile" name="age">-year old <cms::if type="profile" name="sex" equals="M">guy</cms::if><cms::if type="profile" name="sex" equals="F">girl</cms::if> in <cms::var type="profile" name="city"><cms::if type="profile" name="country" equals="US">, <cms::var type="profile" name="state"></cms::if><cms::ifnot type="profile" name="country" equals="US">, <cms::var type="profile" name="country"></cms::ifnot>.
+            <cms::var type="profile" name="cpronoun"> was last active on <cms::var type="profile" name="lastActive" date>.
+            <cms::var type="profile" name="cpronoun"> is 
+            <cms::if type="profile" name="relationshipStatus" equals="1">single.</cms::if>            <cms::if type="profile" name="relationshipStatus" equals="2">in an <i>open</i> relationship.</cms::if>
+            <cms::if type="profile" name="relationshipStatus" equals="3">in a relationship.</cms::if>
+            <br clear="left" />
+        </div>
+
+	<div id="tagsiadded">
+		<b class="normal">Tag This Person:</b>    
+		<cms::if type="user" name="id" nest>    
+			<form id="tagForm" onSubmit="return addTagToProfile();">    
+				<input type="hidden" id="topicId" name="topicId" value="<cms::var type="topic" name="id">">    
+				<input name="tag" id="tag" style="width: 100%; border: 1px solid #369;">    
+				<div class="small" style="margin-bottom: 10px; text-align: center;">(enter simple, one word descriptions)</div>    
+			</form>    
+		</cms::if type="user" name="id">        
+		<div id="topicTags" style="overflow: hidden;">        
+			<cms::ifnotloop type="mytags">            
+			<div class="pad10 small white" id="notags">You haven't tagged this person yet.
+				<cms::ifnot type="user" name="id" nest><a href="/register.pl" style="color: #336699;">Sign up</a> for a free Consumating account, or <A href="/login.pl">login</a> if you're already one of us.</cms::ifnot type="user" name="id">
+			</div>
+			</cms::ifnotloop>
+			<cms::fancylist over="mytags"> 
+			<div class="topictag"><a href="/tags/<cms::var type="tag" name="value">"><cms::var type="tag" name="value"></a></div>
+			</cms::fancylist>
+		</div>
+	</div>
+</div>
+<script>
+	Nifty("div#tags,div#mytags","big transparent");
+
+var pager = new Pager();
+pager.assign('othertags');
+pager.addpage(0,document.getElementById('othertags').innerHTML);
+function tagAdded(xmlobj) {
+}
+
+function getMoreTags(offset) {
+	if (pager.has(offset)) {
+		pager.show(offset);
+	} else {
+		url = '/profiles/<cms::var type="profile" name="linkhandle">/tags?offset='+offset;
+		http.open('GET',url,true);
+		http.onreadystatechange=handleMoreTags;
+		http.send(null);
+		pager.loading = offset;
+	}
+	var newoffset = offset + 50;
+	$('getmorelink').onclick=function(){getMoreTags(newoffset)};
+}
+function handleMoreTags() {
+	if (http.readyState == 4) {
+		results = http.responseText;
+		if (!results.length) { 
+			pager.show(0);
+			pager.loading = null;
+		} else {
+			pager.addpage(pager.loading,results);
+			pager.show(pager.loading);
+			pager.loading = null;
+		}
+	}
+}
+
+
+
+
+</script>
+<br clear="all"/>
+<div style="padding:10px;"><a id="getmorelink" href="#" onclick="getMoreTags(50);return false;">See More!</a></div>
+</div>
+<script>
+<cms::fancylist over="itemBehaviors">
+Profile.setBehavior(<cms::var type="item" name="id">,'<cms::var type="item" name="behavior">');
+</cms::fancylist>
+</script>

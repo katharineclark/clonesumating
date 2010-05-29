@@ -1,0 +1,327 @@
+<script>
+var bid;
+
+var photoId = <cms::var type="entry" name="photoId"> || 0;
+
+function checkQuitContest() {
+	var c= new Array();
+	c.push("<div class='infoBoxOptionWrapper'><a href='#' onClick='InfoBox.clear();return false;' class='infoBoxOption'><div class='ibp'>Cancel</div></a>");
+	c.push("<div class='infoBoxOptionDesc'>Don't change my photo, I want to stay in the contest!</div></div><br clear='all'/>");
+	c.push("<div class='infoBoxOptionWrapper'><a href='#' onClick='InfoBox.clear();setTimeout(\"showPhotos(null,0,1);\",250);return false;' class='infoBoxOption'><div class='ibp'>Quit</div></a>");
+	c.push("<div class='infoBoxOptionDesc'>Change my primary photo and quit the current contest.  I am fine with losing all my current votes.</div></div><br clear='all'/>");
+	InfoBox.draw(c.join(''),'Are you sure?');
+}
+
+var incontest = <cms::var type="photo" name="incontest"> || 0;
+
+
+function removePhoto() {
+	photoId = 0;
+	incontest=0;
+
+	var im = document.getElementById('myresponsephoto');
+	im.src='/img/attachimage.gif';
+
+	InfoBox.clear();
+	saveResponse();
+
+	return false;
+}
+
+function showPhotos(obj,offset,force) {
+	if (offset == null) { offset = 0 }
+
+	if (incontest && !force) {
+		checkQuitContest();
+		return;
+	}
+
+
+
+	submitRequest('user.getPhotos','','offset='+offset);
+	return false;
+
+}
+function photoPager(offset) {
+	InfoBox.clear();
+	setTimeout('showPhotos(null,'+offset+',1)',300);
+}
+
+function displayPhotos(xmlobj) {
+	var photoBox = document.createElement('div');
+	photoBox.style.display='none';
+	var photos = xmlobj.getElementsByTagName('photo');
+	var l;
+	var results = '';
+
+	var y = document.getElementById('photoUpload').cloneNode(true);
+	y.id='infoBoxPhotoUpload';
+	y.style.display='block';
+	photoBox.appendChild(y);
+
+
+	for (var i = 0; i < photos.length; i++) {
+		var id = 0;
+		var uid = 0;
+		for (var j=0;j<photos[i].childNodes.length;j++) {
+			if (photos[i].childNodes[j].tagName == 'id') {
+				id = photos[i].childNodes[j].firstChild.nodeValue;
+			}else if (photos[i].childNodes[j].tagName == 'userId') {
+				uid = photos[i].childNodes[j].firstChild.nodeValue;
+			}
+		}
+
+		if (document.getElementById('photo'+id)) continue;
+
+		var a = document.createElement('a');
+		a.href='#';
+		a.onclick=function(){return false};
+		var im = document.createElement('img');
+		if (id == photoId) { 
+			//im.className = 'highlighted';
+			im.style.border='3px solid #F13';
+		} else {
+			im.style.border='3px solid #AAA';
+		}
+		im.src = '/photos/'+uid+'/50/'+id+'.jpg';
+		im.width = 50;
+		im.height = 50;
+		im.hspace = 5;
+		im.vspace = 5;
+		im.id = 'photo'+id;
+		im.onclick=assignPhoto;
+		a.appendChild(im);
+		photoBox.appendChild(a);
+
+
+	}
+
+	var more = xmlobj.getElementsByTagName('more')[0].firstChild.nodeValue;
+	var less = xmlobj.getElementsByTagName('less')[0].firstChild.nodeValue;
+	var br = document.createElement('br');
+	br.clear='all';
+	photoBox.appendChild(br);
+
+	var bigD = document.createElement('span');
+
+	if (less > -1) {
+		var d = document.createElement('d');
+		d.innerHTML='<div><div style="float:left;width:175px;"><a href="#" onClick="photoPager('+less+');return false;" class="funbutton" style="width:175px;">&lt; Previous Page<b class="round369666 tl"></b><b class="round369666 tr"></b><b class="round369666 bl"></b><b class="round369666 br"></b></a></div>';
+		bigD.appendChild(d);
+	}
+	if (more > 0) {
+		var d = document.createElement('d');
+		d.innerHTML='<div><div style="float:right;width:175px;"><a href="#" onClick="photoPager('+more+');return false;" class="funbutton">Next Page &gt;<b class="round369666 tl"></b><b class="round369666 tr"></b><b class="round369666 bl"></b><b class="round369666 br"></b></a></div>';
+		bigD.appendChild(d);
+	}
+	photoBox.appendChild(bigD);
+	photoBox.appendChild(br);
+
+
+    // remove button if a photo is selected
+    if (photoId) {
+		var x = document.createElement('div');
+		x.innerHTML='<div><div style="float:left;width:175px;"><a href="#" onClick="removePhoto();return false;" class="funbutton">Remove Photo<b class="round369666 tl"></b><b class="round369666 tr"></b><b class="round369666 bl"></b><b class="round369666 br"></b></a></div>';
+
+        photoBox.appendChild(x);
+    }
+
+	InfoBox.draw(photoBox,'Choose a Photo');
+
+	return false;
+
+}
+
+
+function assignPhoto() {
+	var thisId = this.id;
+
+	if (this.style.height == '3px solid #F13') {
+		this.className = '';
+		this.style.border='3px solid #AAA';
+		photoId = 0;
+		return;
+	}
+
+	try {
+		// have to try this in case the previously assigned photo has been deleted
+		if (photoId > 0) {
+			document.getElementById('photo'+photoId).style.border='3px solid #AAA';
+		}
+	} catch(e){}
+
+
+	this.style.border="3px solid #F13";
+	photoId = parseInt(thisId.substr(5));
+
+	InfoBox.clear();
+
+	showPhoto();
+
+	saveResponse();
+
+	return false;
+}
+function showPhoto() {
+	var im = document.getElementById('myresponsephoto');
+	im.onclick=showPhotos;
+
+	if (!photoId) {
+		incontest=0;
+		return;
+	}
+	incontest=1;
+
+	if (document.all) {
+		var r = document.getElementById('photoHolder');
+		r.removeChild(im);
+		var im = document.createElement('img');
+		im.id='myresponsephoto';
+		im.src = '/photos/'+currentuserid+'/100/'+photoId+'.jpg';
+		r.appendChild(im);
+	} else {
+		im.src = '/photos/'+currentuserid+'/100/'+photoId+'.jpg';
+		im.style.display='inline';
+	}
+	return false;
+}
+
+function bling(id,type) {
+
+	url = "/play/photos/index.pl/bling?en=" + id + "&t=" + type;
+	http.open("GET",url,true);
+	http.onreadystatechange= handleBling;
+	http.send(null);
+	bid = id;
+	return false;
+
+}
+
+function handleBling() {
+	if (http.readyState == 4) {
+		resultsT = http.responseText;
+		var results = new Array();
+		results = resultsT.split(';');
+
+		var up = document.getElementById(bid+'Up');
+		var dn = document.getElementById(bid+'Dn');
+
+		if (results[0] == "U") {
+			obj = document.getElementById('bling'+bid+"-up");
+			obj.src = "/img/up-small-on.gif";
+			obj = document.getElementById('bling'+bid+"-down");
+			obj.src = "/img/down-small.gif";
+
+		} else {
+			obj = document.getElementById('bling'+bid+"-down");
+			obj.src = "/img/down-small-on.gif";
+			obj = document.getElementById('bling'+bid+"-up");
+			obj.src = "/img/up-small.gif";
+		}
+		try {
+			if (results[1].split('-')[0] == 'U') {
+				up.innerHTML = results[1].split('-')[1];
+				dn.innerHTML = results[2].split('-')[1];
+			} else {
+				up.innerHTML = results[2].split('-')[1];
+				dn.innerHTML = results[1].split('-')[1];
+			}
+		} catch(e) {}
+
+		bid ='';
+	}
+}
+
+function saveResponse() {
+
+	var url = "/play/photos/index.pl/save?id=<cms::var type="contest" name="id">";
+	
+	url = url + '&photoId='+photoId;
+
+	http.open("GET", url, true);
+	http.onreadystatechange = handleSaveResponse;
+	http.send(null);
+	
+	return false;
+}
+function handleSaveResponse() {
+	if (http.readyState == 4) {
+		document.getElementById('entryId').value = http.responseText;
+	}
+}
+	
+
+
+var contestId = <cms::var type="contest" name="id">;
+
+
+function validateEntry() {
+	if ((document.getElementById('photoId').value == '' || document.getElementById('photoId').value == '0') && document.getElementById('quit').value != 1) {
+		errorBox('Please pick a photo before entering the contest');
+		return false;
+	} else {
+		return true;
+	}
+}
+
+</script>
+
+<div id="contests">
+
+	<h1>Current Theme: <cms::var type="contest" name="description"></h1>
+
+	<cms::if type="page" name="saved">
+		<h1 class="alert" id="saved" align="center">Your entry to this contest has been saved!</h1>
+	</cms::if>
+
+	<div id="myentry">
+
+		<cms::if type="user" name="id" nest>
+				<form method="post" action="/play/photos/index.pl/save" onSubmit="return validateEntry();" id="photoContestForm">
+				<input type="hidden" name="id" value="<cms::var type="contest" name="id">">
+				<input id="photoId" name="photoId" type="hidden">
+				<input type="hidden" name="quit" value="0" id="quit">
+				<cms::ifnot type="entry" name="photoId" equals="0" nest>
+						<iframe src="/photos.pl/picked?ups=<cms::var type="entry" name="ups">&downs=<cms::var type="entry" name="dns">&contest=1&mode=photocontest&id=<cms::var type="entry" name="photoId">" style="width: 100%; height: 500px; border: 0px;"></iframe>
+						<input type="submit" onClick="return('Changing your entry to this contest will cause all votes to be lost. Is that ok?');" value="Change my entry">
+						<input type="submit" onClick="if(confirm('Quitting this contest will cause all votes for your entry to be lost. Is this ok?')) { document.getElementById('quit').value=1; document.getElementById('photoId').value=0; return true; } else { return false; }" value="Quit this Contest">
+				</cms::ifnot type="entry" name="photoId">
+
+				<cms::if type="entry" name="photoId" equals="0" nest>
+						<iframe src="/photos.pl/minipicker?show=20&mode=photocontest" style="width: 100%; height: 500px; border: 0px;"></iframe>
+						<input type="submit" value="Enter This Contest!">
+				</cms::if type="entry" name="photoId">
+				</form>
+		</cms::if type="user" name="id">
+
+		<cms::ifnot type="system" name="authenticated">
+
+			<P>You've got to <a href="/login.pl">login</a> or <a href="/register.pl">register</a> before entering the contest.</p>
+
+		</cms::ifnot>
+
+	</div>
+
+	<div id="themeinfo">
+		<h2>What does "<cms::var type="contest" name="shortname">" mean to you?</p>
+		<p>Upload a new photo to profile to participate in this week's theme.  You'll earn <b>2 points</b> every time someone gives your photo a thumbs up!</p>
+
+		<p>There <cms::wc type="contest" name="responses" s="is" p="are"> <span class="blue"><cms::var type="contest" name="responses"> <cms::wc type="contest" name="responses" s="person" p="people"></span> participating in this photo theme.  They've all been automagically tagged <a href="/browse/<cms::var type="contest" name="tagname">"><cms::var type="contest" name="tagname"></a>.  It's up to you to judge who is the best, so get to it!</p>  
+
+		<cms::ifloop type="entries">
+			<h3>Photos From This Week's Theme:</h3>
+			<cms::fancylist over="entries">
+					<div class="entry">
+						<a href="/profiles/<cms::var type="entry" name="linkhandle">" title="<cms::var type="entry" name="handle">"><img border="0" width="100" height="100" src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="entry" name="userId">/100/<cms::var type="entry" name="photoId">.jpg"/></a>
+					</div>
+			</cms::fancylist> 
+
+			<br clear="all" />
+
+			<P><a href="/browse/<cms::var type="contest" name="tagname">">See all the photos from this week's theme.</a></p>
+		</cms::ifloop>
+	</div>
+</div>
+
+
+</div>

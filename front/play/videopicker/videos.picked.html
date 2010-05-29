@@ -1,0 +1,26 @@
+<script language="javascript" src="http://update.videoegg.com/js/Player.js"></script>
+<script language="javascript" src="http://<cms::var type="global" name="imgserver">/js/videoEgg.js"></script>
+
+<style>
+	body { background: #FFFF99;      font-family: "Trebuchet MS",Trebuchet,"Lucinda Grande", verdana, arial, helvetica, sans-serif; }
+	img { border: 1px solid #666; margin: 5px;}
+    .medium { font-size: 18px; }
+</style>
+<body>
+<div style="width: 110px; float: left;">
+	<script>
+		videoEgg.drawThumb('<cms::var type="video" name="path">',100);
+	</script>
+</div>
+<div style="width: 400px; float: left; margin-left: 10px; padding-top: 10px;">
+	<span class="medium">You have chosen the video to the left!</span>
+	<p><A href="/videos.pl/minipicker">Choose another one?</a></p>
+	<P><a href="#" onClick="window.parent.document.getElementById('videoId').value='0'; window.location='/videos.pl/minipicker';">Remove Video</a></p>
+</div>
+<script>
+// set the main photo id
+
+		window.parent.document.getElementById('videoId').value = <cms::var type="video" name="id">;
+
+</script>
+</body>

@@ -1,0 +1,133 @@
+<link rel="Stylesheet" href="/styles.css" type="text/css" />
+<u><h1><cms::var type="global" name="pagetitle"></h1></u>
+<a href="/admin/zeitgeist.pl?timespan=1 day">Zeitgeist for today</a><br/>
+<a href="/admin/zeitgeist.pl?timespan=7 day">Zeitgeist for past 7 days</a><br/>
+<a href="/admin/zeitgeist.pl?timespan=14 day">Zeitgeist for past 14 days</a><br/>
+<a href="/admin/zeitgeist.pl?timespan=30 day">Zeitgeist for past 30 days</a><br/>
+<a href="/admin/zeitgeist.pl?timespan=6 month">Zeitgeist for past 6 months</a><br/>
+<a href="/admin/now.pl">Live user activity</a>
+<br clear="all">
+<br clear="all">
+<script type="text/javascript" src="/popular/javascript/JavaScriptFlashGateway.js"></script>
+<script src="http://<cms::var type="global" name="imgserver">/js/xmlhttp.js"></script>
+<script type="text/javascript">
+
+	var lcId = new Date().getTime();
+	var flashProxy = new FlashProxy(lcId, "JavaScriptFlashGateway.swf");
+	/*
+
+	SET THESE VARIABLES TO CUSTOMIZE THE DATE SLIDER
+
+	*/
+	var date_range='today';
+	var line_color = '666666';
+	var box_color = 'CCCCCC';
+	var bar_color = '336699';
+	var slider_variable = 'Users';
+	var file_name = '/admin/zeitgeist.pl?data=1&d=<cms::var type="system" name="timestamp">';
+
+
+	var sample = new FlashTag("/popular/date_slider_open.swf?date_range="+date_range+"&file_name="+file_name+"&box_color="+box_color+"&bar_color="+bar_color+"&line_color="+line_color+"&slider_variable="+slider_variable, 675, 130);
+	sample.setFlashvars("lcId=" + lcId);
+	sample.setFlashvars("flashSource=http://www.measuremap.com/developer/slider/&contentLicense=http://creativecommons.org/licenses/by/2.0/");
+	sample.write(document);
+
+function updatePage(raw_range,clean_range,total_count) {
+	http.open('get','/admin/zeitgeist.pl?query=1&range='+raw_range,true);
+	http.onreadystatechange=handleUpdatePage;
+	http.send(null);
+}
+function handleUpdatePage() {
+	if (http.readyState == 4) {
+		results = http.responseText;
+		alert(results);
+	}
+}
+
+</script>
+</center>
+</div>
+<div id="graphData" style="padding-bottom:10px;width:680px;">
+<!--	<center><b>Loading...</b><br/><img src='/img/wheel.gif' alt='Loading...'/></center> -->
+</div>
+
+
+<div style='float:right;width:33%'>
+<h1>Users</h1>
+Total: <cms::var type="users" name="total"><br/>
+New: <cms::var type="users" name="new">
+
+<br clear="all">
+<h1>Thumbs</h1>
+Total: <cms::var type="thumbs" name="total"><br/>
+New: <cms::var type="thumbs" name="new">
+
+<br clear="all">
+<h1>Photos</h1>
+Total: <cms::var type="photos" name="total"><br/>
+New: <cms::var type="photos" name="new">
+<h2>Unique [Logged In] Users per Day</h2>
+<b>Average: <cms::var type="users" name="uniqueDailyAverage"><br/>
+<cms::fancylist over="uniqueUsers">
+	<cms::var type="day" name="startDate">: <cms::var type="day" name="count"><br/>
+</cms::fancylist>
+</div>
+
+<div style='float:left;width:33%'>
+<h1>Messages</h1>
+Total: <cms::var type="messages" name="total"><br/>
+<h2>Messages by Date</h2> Average per day: <cms::var type="messages" name="average"><br/>
+<cms::fancylist over="messageDate">
+	<cms::var type="message" name="date">: <cms::var type="message" name="count"><br/>
+</cms::fancylist>
+</div>
+<div>
+<h1>Tags</h1>
+Total: <cms::var type="tags" name="total"><br>
+New: <cms::var type="tags" name="dateTotal">
+
+<h2>Tags Assigned</h2>
+Total: <cms::var type="tags" name="assigned"><br/>
+Total self: <cms::var type="tags" name="totalself"> (<cms::var type="tags" name="selfpercent">%)<br/>
+Total others: <cms::var type="tags" name="totalothers"> (<cms::var type="tags" name="otherspercent">%)<br/>
+New: <cms::var type="tags" name="newassigned"> <br/>
+To themselves: <cms::var type="tags" name="newself"> (<cms::var type="tags" name="newselfpercent">%)<br/>
+To others: <cms::var type="tags" name="newothers"> (<cms::var type="tags" name="newotherspercent">%)<br/>
+
+<br clear="all"/>
+<h2>Last 5 new users:</h2>
+<cms::fancylist over="newUsers">
+<div class="card">
+	<a href="/profiles/<cms::var type="user" name="linkhandle">"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="user" name="id">/100/<cms::var type="user" name="photoId">.jpg" border="0" width="100" height="100" alt="<cms::var type="user" name="handle">"></a><br/>
+	<span class="small">
+		<a href="/profiles/<cms::var type="user" name="linkhandle">"><cms::var type="user" name="handle"></a>
+	</span>
+</div>
+</cms::fancylist>
+
+<br clear="all"/>
+<h2>Top 5 Message Senders</h2>
+<cms::fancylist over="messageSenders">
+<div class="card">
+	<a href="/profiles/<cms::var type="sender" name="linkhandle">"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="sender" name="id">/100/<cms::var type="sender" name="photoId">.jpg" border="0" width="100" height="100" alt="<cms::var type="sender" name="handle">"></a><br/>
+	<span class="small">
+		<a href="/profiles/<cms::var type="sender" name="linkhandle">"><cms::var type="sender" name="handle"></a>
+		<br/>
+		<cms::var type="sender" name="count"> messages sent<br/>
+	</span>
+</div>
+</cms::fancylist>
+
+<br clear="all"/>
+<h2>Top 5 Message Recipients</h2>
+<cms::fancylist over="messageRecipients">
+<div class="card">
+	<a href="/profiles/<cms::var type="recipient" name="linkhandle">"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="recipient" name="id">/100/<cms::var type="recipient" name="photoId">.jpg" border="0" width="100" height="100" alt="<cms::var type="recipient" name="handle">"></a><br/>
+	<span class="small"><a href="/profiles/<cms::var type="recipient" name="linkhandle">"><cms::var type="recipient" name="handle"></a>
+		<br/>
+		<cms::var type="recipient" name="count"> messages recieved<br/>
+	</span>
+</div>
+</cms::fancylist>
+</div>
+

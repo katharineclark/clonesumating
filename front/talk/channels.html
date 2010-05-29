@@ -1,0 +1,115 @@
+<script language='javascript'>
+
+function toggleWatch(id) {
+
+	<cms::if type="user" name="id">
+	if (test = document.getElementById('watched'+id)) {
+		var on = (document.getElementById('watched'+id).src.indexOf('dashboard-watchbutton-on.gif') == -1);
+	} else if (test = document.getElementById('pwatched'+id)) {
+		 var on = (document.getElementById('pwatched'+id).src.indexOf('dashboard-watchbutton-on.gif') == -1);
+	}
+
+if (on) {
+	submitRequest('topic.addWatch','','topicId='+id);
+	if (obj = document.getElementById('watched'+id)) {
+		obj.src='http://<cms::var type="global" name="imgserver">/img/dashboard/dashboard-watchbutton-on.gif';
+	}
+    if (obj = document.getElementById('pwatched'+id)) {
+        obj.src='http://<cms::var type="global" name="imgserver">/img/dashboard/dashboard-watchbutton-on.gif';
+    }
+
+} else {
+	submitRequest('topic.removeWatch','','topicId='+id);
+	if (obj=document.getElementById('watched'+id)) {
+		obj.src='http://<cms::var type="global" name="imgserver">/img/dashboard/dashboard-watchbutton-off.gif';
+	}
+    if (obj=document.getElementById('pwatched'+id)) {
+        obj.src='http://<cms::var type="global" name="imgserver">/img/dashboard/dashboard-watchbutton-off.gif';
+    }
+
+}
+
+    </cms::if>
+    <cms::ifnot type="user" name="id">
+        document.location='/register.pl';
+    </cms::ifnot>
+
+	return false;
+
+}
+
+</script>
+
+
+<div id="conversationmanager">
+	<h1><a href="/talk">Conversations</a> &#187; <cms::var type="thischannel" name="name"></h1>
+
+	<div id="channel">
+		<cms::if type="thischannel" name="promo">
+			<div id="promo">
+				<cms::var type="thischannel" name="promo">
+			</div>
+		</cms::if>
+
+		<cms::ifnotloop type="topics">
+			<h2>There are currently no topics in this channel.  Why don't you <a href="<cms::if type="user" name="id">/profiles/<cms::var type="user" name="linkhandle">#topic</cms::if><cms::ifnot type="user" name="id">/register.pl</cms::ifnot>">create one</a>?</h2>
+		</cms::ifnotloop>
+				
+		<cms::fancylist over="topics">
+			<div class="topic">
+				<div class="userpic">
+					<a href="/profiles/<cms::var type="profile" name="linkhandle">" title="This is <cms::var type="profile" name="handle">"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="profile" name="userId">/50/<cms::var type="profile" name="photoId">.jpg" border="0" class="pic" height="50" width="50"></a>
+				</div>
+				<div class="content">
+						<span class="headline"><cms::var type="profile" name="handle"></span> said,<br />
+						<a href="/profiles/<cms::var type="profile" name="linkhandle">/topics?id=<cms::var type="topic" name="id">"><cms::var type="topic" name="question"></a>
+				</div>
+                <div class="meta">
+                        <B><cms::var type="topic" name="responses"></B> <cms::wc type="topic" name="responses" s="response" p="responses">, most recently <cms::var type="topic" name="timesince"> ago</b><br />
+                        <cms::if type="topic" name="enabled" equals="0">
+                               This conversation ended, but you can still read the transcript.
+                        </cms::if>
+                </div>
+				<cms::if type="topic" name="enabled" equals="1">
+					<div class="actions">
+							<a href="/profiles/<cms::var type="profile" name="linkhandle">/topics?id=<cms::var type="topic" name="id">" title="What's your take?"><img src="http://<cms::var type="global" name="imgserver">/img/dashboard/dashboard-respondbutton.gif" class="dashbutton" border="0"></a>
+							<a href="#" onClick="return toggleWatch(<cms::var type="topic" name="id">);"><img src="http://<cms::var type="global" name="imgserver">/img/dashboard/dashboard-watchbutton-<cms::if type="topic" name="watched" equals="0" nest>off</cms::if type="topic" name="watched"><cms::if type="topic" name="watched" equals="1" nest>on</cms::if type="topic" name="watched">.gif" id="pwatched<cms::var type="topic" name="id">" class="dashbutton" border="0"></a>
+					</div>
+				</cms::if>
+			</div>
+		</cms::fancylist>
+
+
+		<cms::ifloop type="pages">
+			<div id="pages">
+				<div class="medium">More <B><cms::var type="thischannel" name="name"></b> Conversations:</div>
+				<br clear="All" />
+				<cms::fancylist over="pages">
+					<a href="/talk/channel?id=<cms::var type="thispage" name="channelId">&page=<cms::var type="thispage" name="offset">" class="page <cms::if type="thispage" name="current">currentpage</cms::if>"><cms::var type="thispage" name="page"></a>
+				</cms::fancylist>
+			</div>
+		</cms::ifloop>
+
+	</div> <!-- channel -->
+
+	<div id="extras">
+		<div class="pod" id="channels">
+			<h2>What Do You Want To Talk About?</h2>
+			<cms::fancylist over="profileChannels">
+				<div class="channel <cms::if type="channel" name="current">currentchannel</cms::if>">
+					<a href="/talk/channel?id=<cms::var type="channel" name="id">"><cms::var type="channel" name="name"></a>
+				</div>
+			</cms::fancylist>
+			<div id="search">
+				<form action="/talk/search" method="get" id="convSearch">
+					<input type="text" name="query" id="convsearchq" />
+					<input type="submit" value="Search" />
+				</form>                 
+			</div>
+		</div>       
+
+
+
+	</div> <!-- right column-->
+
+</div>	

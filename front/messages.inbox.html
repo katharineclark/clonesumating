@@ -1,0 +1,55 @@
+<script language="javascript">
+function confirmDeleteInfobox(userId) {
+	var c = new Array();
+	c.push("<form method='post' action='/messages.pl/delete' name='deleteform'>");
+	c.push("<input type='hidden' name='userId' value='"+userId+"'>");
+	c.push("Are you sure you want to delete this conversation?  There is no way to undo this!!!<br/><br/>");
+	c.push("<a href='#' title='Delete' onclick='document.deleteform.submit();InfoBox.clear();'>Go ahead, get rid of it!</a><br/>");
+	c.push("<a href='#' title='Cancel' onclick='InfoBox.clear();'>No Wait!  I changed my mind!</a><br/>");
+	InfoBox.draw(c.join(''),'So, You want to delete a conversation?');
+}
+</script>
+
+<div id="inbox">
+<h1>My Inbox</h1>
+
+<P>Whenever you send a note to someone, they'll appear here so you can keep track of your conversations.</p>
+
+<div id="messagebox">
+	<table cellpadding=5 cellspacing=0>
+	<cms::fancylist over="recent">
+	<TR <cms::ifnot type="message" name="isRead" equals="0">style="background: #FFFF99;"</cms::ifnot>>
+		<TD><a href="/profiles/<cms::var type="message" name="linkhandle">/messages#recent"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="message" name="userId">/50/<cms::var type="message" name="photoId">.jpg" width="50"  height="50" border="0"></a>
+		<TD class="medium"><a href="/profiles/<cms::var type="message" name="linkhandle">/messages#recent"><cms::var type="message" name="handle"></a></TD>
+		<TD class="medium">Last Note: <a href="/profiles/<cms::var type="message" name="linkhandle">/messages#recent"><cms::var type="message" name="lastDate" date></a>
+			<br/><span class="small"><cms::if type="message" name="toIsRead" equals="0"><cms::var type="message" name="handle"> sent the last message</cms::if><cms::if type="message" name="toIsRead" equals="1">Last message you sent is unread</cms::if><cms::if type="message" name="toIsRead" equals="2">Last message you sent has been read</cms::if>
+			<br/>
+			<a class="small" onclick="confirmDeleteInfobox(<cms::var type="message" name="userId">);return false;" href="#">Delete this conversation</a>
+			</span>
+		</td>
+	</TR>
+	</cms::fancylist>
+	<tr>
+	<td class="large"><cms::if type="inbox" name="prev"><a href="/messages.pl/inbox?offset=<cms::var type="inbox" name="prev">">Newer</a></cms::if></td>
+	<td>&nbsp;</td>
+	<td class="large" align="right"><cms::if type="inbox" name="next"><a href="/messages.pl/inbox?offset=<cms::var type="inbox" name="next">">Older</a></cms::if></td>
+	</table>
+
+	<cms::ifnotloop type="recent">
+	<P>You have no recent conversations.</p>
+	</cms::ifnotloop>
+
+	<BR />
+
+</div>
+
+<div id="messagecount">
+	<center>
+        <span class="large">You have<BR /><span class="white"><cms::var type="user" name="points"></span> notes left this month</span>
+	</center>
+	<hr>
+	<P>Every month, you can contact 10 new people.  Once you've contacted someone (or they've contacted you), you can write as many notes as you please!  We'll re-up your account on the 1st of every month.</p>
+</div>
+
+
+</div>

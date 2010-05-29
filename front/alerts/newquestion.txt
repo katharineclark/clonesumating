@@ -1,0 +1,20 @@
+Aloha,
+
+A new Question of the Week has been posted on Consumating.  
+
+<cms::var type="question" name="question">
+
+To post your answer and read what other people have said,
+visit the link below.
+
+http://www.consumating.com/qow.pl
+
+Are you subscribed to CONSUME, Consumating's daily newsletter?
+If not, you're missing out!  Subscribe at the link below.
+
+=> http://www.consumating.com/newsletters.pl
+
+Love, Consumating
+
+PS. If you want to change your email alert options, click below.
+ -> http://www.consumating.com/myAccount.pl/alerts

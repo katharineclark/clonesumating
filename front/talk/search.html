@@ -1,0 +1,126 @@
+<div id="conversationmanager">
+
+	<div id="searchresults">
+	<div id="search">
+		<form method="get" action="/talk/search" id="convsearch">
+			<h1>Search The Conversations</h1>
+			<input name="query" type="text" style="border: 1px solid #FF9966; font-size: 14px; margin-bottom: 10px;" value="<cms::var type="page" name="query">"><br />
+			<cms::ifloop type="terms">
+				<span class="small">(see people tagged <cms::fancylist over="terms"><cms::ifnot type="list" name="last" nest><cms::ifnot type="list" name="first" nest>, </cms::ifnot type="list" name="first"></cms::ifnot type="list" name="last"><cms::if type="list" name="last"><cms::ifnot type="list" name="first"> or </cms::ifnot></cms::if><a href="/tags/<cms::var type="term" name="tag">"><cms::var type="term" name="tag"></a></cms::fancylist>)</span>
+			</cms::ifloop>
+		</form>
+	</div>
+
+
+	<cms::ifloop type="livetopics">
+		<h2>Active conversations tagged or mentioning <span class="blue"><cms::var type="page" name="query"></span></h2>
+		<cms::fancylist over="livetopics">
+			<cms::if type="topic" name="response">
+				<div class="topic">
+					<div class="userpic">
+						<a href="/profiles/<cms::var type="profile" name="linkhandle">" title="view this profile"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="profile" name="id">/50/<cms::var type="profile" name="photoId">.jpg" class="pic" border="0" align="left" style="margin-right: 10px; margin-top: 4px;"></a> 
+					</div>
+					<div class="content">
+						<a href="/profiles/<cms::var type="profile" name="linkhandle">/topics" class="medium"><cms::var type="topic" name="question"></a><br />
+						<span class="small"><cms::var type="topic" name="totalresponses"> <cms::wc type="topic" name="totalresponses" s="response" p="responses">. started by <a href="/profiles/<cms::var type="profile" name="linkhandle">/topics"><cms::var type="profile" name="handle"></a> on <cms::var type="topic" name="date" date></span><br clear="all" />
+						<div class="response"><cms::var type="topic" name="response" paragraphs></div>
+					</div>
+					<br clear="all" />
+				</div>
+			</cms::if>
+			<cms::ifnot type="topic" name="response">
+				<div class="topic">
+					<div class="userpic">
+						<a href="/profiles/<cms::var type="profile" name="linkhandle">" title="view this profile"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="profile" name="id">/50/<cms::var type="profile" name="photoId">.jpg" class="pic" border="0" align="left" style="margin-right: 10px; margin-top: 4px;"></a>
+					</div>
+					<div class="content">
+						<a href="/profiles/<cms::var type="profile" name="linkhandle">/topics" class="medium"><cms::var type="topic" name="question"></a><br />
+						<cms::if type="topic" name="type" equals="tag">
+							<span class="normal">This conversation is about <span class="blue"><cms::var type="topic" name="tag"></span>.<br />
+						</cms::if>
+						<span class="small">
+							<cms::var type="topic" name="totalresponses"> <cms::wc type="topic" name="totalresponses" s="response" p="responses">. 
+							started by <a href="/profiles/<cms::var type="profile" name="linkhandle">/topics"><cms::var type="profile" name="handle"></a> on <cms::var type="topic" name="date" date>
+						</span>
+					</div>
+					<br clear="all" />
+				</div>
+			</cms::ifnot>
+		</cms::fancylist>
+	</cms::ifloop>
+
+	<cms::ifloop type="archivedtopics">
+		<h2>FROM THE ARCHIVES</h2>
+		<cms::fancylist over="archivedtopics">
+			<cms::if type="topic" name="response" nest>
+				<div class="topic">
+					<div class="userpic">
+						<a href="/profiles/<cms::var type="profile" name="linkhandle">" title="view this profile"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="profile" name="id">/50/<cms::var type="profile" name="photoId">.jpg" class="pic" border="0" align="left" style="margin-right: 10px; margin-top: 4px;"></a>
+					</div>
+					<div class="content">
+						<a href="/profiles/<cms::var type="profile" name="linkhandle">/topics?id=<cms::var type="topic" name="id">" class="medium"><cms::var type="topic" name="question"></a><br />
+						<span class="small"><cms::var type="topic" name="totalresponses"> <cms::wc type="topic" name="totalresponses" s="response" p="responses">. started by <a href="/profiles/<cms::var type="profile" name="linkhandle">/topics"><cms::var type="profile" name="handle"></a> on <cms::var type="topic" name="date" date></span><br clear="all" />
+						<div class="response">"<cms::var type="topic" name="response" paragraphs>"</div>
+					</div>
+					<br clear="all" />
+				</div>
+			</cms::if type="topic" name="response">
+			<cms::ifnot type="topic" name="response">
+				<div class="topic">
+					<div class="userpic">
+						<a href="/profiles/<cms::var type="profile" name="linkhandle">" title="view this profile"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="profile" name="id">/50/<cms::var type="profile" name="photoId">.jpg" class="pic" border="0" align="left" style="margin-right: 10px; margin-top: 4px;"></a>
+					</div>
+					<div class="content">
+						<a href="/profiles/<cms::var type="profile" name="linkhandle">/topics?id=<cms::var type="topic" name="id">" class="medium"><cms::var type="topic" name="question"></a><br />                          
+						<span class="small"><cms::var type="topic" name="totalresponses"> <cms::wc type="topic" name="totalresponses" s="response" p="responses">. started by <a href="/profiles/<cms::var type="profile" name="linkhandle">/topics"><cms::var type="profile" name="handle"></a> on <cms::var type="topic" name="date" date></span>
+					</div>
+					<br clear="all" />
+				</div>
+			</cms::ifnot>
+		</cms::fancylist>
+	</cms::ifloop>
+
+	<cms::if type="search" name="more">
+		<p><a href="/talk/search?query=<cms::var type="page" name="query">&offset=<cms::var type="search" name="more">">Older Conversations &#187;</a></p>
+	</cms::if>
+
+	<cms::if type="page" name="noresults">
+				
+		<h2>No conversations could be found that contain your search terms!</h2>
+		<br />
+		<p><B>Hint:</b> You can group search terms using quotes:</p>
+		<blockquote>
+			<a href='/talk/search?query="arrested+development"'>Conversations mentioning "Arrested Development"</a>
+		</blockquote>
+
+		<P>You can also search for multiple terms:</p>
+		<blockquote>
+			<a href="/talk/search?query=vegetarian+food">Conversations mentioning vegetarian and food</a>
+		</blockquote>
+
+	</cms::if>
+
+</div> <!-- searchresults -->
+
+<div id="extras">
+
+	<div class="pod" id="hottopics">
+        <h2>Hot Topics</h2>
+        <cms::fancylist over="hottopics">
+            <div class="<cms::var type="list" name="evenodd">"><A href="/profiles/<cms::var type="profile" name="linkhandle">/topics?id=<cms::var type="topic" name="id">">
+				<cms::var type="topic" name="question"></a><br /> <cms::var type="topic" name="responses"> <cms::wc type="topic" name="responses" s="comment" p="comments"> so far! 
+            </div>
+        </cms::fancylist>
+    </div>
+
+    <div class="pod" id="newtopics">
+        <h2>New Topics</h2>
+        <cms::fancylist over="topics">
+            <div class="<cms::var type="list" name="evenodd">"><A href="/profiles/<cms::var type="profile" name="linkhandle">/topics?id=<cms::var type="topic" name="id">">
+                <cms::var type="topic" name="question"></a><Br /><cms::var type="topic" name="responses"> <cms::wc type="topic" name="responses" s="comment" p="comments"> so far!  
+            </div>
+        </cms::fancylist>
+    </div>
+
+	</div> <!-- extras -->
+</div> <!-- conversation manager -->

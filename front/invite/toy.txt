@@ -1,0 +1,3 @@
+Hello!  <cms::var type="user" name="handle"> has given you a <cms::var type="item" name="name">.
+
+Click this link to get your toy!  http://dev.consumating.com/register.pl?item=<cms::var type="item" name="id">

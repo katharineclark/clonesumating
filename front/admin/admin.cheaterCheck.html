@@ -1,0 +1,23 @@
+<cms::if type="page" name="error">
+<font color="red"><b>User not found</b></font>
+</cms::if>
+<form method="post">
+Handle: <input type="text" name="handle" value="<cms::var type="profile" name="handle">"/><br/>
+<input type="submit" name="submit" value="Submit"/>
+</form>
+<a href="/profiles/<cms::var type="profile" name="linkhandle">"><cms::var type="profile" name="handle"></a> has <cms::var type="profile" name="popularity"> points.
+
+<table>
+<cms::fancylist over="blingUsers">
+<tr>
+<td>
+<a href="/profiles/<cms::var type="profile" name="linkhandle">"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="profile" name="id">/50/<cms::var type="profile" name="photoId">.jpg"/><br/><cms::var type="profile" name="handle"></a>
+</td>
+<td><cms::var type="blings" name="count"></td>
+<td><cms::var type="profile" name="lastActive"></td>
+<td><cms::var type="profile" name="username"></td>
+<td><cms::var type="profile" name="password"></td>
+<td><cms::var type="profile" name="id"></td>
+</tr>
+</cms::fancylist>
+</table>

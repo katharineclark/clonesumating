@@ -1,0 +1,23 @@
+<storeMore>
+<cms::fancylist over="itemlist">
+	<div id="item<cms::var type="item" name="id">" class="tile" onmouseover='bgover(this);' onmouseout='bgout(this);'>
+		<a id='itemlink<cms::var type="item" name="id">' href='#' onmouseover='bgover(this.parentNode);' onmouseout='bgout(this.parentNode);' onclick="getItemInfo(<cms::var type="item" name="ownerId">,<cms::var type="item" name="id">);return false">
+			<img title="<cms::var type="item" name="name">" id='itemimg<cms::var type="item" name="id">' src="http://<cms::var type="global" name="imgserver">/img/items/<cms::var type="item" name="type">/<cms::if type="item" name="type" equals="system"><cms::var type="item" name="name"></cms::if><cms::if type="item" name="type" equals="user"><cms::var type="item" name="id"></cms::if>.gif<cms::if type="item" name="new">?t=<cms::var type="item" name="new"></cms::if>" /> </a> </div>  </cms::fancylist>
+<cms::fancylist over="blanks">
+	<div class="tile blank"></div>
+</cms::fancylist>
+<br clear="all"/>
+<cms::if type="items" name="prev">
+<div style="float:left;">
+<a href="#" onclick="seemore('<cms::var type="items" name="type">',<cms::var type="items" name="prev">);return false;">Previous</a>
+</div>
+</cms::if>
+<cms::if type="items" name="next">
+<div style="float:right;">
+<a href="#" onclick="seemore('<cms::var type="items" name="type">',<cms::var type="items" name="next">);return false;">Next</a>
+</div>
+</cms::if>
+
+<br clear="all"/>
+<span class="small"><a href="#" onclick="seeall();return false;">Return to main store</a></span>
+</storeMore>

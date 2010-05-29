@@ -1,0 +1,10 @@
+<cms::ifnotloop type="availabletags">
+
+<P>You've filtered down to one person.  Remove a tag from your search to get more options here!</p>
+
+</cms::ifnotloop>
+<h3><b>Continue filtering!</b>  The people above are also tagged these things.  Click a tag below to add it to your search.</h3>
+<cms::fancylist over="availabletags">
+		<a href="#<cms::var type="tag" name="value">" class="tag" onClick="return addTag('<cms::var type="tag" name="value">');"><cms::var type="tag" name="value"></a>&#133;&nbsp;
+</cms::fancylist>
+</div>

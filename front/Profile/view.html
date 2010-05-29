@@ -1,0 +1,457 @@
+<script src="http://<cms::var type="global" name="imgserver">/js/CsmInPlaceEditor.js" type="text/javascript"></script>
+<script src="http://<cms::var type="global" name="imgserver">/js/Profile.js" type="text/javascript"></script>
+<link rel="Stylesheet" href="http://<cms::var type="global" name="imgserver">/css/styles.profile.css" type="text/css" />
+
+<script type="text/javascript">
+var thisprofileid = '<cms::var type="profile" name="userId">';
+var Profile = new Profile(<cms::var type="profile" name="userId">);
+
+
+
+function toggleHot(id) {   
+	if ("<cms::var type="user" name="id">" == "") {
+		window.location='/register.pl';
+		return false;
+	}
+    var img = document.getElementById("hotlist");
+	if (img.src.indexOf('hotlist_on') > 0) {
+        apiRequest('user.removeFromHotList','userId='+id,null);
+        img.src = 'http://<cms::var type="global" name="imgserver">/img/hotlist_off.gif';
+    } else {  
+	    apiRequest('user.addToHotList','userId='+id,null);        
+        img.src='http://<cms::var type="global" name="imgserver">/img/hotlist_on.gif';       
+    }   
+   return false;
+                            
+}                       
+
+
+</script>
+
+<div id="profile" class="vcard">
+	<div id="profileNav">
+		<a class="url" href="/profiles/<cms::var type="profile" name="linkhandle">"><cms::var type="profile" name="handle"> &#187;</a>
+		<a href="/profiles/<cms::var type="profile" name="linkhandle">/topics">Conversations</a>
+		<a href="/profiles/<cms::var type="profile" name="linkhandle">/messages">Send Note</a>
+		<a href="/profiles/<cms::var type="profile" name="linkhandle">/answers">Answers</a>
+		<a class="url" href="/profiles/<cms::var type="profile" name="linkhandle">/photos">Photos</a>
+		<a class="url" href="/profiles/<cms::var type="profile" name="linkhandle">/tags">Tags</a>
+		<a href="/profiles/<cms::var type="profile" name="linkhandle">/inventory">Toy Box<sup style="color: #FFFF99;font-size: 10px;">&nbsp;new</sup></a>
+	</div>
+	<div class="pad10">
+	<h1>Meet <span class="fn nickname"><cms::var type="profile" name="handle"></span>.  
+		<cms::if type="page" name="myprofile">
+		(Oh wait! This is your profile.)
+		</cms::if>
+		<cms::ifnot type="page" name="myprofile" nest>
+			<cms::if type="user" name="id" nest>
+				<cms::ifnot type="personalized" name="incommon" equals="0" nest>You have <cms::var type="personalized" name="incommon"> tag<cms::wc type="personalized" name="incommon" s="" p="s"> <a href="/profiles/<cms::var type="profile" name="linkhandle">/tags">in common</a><cms::var type="personalized" name="description">
+					<cms::ifloop type="personalized_tags">
+							<cms::fancylist over="personalized_tags"><cms::ifnot type="list" name="first" nest>, </cms::ifnot type="list" name="first"><cms::if type="list" name="last" nest><cms::ifnot type="list" name="first" nest>and </cms::ifnot type="list" name="first"></cms::if type="list" name="last"><a href="/tags/<cms::var type="tag" name="value">"><cms::var type="tag" name="value"></a></cms::fancylist>.
+					</cms::ifloop>
+				</cms::ifnot type="personalized" name="incommon">
+			</cms::if type="user" name="id">
+
+			<cms::if type="personalized" name="incommon" equals="0" nest>
+				<cms::ifloop type="random_tags">
+					<cms::var type="profile" name="cpronoun"> is tagged    <span style="width:700px;overflow:hidden;"><cms::fancylist over="random_tags"><cms::ifnot type="list" name="first" nest>, </cms::ifnot type="list" name="first"><cms::if type="list" name="last" nest>and </cms::if type="list" name="last"><a rel="tag" class="category" href="/tags/<cms::var type="tag" name="value">"><cms::var type="tag" name="value"></a></cms::fancylist>.</span>
+				</cms::ifloop>
+			</cms::if type="personalized" name="incommon">
+		</cms::ifnot type="page" name="myprofile">
+
+	<p class="normal"><span id="tagline" class="tagline note"><cms::var type="profile" name="tagline"></span><br/><span class="small"><cms::if type="page" name="myprofile"><a id="taglinelink" href="#" onclick="Profile.changeTagline();return false;" style="font-weight: normal;">Change tagline &#187;</a></cms::if></span></p>
+	</div>
+
+	<div class="left">
+		<cms::if type="topic" name="id">
+			<div id="topic">
+				"<a href="/profiles/<cms::var type="profile" name="linkhandle">/topics"><cms::var type="topic" name="question"></a>"
+				<div class="meta">
+					<cms::var type="topic" name="responseCount"> response<cms::wc type="topic" name="responseCount" s="" p="s"> to this conversation,
+					with <cms::var type="topic" name="watchCount"> <cms::wc type="topic" name="watchCount" s="person" p="people"> watching.
+				</div>
+			</div>
+		</cms::if>
+		<cms::ifnot type="topic" name="id" nest>
+			<cms::if type="page" name="myprofile">
+				<div class="dashboard medium">
+					<A href="/profiles/<cms::var type="profile" name="linkhandle">/topics">Start a Conversation</a> and invite your friends to discuss ... anything you want! Ask a question, share a link, or pose a philosophical quandry.
+				</div>
+			</cms::if>
+		</cms::ifnot type="topic" name="id">
+
+		<cms::ifnotloop type="qows">
+			<cms::ifnot type="page" name="myprofile">
+				<cms::var type="profile" name="handle"> has not answered any questions yet.
+			</cms::ifnot>
+			<cms::if type="page" name="myprofile">
+				<div class="dashboard">
+				<h2 style="margin-bottom: 10px;">Add some more stuff to your page:</h2>
+
+				<P>Add pictures, video and words to your profile by <a href="/weekly/questions">answering questions</a>.  Every Monday we'll send you a new question,
+				and you can answer any of the previous questions too!  You earn points when people give your answer a thumbs up.</p>
+
+				<P><B>Got your thinking cap on?  Get to it...</b></p>
+
+				<ul>
+					<li style="font-size: 20px;">&#187; <A href="/qow.pl">Answer <B>this week's</b> question</a></li>
+					<li style="font-size: 20px;">&#187; <a href="/weekly/questions">Pick from our archive of 100+ questions</a></li>
+				</ul>
+
+				<P>Below, find a sample of what your profile will look like once it is filled with your charming answers to our delightfully vague yet pop-inspired questions:</p>	
+				</div>
+
+				<a href="/weekly/questions"><img src="http://<cms::var type="global" name="imgserver">/img/sample_qow.gif" border="0" style="margin-bottom: 10px"></a>
+				<a href="/weekly/questions"><img src="http://<cms::var type="global" name="imgserver">/img/sample_qow.gif" border="0" style="margin-bottom: 10px"></a>
+				<a href="/weekly/questions"><img src="http://<cms::var type="global" name="imgserver">/img/sample_qow.gif" border="0" style="margin-bottom: 10px"></a>
+
+			</cms::if>
+				
+		</cms::ifnotloop>
+		<cms::fancylist over="qows">
+		<a name="<cms::var type="content" name="id">"></a>
+		<div class="content" id="qow<cms::var type="content" name="id">">
+			<div class="pad5">
+			<div class="contenttext">
+				<div class="pad5">
+					<P><B><cms::var type="contest" name="question"></b></p>
+
+					<cms::if type="content" name="videoId" nest>
+							<!-- Place custom code for video embed here -->
+							<!-- <script language="javascript">videoEgg.drawMovie('<cms::var type="content" name="videopath">');</script> -->
+					</cms::if type="content" name="videoId">
+
+					<cms::if type="content" name="photoId" nest>
+					<img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="user" name="id">/large/<cms::var type="content" name="photoId">.jpg" style="margin-bottom: 5px;">
+					</cms::if type="content" name="photoId">
+
+					<P id="qowanswer<cms::var type="content" name="id">"><cms::var type="content" name="answer" paragraphs></p>
+
+					<br clear="all" />
+                	<div class="postinfo">
+                		Posted on <cms::var type="content" name="date" datetime> | <a href="/profiles/<cms::var type="user" name="linkhandle">/answers#<cms::var type="content" name="id">">Permalink</A><br />
+						<a href="/qow.pl?question=<cms::var type="contest" name="id">">View other answers</a> to this question
+	                </div>
+				</div>
+			</div>
+
+            <cms::if type="page" name="myprofile">
+				<div class="contentstats">
+                             <span id="qowupcount<cms::var type="content" name="id">"><cms::var type="content" name="blingups"></span> <cms::wc type="content" name="blingups" s="up" p="ups"> / <span id="qowdowncount<cms::var type="content" name="id">"><cms::var type="content" name="blingdowns"></span> <cms::wc type="content" name="blingdowns" s="down" p="downs">
+							&nbsp;|&nbsp;
+                            <span class="editControl" id="editControl<cms::var type="content" name="id">">edit text</span>
+                            &nbsp;|&nbsp;
+                            <a href="/qow.pl/myresponse?question=<cms::var type="content" name="questionId">#actionbox">change photo or video</a>
+                            <script>Profile.editAnswer(<cms::var type="content" name="id">);</script>
+						</div>
+                        </cms::if>
+
+
+			<div class="contentthumb">
+				<table cellpadding="0" cellspacing="0" border="0">
+				<TR>
+					<TD valign="middle">
+					<span class="blue medium">Do you like this answer?&nbsp;&nbsp;</span>
+					</td>
+					<td valign="middle">
+					<a href="#" title="I like this! I want to see more from this person." onClick="return Profile.qowbling(<cms::var type="content" name="id">,'U');"><img src="http://<cms::var type="global" name="imgserver">/img/up-small<cms::if type="vote" name="direction" equals="U" nest>-on</cms::if type="vote" name="direction">.gif" border="0" id="qowup<cms::var type="content" name="id">"></a>
+					</td>
+				</tr>
+				</table>
+			</div>
+		
+			</div>
+		</div>
+		</cms::fancylist>
+
+		<br clear="all" />
+
+		<cms::ifloop type="qows">
+		<a href="/profiles/<cms::var type="profile" name="linkhandle">/answers">See more question answers!</a>
+		</cms::ifloop>
+
+	</div>
+
+	<div class="right">
+		<div class="profilephoto">
+			<div id="thumbs">
+				Do You Like <cms::var type="profile" name="handle">?<Br />
+
+						<cms::if type="profile" name="status" equals="-1" nest>
+						It doesn't matter right now, they're in timeout!
+						</cms::if type="profile" name="status">
+						<cms::if type="profile" name="status" equals="0" nest>
+						It doesn't matter right now, they're on vacation!  When they come back, you can vote for them again.
+						</cms::if type="profile" name="status">
+						<cms::if type="profile" name="status" equals="1" nest>
+						<a href="#" title="thumbs up!" onClick="return Profile.thumb('U');"><img src="http://<cms::var type="global" name="imgserver">/img/up<cms::if type="profile" name="thumb" equals="U" nest>-on</cms::if type="profile" name="thumb">.gif" border=0 align="absmiddle" width=50 alt="thumbs up" id="thumbup"></a>&nbsp;<a href="#" title="Hotlist" onClick="return toggleHot(<cms::var type="profile" name="userId">);"><cms::if type="profile" name="hotlist" nest><img src="http://<cms::var type="global" name="imgserver">/img/hotlist_on.gif" id="hotlist" border="0" width="40" height="50" align="absmiddle" alt="hot list"></cms::if type="profile" name="hotlist"><cms::ifnot type="profile" name="hotlist" nest><img src="http://<cms::var type="global" name="imgserver">/img/hotlist_off.gif"  width="40" height="50" align="absmiddle" id="hotlist" border="0" alt="hot list"></cms::ifnot type="profile" name="hotlist"></a>&nbsp;<a href="#" title="thumbs down!" onClick="return Profile.thumb('D');"><img src="http://<cms::var type="global" name="imgserver">/img/down<cms::if type="profile" name="thumb" equals="D" nest>-on</cms::if type="profile" name="thumb">.gif" border=0 align="absmiddle" width=50 id="thumbdown"></a>
+						</cms::if type="profile" name="status">
+			</div>
+			<div>
+				<div id="mediaArea">
+					<img class="photo" id="mainphoto" src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="profile" name="userId">/large/<cms::var type="profile" name="photoId">.jpg">
+				</div>
+				<div id="itemMediaShower"></div>
+			</div>
+
+				<cms::if type="currentContest" name="id" nest>
+				<div style="padding: 5px; background: #333;">
+					<table>
+					<TR>
+						<TD valign="middle">
+							<span class="white medium">Do you like this <b><cms::var type="currentContest" name="shortname">?</b></span>
+						</TD>
+						<TD valign="middle">
+							<a href="#" onClick="return Profile.photobling('U');"><img src="http://<cms::var type="global" name="imgserver">/img/up-grey<cms::if type="profile" name="currentContestVote" equals="U" nest>-on</cms::if type="profile" name="currentContestVote">.gif" border="0" id="photoup"></a><A href="#" onClick="return Profile.photobling('D');"><img src="http://<cms::var type="global" name="imgserver">/img/down-grey<cms::if type="profile" name="currentContestVote" equals="D" nest>-on</cms::if type="profile" name="currentContestVote">.gif" border="0" id="photodown"></a>
+						</TD>
+					</TR>
+					</table>
+				</div>
+				</cms::if type="currentContest" name="id">
+
+
+		</div>
+		<cms::if type="items" name="hasDashboard" equals="1" nest>
+		<div id="toybox">
+			<div style="position:absolute;top:0px;left:10px;"><cms::if type="page" name="myprofile">My</cms::if><cms::ifnot type="page" name="myprofile"><cms::var type="profile" name="handle">'s</cms::ifnot> Stuff:</div>
+			<cms::fancylist over="dashboardItems">
+				<div id="slot<cms::var type="iter" name="position">" class="toyboxspot" style="float:left;">
+					<cms::ifnot type="item" name="noitem" equals="1"><img width="50" height="50" onclick="Profile.getItemInfo(<cms::var type="item" name="ownerId">,<cms::var type="item" name="id">);" id='itemimg<cms::var type="item" name="id">' src="http://<cms::var type="global" name="imgserver">/img/items/<cms::var type="item" name="type">/<cms::if type="item" name="type" equals="system"><cms::var type="item" name="name"></cms::if><cms::if type="item" name="type" equals="user"><cms::var type="item" name="id"></cms::if>.gif"></cms::ifnot>
+				</div>
+			</cms::fancylist>
+		</div>
+		</cms::if type="items" name="hasDashboard">
+		<div id="itemPocket" style="display:none;">
+			<div>
+				<div id="pipeImage" style="display:none;"><img src="http://<cms::var type="global" name="imgserver">/img/toys/tallCornerPipe.gif"/></div>
+				<a href="#" onclick="return false;">&nbsp;</a>
+				<div id="giveDropper"><img src="http://<cms::var type="global" name="imgserver">/img/giveDropper.gif"></div>
+				<cms::fancylist over="yourItems">
+					<div id="item<cms::var type="item" name="id">" class="toyboxspot" style="float:left;">
+						<cms::ifnot type="item" name="noitem" equals="1"><img id='itemimg<cms::var type="item" name="id">' src="http://<cms::var type="global" name="imgserver">/img/items/<cms::var type="item" name="type">/<cms::if type="item" name="type" equals="system"><cms::var type="item" name="name"></cms::if><cms::if type="item" name="type" equals="user"><cms::var type="item" name="id"></cms::if>.gif"></cms::ifnot>
+					</div>
+					<script type="text/javascript">
+						new Draggable("item<cms::var type="item" name="id">",{revert:true});
+					</script>
+				</cms::fancylist>
+				<input type="hidden" name="giveawayItemId" id="giveawayItemId">
+			</div>
+		</div>
+		<div id="itemButtonBar">
+			<div id="itemDrawerButton">
+				<a id="itemDrawerButtonLink" href="#"><span id="itemDrawerButtonLinkText">Show My Pocket</span></a>
+			</div>
+			<div id="itemDrawerButton2">
+				<a id="itemDrawerButtonLink" href="/profiles/<cms::var type="profile" name="linkhandle">/inventory"><span id="itemDrawerButton2LinkText">Show All Toys</span></a>
+			</div>
+		</div>
+		<br clear="all" />
+		<script type="text/javascript">
+		$('itemDrawerButton').onclick=function(e){
+			Effect.toggle('itemPocket','Blind',
+			{
+				beforeStart: function() {
+					if ($('itemDrawerButtonLinkText').innerHTML.indexOf('Show My Pocket') == 0) {
+						$('itemDrawerButtonLinkText').innerHTML = 'Hide My Pocket';
+					} else {
+						$('itemDrawerButtonLinkText').innerHTML = 'Show My Pocket';
+					}
+				},
+				afterFinish: function() {
+					if ($('itemDrawerButtonLinkText').innerHTML.indexOf('Show My Pocket') == 0) {
+						Effect.Fade('pipeImage',{duration:1.5});
+					} else {
+						Effect.Appear('pipeImage',{duration:1.5});
+					}
+				}
+			});
+			return false;
+		};
+
+		Droppables.add('giveDropper',{
+			onHover: function() {  },
+			onDrop: function(element,dropper) {
+				var id = element.id.substring(4);
+				var src = document.getElementById('itemimg'+id).src;
+				dropper.innerHTML = '';
+				var img = document.getElementById('itemimg'+id).cloneNode(true);
+				img.id = 'giveDropperImg';
+				img.style.position='absolute';
+				dropper.appendChild(img);
+
+				$('giveawayItemId').value = id;
+				setTimeout('Profile.getGiveItem('+id+')',500);
+			}
+		});
+
+
+
+		</script>
+		<br clear="all" />
+
+		<div id="meta">
+			<!-- filler is an IE hack.  Don't remove it! -->
+			<div id="filler"></div>
+			<cms::ifnot type="page" name="myprofile" nest>
+			<div id="about" class="adr note"> 
+				<B><cms::var type="profile" name="handle"></b> is a <cms::var type="profile" name="age">-year old <span class="category"><cms::if type="profile" name="sex" equals="M">guy</cms::if><cms::if type="profile" name="sex" equals="F">girl</cms::if></span> in <span class="locality"><cms::var type="profile" name="city"></span><cms::if type="profile" name="country" equals="US">, <span class="region"><cms::var type="profile" name="state"></span></cms::if><cms::ifnot type="profile" name="country" equals="US">, <span class="country-name"><cms::var type="profile" name="country"></span></cms::ifnot>.                <cms::var type="profile" name="cpronoun"> was last active on <cms::var type="profile" name="lastActive" date>.
+				<cms::var type="profile" name="cpronoun"> is 
+				<cms::if type="profile" name="relationshipStatus" equals="1"><span class="category">single</span>.</cms::if>                
+				<cms::if type="profile" name="relationshipStatus" equals="2">in an <span class="category"><i>open</i> relationship</span>.</cms::if>                
+				<cms::if type="profile" name="relationshipStatus" equals="3">in a <span class="category">relationship</span>.</cms::if>            
+			</div>
+			<br clear="all" />
+			</cms::ifnot type="page" name="myprofile">
+			<div id="scoreboard">
+                <cms::ifnot type="page" name="myprofile" nest>
+                    <cms::if type="profile" name="norank" equals="0" nest>
+                        <P><cms::var type="profile" name="cpronoun"> has earned <B><cms::var type="profile" name="popularity"> points</b>, which puts <cms::var type="profile" name="tpronoun"> in <strong><cms::var type="profile" name="rank"><cms::var type="profile" name="rankword"></strong> place.</p>
+                        <div id="breakdown">
+                         <strong id="up"><cms::var type="profile" name="thumbsUp"></strong> <cms::wc type="profile" name="thumbsUp" s="person likes" p="people like"> <cms::var type="profile" name="tpronoun">, and <strong id="down"><cms::var type="profile" name="thumbsDown"></strong> <cms::wc type="profile" name="thumbsDown" s="person does" p="people do"> not. <br /> 
+                        <cms::if type="profile" name="questionthumbs" equals="1"><cms::var type="profile" name="cppronoun"> clever answers have earned <cms::var type="profile" name="tpronoun"> <B><cms::var type="profile" name="qthumbups"> <cms::wc type="profile" name="qthumbups" s="up" p="ups"></b> and <B><cms::var type="profile" name="qthumbdowns"> <cms::wc type="profile" name="qthumbdowns" s="down" p="downs"></b>.<br /></cms::if>                         <cms::if type="profile" name="photothumbs" equals="1"><cms::var type="profile" name="cppronoun"> themed photos have earned <b><cms::var type="profile" name="pthumbups"> <cms::wc type="profile" name="pthumbups" s="up" p="ups"></b> and <b><cms::var type="profile" name="pthumbdowns"> <cms::wc type="profile" name="pthumbdowns" s="down" p="downs"></b>.</cms::if>
+                        </div>
+                    </cms::if type="profile" name="norank">
+                    <cms::if type="profile" name="norank" equals="1" nest>
+                        <div style="display: none;"><span id="up"></span><span id="down"></span></div>
+                    </cms::if type="profile" name="norank">
+               </cms::ifnot type="page" name="myprofile">
+
+            <cms::if type="page" name="myprofile" nest>
+                <cms::if type="profile" name="norank" equals="1" nest>
+                    <div style="background: #ECF2FE; padding: 5px; margin-bottom: 10px;">You are currently <b>unranked</b>.  Only you can see the stats below.  <a href="/manageProfiles.pl" class="small">Change my rank settings &#187;</a></div>
+                </cms::if type="profile" name="norank">
+
+                    <P>You have earned <B><cms::var type="profile" name="popularity"> points</b><cms::if type="profile" name="norank" equals="0" nest>, which puts you in <strong><cms::var type="profile" name="rank"><cms::var type="profile" name="rankword"></strong> place</cms::if type="profile" name="norank">:</p>
+                    <div id="breakdown">
+                     <strong id="up"><cms::var type="profile" name="thumbsUp"></strong> <cms::wc type="profile" name="thumbsUp" s="person" p="people"> gave you a thumbs up, and <strong id="down"><cms::var type="profile" name="thumbsDown"></strong> <cms::wc type="profile" name="thumbsDown" s="person" p="people"> didn't. <br />
+                     <cms::if type="profile" name="questionthumbs" equals="1">Your clever answers have earned you <B><cms::var type="profile" name="qthumbups"> <cms::wc type="profile" name="qthumbups" s="up" p="ups"></b> and <B><cms::var type="profile" name="qthumbdowns"> <cms::wc type="profile" name="qthumbdowns" s="down" p="downs"></b>.<br /></cms::if>
+                     <cms::if type="profile" name="photothumbs" equals="1">Your themed photos have earned <b><cms::var type="profile" name="pthumbups"> <cms::wc type="profile" name="pthumbups" s="up" p="ups"></b> and <b><cms::var type="profile" name="pthumbdowns"> <cms::wc type="profile" name="pthumbdowns" s="down" p="downs"></b>.</cms::if>
+                    </div>            </cms::if type="page" name="myprofile">
+            </cms::if type="profile" name="norank">
+            </div>
+
+		</div>
+
+
+
+
+		<div id="extra">
+			<cms::fancylist over="photos"><img class="logo" onclick="Profile.showPhoto(this)" src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="photo" name="userId">/100/<cms::var type="logo" name="id">.jpg" width="100" height="100"></cms::fancylist>
+
+	
+
+			 <div style="text-align: center; border-bottom: 2px solid #333; padding: 3px; margin-bottom: 5px; margin-top: 10px;">
+				Past Photo Themes <span class="small"><a href="/profiles/<cms::var type="profile" name="linkhandle">/photos">view all</a></span>
+			</div>
+			<cms::fancylist over="photothemes">
+			<div class="minitheme">
+				<img onclick="Profile.showPhoto(this)" class="<cms::if type="content" name="itson">activephoto </cms::if>logo" src="http://<cms::var type="global" name="imgserver">/photos/<cms::ifnot type="content" name="itson">photoContest/<cms::var type="content" name="contestId"></cms::ifnot><cms::if type="content" name="itson"><cms::var type="content" name="userId"></cms::if>/100/<cms::var type="content" name="photoId">.jpg" align="left" border="1"> 
+				<div style="float:right;text-align:left;width:87px;">
+					<cms::var type="contest" name="shortname"><br clear="all" />
+					<cms::if type="page" name="myprofile">
+						<cms::var type="content" name="blingups"> Ups<br clear="all"/>
+						<cms::var type="content" name="blingdowns"> Downs<br clear="all"/>
+					</cms::if>
+				</div>
+				<br clear="all"/>
+			</div>
+			</cms::fancylist>
+			<br clear="all"/>
+			<cms::ifloop type="photothemes">
+				<a href="/profiles/<cms::var type="profile" name="linkhandle">/photos">View all themed photos &#187;</a>
+			</cms::ifloop>
+		</div>
+		<div id="tags">
+
+		<cms::ifnot type="blocklist" name="tag" nest>
+			<cms::if type="user" name="id" nest>
+				<cms::if type="profile" name="status" equals="-1">
+				This user is in timeout, so you can't add any new tags to them.
+				</cms::if>
+				<cms::if type="profile" name="status" equals="0">
+				This user is on vacation, so you can't add any new tags to them.
+				</cms::if>
+				<cms::if type="profile" name="status" equals="1">
+				<div style="padding: 5px; border-bottom: #369 1px dashed;  background: #FFFF99;" id="tag_add_form">
+					<div id="tag_add_form_area">
+						<form id="tagForm" onSubmit="return Profile.addTag($('tag').value);">
+							<div style="float:left;">
+							<a name='newtag'>&nbsp;</a>New tag: <input autocomplete="off" name="tag" id="tag" style="width: 70px;"> 
+									<div id="tag-popup" class="autocomplete"><span></span></div>
+									<script type="text/javascript">
+										if (!ie)
+										autocomplete('tag','tag-popup','/api?method=autocomplete.tag&name=tag-popup');
+									</script>
+									<br clear="left" />
+							</div>
+							<div id="addTagButton"><input type="button" onClick="return Profile.addTag($(\'tag\').value);" value="Add"></div>
+						</form>
+					</div>
+					<div id="tag_add_busy_area" style="display: none;">
+						<img src="http://<cms::var type="global" name="imgserver">/img/wheel.gif" height="30"/>
+					</div>
+					<br clear="all"/>
+				</div>
+				<div style="display: none; border-bottom: #369 1px dashed;  background: #FFFF99; padding: 5px;" id="tag_add_working">
+					<p class="medium">Adding tag...</p>
+				</div>
+				<br clear="all"/>
+				</cms::if>
+			</cms::if type="user" name="id">
+		</cms::ifnot type="blocklist" name="tag">
+
+			<div style="text-align: center; border-bottom: 2px solid #369; color: #FFF; padding: 3px;">
+			<b>My Tags</b> <span class="small"><A href="/profiles/<cms::var type="profile" name="linkhandle">/tags">view all</a></span>
+			</div>
+			<div id="selftags">
+			<cms::fancylist over="selftags">
+			<div class="tag" id="tag<cms::var type="tag" name="id">">
+				<nobr><cms::if type="page" name="myprofile"><a href="#" onClick="if (confirm('Delete this tag?')) { Profile.deleteTag('<cms::var type="tag" name="id">'); }return false;"><img src="http://<cms::var type="global" name="imgserver">/img/tag_delete_x.gif" border="0" align="absmiddle"></a>&nbsp;</cms::if><img src="http://<cms::var type="global" name="imgserver">/img/tag_on_blue.gif" align="absmiddle" border="0">&nbsp;<a class="taglink category" rel="tag" href="/tags/<cms::var type="tag" name="value">" title="<cms::var type="tag" name="value">"><cms::var type="tag" name="value"></a></nobr>
+			</div>
+			</cms::fancylist>
+			</div>
+			<br clear="all" />
+			<br clear="all" />
+            <div style="text-align: center; border-bottom: 2px solid #369; color: #FFF; padding: 3px;">
+			<b>Tags From Others</b> <span class="small"><a href="/profiles/<cms::var type="profile" name="linkhandle">/tags">view all</a></span>
+
+			</div>
+
+			<div id="othertags">
+			<cms::fancylist over="othertags">
+			<div class="othertag" id="tag<cms::var type="tag" name="id">">
+				<nobr><cms::if type="page" name="myprofile"><a href="#" onClick="if (confirm('Delete this tag?')) { Profile.deleteTag('<cms::var type="tag" name="id">'); }return false;"><img src="http://<cms::var type="global" name="imgserver">/img/tag_delete_x.gif" border="0" align="absmiddle"></a>&nbsp;</cms::if><img src="http://<cms::var type="global" name="imgserver">/img/tag_on_blue.gif" align="absmiddle" border="0">&nbsp;<a class="othertaglink category" rel="tag" href="/tags/<cms::var type="tag" name="value">" title="<cms::var type="tag" name="value">"><cms::var type="tag" name="value"></a></nobr>
+				<span class="taginfo">
+					<br />
+					<span class="small" style="font-size:9px;">&uarr;added
+					<cms::if type="page" name="myprofile" nest>
+						<cms::if type="tag" name="anonymous" equals="0">
+							by <a href="/profiles/<cms::var type="user" name="linkhandle">"><cms::var type="user" name="handle"></a>
+						</cms::if>
+						<cms::if type="tag" name="anonymous" equals="-1">
+							by <a href="/profiles/<cms::var type="user" name="linkhandle">"><cms::var type="user" name="handle"></a>
+						</cms::if>
+					</cms::if type="page" name="myprofile">
+					<cms::ifnot type="page" name="myprofile" nest>
+						<cms::if type="tag" name="anonymous" equals="-1">
+							by <a href="/profiles/<cms::var type="user" name="linkhandle">"><cms::var type="user" name="handle"></a>
+						</cms::if>
+					</cms::ifnot type="page" name="myprofile">
+					<cms::var type="tag" name="timesince"> ago</span>
+				</span>
+			</div>
+			</cms::fancylist>
+			</div>
+		</div>
+	</div>
+	<br clear="all" />
+
+</div> <!-- profile -->
+
+
+
+<script>
+<cms::fancylist over="itemBehaviors">
+Profile.setBehavior(<cms::var type="item" name="id">,'<cms::var type="item" name="behavior">');
+</cms::fancylist>
+</script>

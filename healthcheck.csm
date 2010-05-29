@@ -1,0 +1,18 @@
+#!/usr/bin/perl
+
+
+use strict;
+ 
+
+use lib 'lib';
+use FCGI;
+use CGI::Fast;
+
+my ($dbh);
+my $appcount = 0;
+while (my $cgi = new CGI::Fast) {
+
+	print $cgi->header();
+	print "Consumating is alive.  This is health check $appcount";
+	$appcount++;
+}

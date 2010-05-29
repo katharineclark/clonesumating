@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /browse/
+Disallow: /search.pl
+Disallow: /invite/
+Disallow: /everywhere/
+Disallow: /img/
+Disallow: /updates/

@@ -1,0 +1,34 @@
+<h1>Welcome!</h1>
+
+<h2>I am new to the site</h2>
+<p class="large"><a href="/register.pl">Join today for free!</a></p>
+
+<h2>I already have an account</h2>
+
+<cms::if type="page" name="msg">
+	<div style="background: #FFFF99; border: 1px solid #FF9966; padding: 10px;">
+		<span class="medium"><cms::var type="page" name="msg"></span>
+	</div>
+</cms::if>
+
+<form id="loginForm" method="post" action="<cms::var type="global" name="loginUrl">/authenticate">
+<input name="redirect" value="<cms::var type="page" name="redirect">" type="hidden">
+<p style="font-weight: bold;">Your E-Mail Address:<BR />
+<input id="username" name="username" value="" class="textinput"></p>
+
+<P style="font-weight:bold;">Password:<BR />
+<input name="password" value="" type="password" class="textinput">
+</p>
+
+<P><input type="checkbox" class="checkbox" name="rememberme"> Remember me!</p>
+
+<input type="submit" value="Login">
+
+<P class="small">(if you've forgotten your password, <a href="/login.pl/forgotPassword">click here</a>)</p>
+
+</form>
+</div>
+
+<script>
+	document.getElementById('username').focus();
+</script>

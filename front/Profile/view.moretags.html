@@ -1,0 +1,53 @@
+<div>
+	<div>&nbsp;</div>
+	<cms::fancylist over="addedtags">
+		<div class="peeptag">
+			<cms::if type="tag" name="myprofile" nest>
+				<cms::ifnot type="tag" name="anonymous" equals="1" nest>
+					<A href="/profiles/<cms::var type="profile" name="linkhandle">"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="profile" name="userId">/50/<cms::var type="profile" name="photoId">.jpg" class="pic" border="0" height="50" width="50"></a> 
+				</cms::ifnot type="tag" name="anonymous">
+				<cms::if type="tag" name="anonymous" equals="1" nest>
+					<img src="http://<cms::var type="global" name="imgserver">/img/nophoto.jpg" class="pic">
+				</cms::if type="tag" name="anonymous">
+			</cms::if type="tag" name="myprofile">
+
+			<cms::ifnot type="tag" name="myprofile" nest>
+				<cms::if type="tag" name="anonymous" equals="-1" nest>
+					<A href="/profiles/<cms::var type="profile" name="linkhandle">"><img src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="profile" name="userId">/50/<cms::var type="profile" name="photoId">.jpg" class="pic" border="0" height="50" width="50"></a> 
+				</cms::if type="tag" name="anonymous">
+				<cms::ifnot type="tag" name="anonymous" equals="-1" nest>
+					<img src="http://<cms::var type="global" name="imgserver">/img/nophoto.jpg" class="pic">
+				</cms::ifnot type="tag" name="anonymous">
+			</cms::ifnot type="tag" name="myprofile">
+
+
+			<span class="medium">
+				<a href="/tags/<cms::var type="tag" name="value">"><cms::var type="tag" name="value"></a>
+			</span><br />
+			<cms::if type="tag" name="myprofile" nest>
+				<cms::if type="tag" name="anonymous" equals="0" nest>
+					<span class="small indent">&uarr;added by <a href="/profiles/<cms::var type="profile" name="linkhandle">"><cms::var type="profile" name="handle"></a> <cms::var type="tag" name="timesince"> ago</span>
+				</cms::if type="tag" name="anonymous">
+				<cms::if type="tag" name="anonymous" equals="-1" nest>
+					<span class="small indent">&uarr;added by <a href="/profiles/<cms::var type="profile" name="linkhandle">"><cms::var type="profile" name="handle"></a> <cms::var type="tag" name="timesince"> ago</span>
+				</cms::if type="tag" name="anonymous">
+				<cms::if type="tag" name="anonymous" equals="1" nest>
+					<span class="small indent">&uarr; added <cms::var type="tag" name="timesince"> ago</span>
+				</cms::if type="tag" name="anonymous">
+			</cms::if type="tag" name="myprofile">
+
+
+			<cms::ifnot type="tag" name="myprofile" nest>
+				<span class="small indent">&uarr;added
+					<cms::if type="tag" name="anonymous" equals="-1" nest>
+					by <a href="/profiles/<cms::var type="profile" name="linkhandle">"><cms::var type="profile" name="handle"></a>
+					</cms::if type="tag" name="anonymous">
+					<cms::var type="tag" name="timesince"> ago
+				</span>
+			</cms::ifnot type="tag" name="myprofile">
+			<br clear="all" />
+		</div>
+	</cms::fancylist>
+	<div>&nbsp;</div>
+</div>
+<div>&nbsp;</div>

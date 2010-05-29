@@ -1,0 +1,432 @@
+<script src="http://<cms::var type="global" name="imgserver">/js/prototype.js" type="text/javascript"></script>
+<script src="http://<cms::var type="global" name="imgserver">/js/scriptaculous.js?load=dragdrop" type="text/javascript"></script>
+<script>
+var scrollOK = 1;
+function photoScroll(e) {
+	if (!scrollOK) { return true; }
+
+	if (!e) var e = window.event;
+	var posy = 0;
+	if (e.pageY) {
+		posy = e.pageY;
+	} else if (e.clientY) {
+		posy = e.clientY + document.body.scrollTop;
+	}
+
+	var scroller = getWindowScroll();
+
+	if (posy < scroller.top + 50) {
+		window.scrollTo(0,scroller.top - 150);
+		scrollOK = 0;
+		setTimeout('scrollOK = 1;',300);
+	}
+}
+ 
+function getWindowScroll() {
+	var T, L, W, H;
+	var w = window;
+	with (w.document) {
+		if (w.document.documentElement && documentElement.scrollTop) {
+			T = documentElement.scrollTop;
+			L = documentElement.scrollLeft;
+		} else if (w.document.body) {
+			T = body.scrollTop;
+			L = body.scrollLeft;
+		}
+		if (w.innerWidth) {
+			W = w.innerWidth;
+			H = w.innerHeight;
+		} else if (w.document.documentElement && documentElement.clientWidth) {
+			W = documentElement.clientWidth;
+			H = documentElement.clientHeight;
+		} else {
+			W = body.offsetWidth;
+			H = body.offsetHeight
+		}
+	}
+	return { top: T, left: L, width: W, height: H };
+}
+
+function deletePhoto(ele) {
+	var id = ele.id.substring(5);
+	for (var i=1;i<6;i++) {
+		var im = document.getElementById('pos'+i).firstChild;
+		if (im.src) {
+			var parts = im.src.split('/');
+			var ids = parts[parts.length-1].split('.');
+			if (ids[0] == id) {
+				im.parentNode.removeChild(im);
+			}
+		}
+	}
+	ele.parentNode.removeChild(ele);
+	//new Ajax.Request('/api',{parameters:"method=photos.delete&photoId="+id});
+	apiRequest("photos.delete","photoId="+id,null);
+}
+
+function deletePhotoReturn() {
+	try {
+		if (usedImages[newPhotoId] == 1) {
+			var imgs = document.getElementsByTagName('pos');
+			for (var i=0;i<imgs.length;i++) {
+				if (imgs[i].firstChild.name == newPhotoId) {
+					imgs[i].firstChild.src = '/img/nophoto.jpg';
+					break;
+				}
+			}
+		}
+
+		var parent = document.getElementById(newPhotoId).parentNode;
+		parent.parentNode.removeChild(parent);
+		newPhotoId = null;
+
+		document.getElementById('deletebuttondiv').parentNode.removeChild(document.getElementById('deletebuttondiv'));
+	}catch(e){alert('DPR error: '+e.message)}
+}
+
+function showDeleteButton() {
+	var d = document.createElement('div');
+	var i = document.createElement('input');
+
+	i.type = 'button';
+	i.value = 'Delete Selected Photo';
+	i.onclick = deletePhoto;
+	d.id = 'deletebuttondiv';
+	d.appendChild(i);
+	d.style.positon='relative';
+
+	var op = document.getElementById('options');
+	op.appendChild(d);
+}
+
+
+
+function checkQuitContest() {
+	var c= new Array();
+	c.push("<div class='infoBoxOptionWrapper'><a href='#' onClick='InfoBox.clear();resetMainPhoto();return false;' class='infoBoxOption'><div class='ibp'>Keep Fightin'</div></a>");
+	c.push("<div class='infoBoxOptionDesc'>Don't change my photo, I want to stay in the contest!</div></div><br clear='all'/>");
+	c.push("<div class='infoBoxOptionWrapper'><a href='#' onClick='InfoBox.clear();setPhoto(1,1,1);return false;' class='infoBoxOption'><div class='ibp'>Quit Contest</div></a>");
+	c.push("<div class='infoBoxOptionDesc'>I want to quit the current contest so I can change my main photo.  I am fine with losing all my current contest votes.</div></div><br clear='all'/>");
+	InfoBox.draw(c.join(''),'Are you sure?');
+}
+
+var incontest = <cms::var type="photo" name="incontest">;
+
+var prevEle;
+var holdEle;
+var holdDropper;
+var used = new Array();
+used.push(0);
+used.push("http://<cms::var type="global" name="imgserver">/photos/<cms::var type="photo1" name="userId">/50/<cms::var type="photo1" name="id">.jpg");
+used.push("http://<cms::var type="global" name="imgserver">/photos/<cms::var type="photo1" name="userId">/50/<cms::var type="photo2" name="id">.jpg");
+used.push("http://<cms::var type="global" name="imgserver">/photos/<cms::var type="photo1" name="userId">/50/<cms::var type="photo3" name="id">.jpg");
+used.push("http://<cms::var type="global" name="imgserver">/photos/<cms::var type="photo1" name="userId">/50/<cms::var type="photo4" name="id">.jpg");
+used.push("http://<cms::var type="global" name="imgserver">/photos/<cms::var type="photo1" name="userId">/50/<cms::var type="photo5" name="id">.jpg");
+
+function resetMainPhoto() {
+	$('pos1').innerHTML = prevEle;
+/*
+	for (var i=0;i<$('pos1').childNodes.length;i++) {
+		if ($('pos1').childNodes[i].nodeName == 'IMG') {
+			$('pos1').removeChild($('pos1').childNodes[i]);
+			$('pos1').appendChild(prevEle);
+		}
+	}
+*/
+}
+function setPhoto(ele,dropper,force,swap) {
+	if (force) {
+		dropper = holdDropper;
+		ele = holdEle;
+	}
+	if (!swap) {
+		for (var i=1;i<=used.length;i++) {
+			if (ele.innerHTML.indexOf(used[i]) > -1) {
+				alert('This photo is already in use!');
+				return false;
+			}
+		}
+	}
+	try{
+		prevEle = dropper.innerHTML;
+		dropper.innerHTML = ele.innerHTML;
+/*
+		for (var i=0;i<dropper.childNodes.length;i++) {
+			if (dropper.childNodes[i].nodeName == 'IMG') {
+				prevEle = dropper.childNodes[i].cloneNode(true);
+				dropper.removeChild(dropper.childNodes[i]);
+var foundEle=0;
+				for (var j=0;j<ele.childNodes.length;j++) {
+//alert('ele '+j+': '+ele.childNodes[j].nodeName);
+					if (ele.childNodes[j].nodeName == 'IMG') {
+						dropper.appendChild(ele.childNodes[i]);
+foundEle=1;
+						break;
+					}
+				}
+if (foundEle==0) {alert("We didn't find anything in ele!!!")}
+				break;
+			}
+		}
+*/
+		for (var i=0;i<dropper.childNodes.length;i++) {
+			if (dropper.childNodes[i].nodeName == 'IMG') {
+				var src = dropper.childNodes[i].src;
+				dropper.childNodes[i].style.position='relative';
+				dropper.childNodes[i].style.top='-10px';
+				dropper.childNodes[i].style.left='-10px';
+				if (dropper.id == 'pos1') {
+					if (incontest && !force) {
+						holdEle = ele;
+						holdDropper = dropper;
+						checkQuitContest();
+						return;
+					}
+					dropper.childNodes[i].border='';
+					dropper.childNodes[i].style.width='400px';
+					dropper.childNodes[i].style.height='300px';
+					dropper.childNodes[i].src = src.replace(/50/,'large');
+					used[1] = dropper.childNodes[i].src;
+				} else {
+					dropper.childNodes[i].border='';
+					dropper.childNodes[i].style.width='100px';
+					dropper.childNodes[i].style.height='100px';
+					dropper.childNodes[i].src = src.replace(/50/,'100');
+					used[dropper.id.substring(3)] = src;
+				}
+				break;
+			}
+		}
+		var quitter = force == 1 ? 1 : 0;
+		var params = 'method=user.setPhoto&photoId='+ele.id.substring(5)+'&position='+dropper.id.substring(3)+'&dropcontest='+quitter;
+		new Ajax.Request('/api',{parameters:params});
+	}catch(e){'swap error: '+alert(e.message)}		
+}
+
+function DeshowPhoto(ele) {
+	if (ele.id.indexOf('pos') != 0) {
+		return false;
+	}
+	var photoId;
+	for (var i=0;i<ele.childNodes.length;i++) {
+		if (ele.childNodes[i].nodeName == 'IMG') {
+			photoId = ele.childNodes[i].id;
+			ele.childNodes[i].src = 'http://<cms::var type="global" name="imgserver">/img/nophoto.jpg';
+			break;
+		}
+	}
+	//alert('deshowing '+photoId);
+
+	new Ajax.Request('/api',{parameters:'method=user.setPhoto&position=99&photoId='+photoId});
+}
+
+setTab('tabphotos');
+</script>
+
+
+<style>
+
+#position1 { width: 400px; height: 300px; overflow: hidden; margin: 0; background: #CCC; border: 4px #666 solid;}
+.position { width: 100px; height: 100px; overflow: hidden;  margin: 0; background: #CCC; border: 1px #666 solid;}
+
+#picked { width: 420px; floaT: left; }
+
+#rightside { float: right; width: 270px;}
+
+#options { width: 270; background: #FF9; border: #369 1px solid;}
+#upload { 
+	background: #369;
+	border: #369 1px solid; 
+	width: 270px;
+}
+
+.highlighted    { width: 50px; height: 50px; margin: 10px;}
+.option         { width: 50px; height: 50px; margin: 10px;}
+.selectedoption { width: 50px; height: 50px; margin: 10px;}
+
+/*
+.option:hover { border: 4px solid #369; }
+
+.selectedPhoto { border: 2px #F00 solid; }
+*/
+
+#instructions { font-size: 24px; margin-bottom: 10px; display: none;}
+
+#myPhotos {  }
+
+</style>
+
+
+
+
+
+<cms::if type="form" name="msg">
+<P style="font-size: 14px;"><cms::var type="form" name="msg"></p>
+</cms::if>
+
+
+
+	<div id="instructions">
+		Pick a photo from the right...
+	</div>
+
+<BR clear="all" />
+
+<div id="picked">
+<div id="myPhotos">
+	<div id="pos1" style="width:400px;overflow:hidden;">
+		<img id="<cms::var type="photo1" name="id">" src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="photo1" name="userId">/large/<cms::var type="photo1" name="id">.jpg" name="<cms::var type="photo1" name="id">" border="0">
+	</div>
+	<div id="pos2" style="float:left;width:100px;height:100px;overflow:hidden;">
+		<img id="<cms::var type="photo2" name="id">" src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="photo1" name="userId">/100/<cms::var type="photo2" name="id">.jpg" name="<cms::var type="photo2" name="id">" border="0">
+	</div>
+	<div id="pos3" style="float:left;width:100px;height:100px;overflow:hidden;">
+		<img id="<cms::var type="photo3" name="id">" src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="photo1" name="userId">/100/<cms::var type="photo3" name="id">.jpg" id="position3" name="<cms::var type="photo3" name="id">" "border="0">
+	</div>
+	<div id="pos4" style="float:left;width:100px;height:100px;overflow:hidden;">
+		<img id="<cms::var type="photo4" name="id">" src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="photo1" name="userId">/100/<cms::var type="photo4" name="id">.jpg" id="position4" name="<cms::var type="photo4" name="id">" border="0">
+	</div>
+	<div id="pos5" style="float:left;width:100px;height:100px;overflow:hidden;">
+		<img id="<cms::var type="photo5" name="id">" src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="photo1" name="userId">/100/<cms::var type="photo5" name="id">.jpg" id="position5" name="<cms::var type="photo5" name="id">"border="0">
+	</div>
+	<script>
+	for (var i=1;i<6;i++) {
+		Droppables.add('pos'+i,{
+			onHover:function(ele,dropper) {
+				dropper.style.border='2px ridge #CFD9E4';
+			},
+			onUnHover:function(dropper) {
+				dropper.style.border='';
+			},
+			onDrop:function(ele,dropper) {
+//alert('ele: '+ele.id+'\ndropper: '+dropper.id);
+				if (ele.id.indexOf('pos') == 0) {
+					var tmpid=0;
+					for (var i=0;i<dropper.childNodes.length;i++) {
+						if (dropper.childNodes[i].id) {
+							tmpid = dropper.childNodes[i].id;
+							//alert('swapping tmpid = '+tmpid);
+							break;
+						}
+					}
+					var e = ele;
+					for (var i=0;i<e.childNodes.length;i++) {
+						if (e.childNodes[i].id) {
+							//alert('child '+i+': '+e.childNodes[i].id);
+							setPhoto(document.getElementById('photo'+e.childNodes[i].id),dropper,0,1);
+							break;
+						}
+					}
+					if (tmpid > 0) {
+						setPhoto(document.getElementById('photo'+tmpid),e,0,1);
+					}
+				} else {
+					setPhoto(ele,dropper);
+				}
+			}
+		});
+		var d = new Draggable('pos'+i,{
+			revert: true,
+			onEnd:function(drag,event){ 
+				//alert(drag.element.id);
+			}
+		});
+		Draggables.addObserver('onEnd',d.onEnd);
+	}
+	</script>
+
+	<BR clear="left"/>
+	<P class="normal">
+		Holy web 2.0 batman!  Just drag photos from the right onto the area above, and the changes are shown on your profile immediately!
+	</p>
+	<BR clear="all" />
+</div>
+</div>
+
+
+<div id="rightside">
+<div id="upload" class="corners">
+<div class="pad5">
+<form method="post" action="/photos.pl/upload" enctype="multipart/form-data" id="uploadForm">
+<input type="file" name="photo" class="browse"><BR />
+<input type="submit" value="Upload a new photo">
+<br clear="all"/>
+</form>
+</div>          
+<b class="round369 tl"></b>
+<b class="round369 tr"></b>
+<b class="round369 bl"></b>
+<b class="round369 br"></b>
+</div>  
+<style>
+#deleter {
+	float: right;
+	width: 60px;
+	height: 60px;
+}
+</style>
+<div id="deleter">
+<img id="deleterImg" src="http://<cms::var type="global" name="imgserver">/img/trash.gif"/>
+</div>
+<script>
+Droppables.add('deleter',{
+	onHover:function(ele,dropper){
+		$('deleterImg').src="http://<cms::var type="global" name="imgserver">/img/trash_full.gif";
+	},
+	onUnHover:function(dropper) {
+		$('deleterImg').src="http://<cms::var type="global" name="imgserver">/img/trash.gif";
+	},
+	onDrop:function(ele,dropper) {
+		if (confirm('Are you sure you want to delete this photo? It cannot be undone!')) {
+			try {
+				deletePhoto(ele);
+			}catch(e){alert('deleter failed: '+e.message)}
+		}
+	}
+});
+</script>
+
+       <BR clear="all" /><BR /> 
+<cms::ifloop type="photos">
+<div id="options">
+<div class="pad5">
+
+	<cms::fancylist over="photos">
+
+	<span id="photo<cms::var type="photo" name="id">" >
+		<img style="border:2px solid green;" src="http://<cms::var type="global" name="imgserver">/photos/<cms::var type="photo" name="userId">/50/<cms::var type="photo" name="id">.jpg" width="50" height="50" id="<cms::var type="photo" name="id">" class="<cms::if type="photo" name="selected" nest>selected</cms::if type="photo" name="selected">option" border="0">
+	</span>
+	<script>
+	new Draggable('photo<cms::var type="photo" name="id">',{
+		revert:true,
+		starteffect:function(ele) {
+			document.body.onmousemove=photoScroll;
+		},
+		endeffect:function(ele) {
+			var id = ele.id.substring(5);
+			document.getElementById(id).style.border='';
+			document.body.onmousemove=null;
+		}
+	});
+	</script>
+
+	</cms::fancylist>
+</div>
+<b class="round369 tl"></b>
+<b class="round369 tr"></b>
+<b class="round369 bl"></b>
+<b class="round369 br"></b>
+</div>
+<script>
+Droppables.add('options',{
+	onDrop: function(ele,dropper) {
+		DeshowPhoto(ele);
+	}
+});
+</script>
+</cms::ifloop>
+
+
+<BR clear="all" />
+</div>
+
